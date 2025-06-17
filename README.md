@@ -43,23 +43,41 @@ A modern, full-stack web application for tracking and managing sports card colle
 
 ### Dashboard - Portfolio Overview
 ![Dashboard Portfolio Overview](dashboard-portfolio-overview.png)
-*View your complete portfolio statistics, recent additions, and top performing cards at a glance.*
+
+> [!NOTE]
+> View your complete portfolio statistics, recent additions, and top performing cards at a glance.
+
+---
 
 ### Inventory - Card Grid View
 ![Inventory Card Grid](inventory-card-grid.png)
-*Browse and manage your card collection with advanced filtering and search capabilities.*
+
+> [!NOTE]
+> Browse and manage your card collection with advanced filtering and search capabilities.
+
+---
 
 ### Add New Card Form
 ![Add Card Form](add-card-form.png)
-*Easily add new cards to your collection with comprehensive details and image uploads.*
+
+> [!NOTE]
+> Easily add new cards to your collection with comprehensive details and image uploads.
+
+---
 
 ### User Profile Management
 ![User Profile Page](user-profile-page.png)
-*Manage your account settings, update profile information, and customize preferences.*
+
+> [!NOTE]
+> Manage your account settings, update profile information, and customize preferences.
+
+---
 
 ### Admin Dashboard
 ![Admin Dashboard](admin-dashboard.png)
-*System administrators can manage users, collections, and monitor platform statistics.*
+
+> [!NOTE]
+> System administrators can manage users, collections, and monitor platform statistics.
 
 ## 🏗️ Architecture
 
