@@ -1,0 +1,141 @@
+export interface Card {
+  id: string;
+  player: string;
+  team: string;
+  year: number;
+  brand: string;
+  category: string;
+  cardNumber: string;
+  parallel?: string;
+  condition: string;
+  gradingCompany?: string;
+  purchasePrice: number;
+  purchaseDate: Date;
+  sellPrice?: number;
+  sellDate?: Date;
+  currentValue: number;
+  images: string[];
+  notes: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CardFormData {
+  player: string;
+  team: string;
+  year: number;
+  brand: string;
+  category: string;
+  cardNumber: string;
+  parallel?: string;
+  condition: string;
+  gradingCompany?: string;
+  purchasePrice: number;
+  purchaseDate: string;
+  sellPrice?: number;
+  sellDate?: string;
+  currentValue: number;
+  notes: string;
+}
+
+export interface PortfolioStats {
+  totalCards: number;
+  totalCostBasis: number;
+  totalCurrentValue: number;
+  totalProfit: number;
+  totalSold: number;
+  totalSoldValue: number;
+}
+
+export interface FilterOptions {
+  player?: string;
+  team?: string;
+  year?: number;
+  brand?: string;
+  category?: string;
+  condition?: string;
+  minValue?: number;
+  maxValue?: number;
+}
+
+export interface SortOption {
+  field: keyof Card;
+  direction: 'asc' | 'desc';
+}
+
+export type ConditionGrade = 
+  | 'RAW'
+  | '10: GEM MINT'
+  | '9: MINT'
+  | '8: NEAR MINT-MINT'
+  | '7: NEAR MINT'
+  | '6: EXCELLENT-MINT'
+  | '5: EXCELLENT'
+  | '4: VERY GOOD-EXCELLENT'
+  | '3: VERY GOOD'
+  | '2: GOOD'
+  | '1: POOR';
+
+export const CONDITIONS: ConditionGrade[] = [
+  'RAW',
+  '10: GEM MINT',
+  '9: MINT',
+  '8: NEAR MINT-MINT',
+  '7: NEAR MINT',
+  '6: EXCELLENT-MINT',
+  '5: EXCELLENT',
+  '4: VERY GOOD-EXCELLENT',
+  '3: VERY GOOD',
+  '2: GOOD',
+  '1: POOR'
+];
+
+export type CardCategory = 
+  | 'Racing'
+  | 'MMA'
+  | 'Wrestling'
+  | 'Pokemon'
+  | 'Soccer'
+  | 'Hockey'
+  | 'Baseball'
+  | 'Basketball'
+  | 'Football'
+  | 'Magic: The Gathering';
+
+export const CATEGORIES: CardCategory[] = [
+  'Racing',
+  'MMA',
+  'Wrestling',
+  'Pokemon',
+  'Soccer',
+  'Hockey',
+  'Baseball',
+  'Basketball',
+  'Football',
+  'Magic: The Gathering'
+];
+
+export type GradingCompany = 
+  | 'PSA'
+  | 'BGS'
+  | 'SGC'
+  | 'CGC Cards'
+  | 'CSG'
+  | 'HGA'
+  | 'TAG'
+  | 'ISA'
+  | 'GMA Grading'
+  | 'ACE Grading';
+
+export const GRADING_COMPANIES: GradingCompany[] = [
+  'PSA',
+  'BGS',
+  'SGC',
+  'CGC Cards',
+  'CSG',
+  'HGA',
+  'TAG',
+  'ISA',
+  'GMA Grading',
+  'ACE Grading'
+];

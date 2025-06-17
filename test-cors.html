@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>CORS Test</h1>
+    <button onclick="testHealth()">Test Health Endpoint</button>
+    <button onclick="testCreateCard()">Test Create Card</button>
+    <div id="result"></div>
+
+    <script>
+        async function testHealth() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing health endpoint...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/health');
+                const data = await response.json();
+                result.innerHTML = `<pre>Health: ${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre>Health Error: ${error.message}</pre>`;
+            }
+        }
+
+        async function testCreateCard() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing create card...';
+            
+            try {
+                const cardData = {
+                    player: "Test Player",
+                    team: "Test Team",
+                    year: 2024,
+                    brand: "Test Brand",
+                    category: "Racing",
+                    cardNumber: "TEST001",
+                    condition: "10: GEM MINT",
+                    purchasePrice: 100,
+                    purchaseDate: "2024-01-01",
+                    currentValue: 150,
+                    images: [],
+                    notes: "CORS test card"
+                };
+
+                const response = await fetch('http://localhost:8000/api/cards', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(cardData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                result.innerHTML = `<pre>Created: ${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre>Create Error: ${error.message}</pre>`;
+            }
+        }
+    </script>
+</body>
+</html>

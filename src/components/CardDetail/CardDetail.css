@@ -1,0 +1,350 @@
+.card-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.card-detail {
+  background: white;
+  border-radius: 12px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.card-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+}
+
+.card-detail-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.card-detail-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.edit-btn {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.edit-btn:hover {
+  background: #0056b3;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: #e9ecef;
+}
+
+.card-detail-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  padding: 30px;
+}
+
+.card-detail-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-images {
+  position: sticky;
+  top: 0;
+}
+
+.image-viewer {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 400px;
+  object-fit: contain;
+  background: #f8f9fa;
+}
+
+.image-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+}
+
+.image-nav {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  transition: background 0.2s;
+}
+
+.image-nav:hover {
+  background: white;
+}
+
+.image-counter {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.image-thumbnails {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.thumbnail {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.thumbnail:hover {
+  border-color: #007bff;
+  transform: scale(1.05);
+}
+
+.thumbnail.active {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+}
+
+.no-image-placeholder {
+  text-align: center;
+  color: #666;
+}
+
+.card-detail-right {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.card-info-section,
+.financial-section,
+.notes-section,
+.metadata-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.card-info-section h3,
+.financial-section h3,
+.notes-section h3,
+.metadata-section h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.info-grid,
+.financial-grid,
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.info-item,
+.financial-item,
+.metadata-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item label,
+.financial-item label,
+.metadata-item label {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item span,
+.financial-item span,
+.metadata-item span {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.profit-loss.profit {
+  color: #28a745;
+}
+
+.profit-loss.loss {
+  color: #dc3545;
+}
+
+.notes-content {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .card-detail-overlay {
+    padding: 10px;
+  }
+  
+  .card-detail {
+    max-height: 95vh;
+  }
+  
+  .card-detail-header {
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .card-detail-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .card-detail-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .card-detail-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .card-images {
+    position: static;
+  }
+  
+  .info-grid,
+  .financial-grid,
+  .metadata-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .image-controls {
+    position: static;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 0 0 8px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-detail-header {
+    padding: 15px;
+  }
+  
+  .card-detail-content {
+    padding: 15px;
+  }
+  
+  .card-info-section,
+  .financial-section,
+  .notes-section,
+  .metadata-section {
+    padding: 15px;
+  }
+}
