@@ -1,5 +1,6 @@
 import React, { useState, memo, useCallback } from 'react';
 import { Card } from '../../types';
+import { exportDetailedCardReport } from '../../utils/pdfExport';
 import './CardDetail.css';
 
 interface CardDetailProps {
@@ -42,12 +43,24 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
     }
   }, [card.images.length]);
 
+  const handleExportPDF = useCallback(() => {
+    try {
+      exportDetailedCardReport(card);
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      alert('PDF export failed. Please try again.');
+    }
+  }, [card]);
+
   return (
     <div className="card-detail-overlay" onClick={onClose}>
       <div className="card-detail" onClick={(e) => e.stopPropagation()}>
         <div className="card-detail-header">
           <h2>{card.year} {card.brand} {card.player}</h2>
           <div className="card-detail-actions">
+            <button onClick={handleExportPDF} className="export-pdf-btn" title="Export to PDF">
+              📄 PDF
+            </button>
             {onEdit && (
               <button onClick={() => onEdit(card)} className="edit-btn">
                 Edit Card

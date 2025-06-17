@@ -59,6 +59,24 @@
   background: #0056b3;
 }
 
+.export-pdf-btn {
+  padding: 8px 12px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.export-pdf-btn:hover {
+  background: #1e7e34;
+}
+
 .close-btn {
   background: none;
   border: none;

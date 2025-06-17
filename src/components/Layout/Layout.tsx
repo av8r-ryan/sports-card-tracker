@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useCards } from '../../context/CardContext';
 import { exportCardsAsJSON, exportCardsAsCSV } from '../../utils/localStorage';
+import { exportCardsToPDF } from '../../utils/pdfExport';
 import './Layout.css';
 
 interface LayoutProps {
   children: React.ReactNode;
-  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile';
-  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile') => void;
+  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports';
+  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports') => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) => {
@@ -19,8 +20,17 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
   const isLoading = state.loading;
   const hasError = !!state.error;
 
-  const handleExport = (format: 'json' | 'csv') => {
+  const handleExport = (format: 'json' | 'csv' | 'pdf') => {
     try {
+      if (format === 'pdf') {
+        exportCardsToPDF(state.cards, {
+          includeStats: true,
+          groupBy: 'none',
+          sortBy: 'player'
+        });
+        return;
+      }
+
       const filename = `sports-cards-${new Date().toISOString().split('T')[0]}`;
       const data = format === 'json' 
         ? exportCardsAsJSON(state.cards)
@@ -106,11 +116,14 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
                 Export
               </button>
               <div className="export-dropdown">
+                <button onClick={() => handleExport('pdf')}>
+                  📄 Export as PDF
+                </button>
                 <button onClick={() => handleExport('json')}>
-                  Export as JSON
+                  📋 Export as JSON
                 </button>
                 <button onClick={() => handleExport('csv')}>
-                  Export as CSV
+                  📊 Export as CSV
                 </button>
               </div>
             </div>
@@ -162,6 +175,17 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
           >
             <span className="nav-icon">➕</span>
             Add Card
+          </button>
+          
+          <button
+            className={`nav-item ${currentView === 'reports' ? 'active' : ''}`}
+            onClick={() => {
+              onViewChange('reports');
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <span className="nav-icon">📊</span>
+            Reports
           </button>
           
           <button

@@ -10,13 +10,14 @@ import CardDetail from './components/CardDetail/CardDetail';
 import AuthForm from './components/Auth/AuthForm';
 import AdminDashboard from './components/AdminDashboard/AdminDashboard';
 import UserProfile from './components/UserProfile/UserProfile';
+import Reports from './components/Reports/Reports';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import DebugPanel from './components/DebugPanel/DebugPanel';
 import { Card } from './types';
 import { logInfo } from './utils/logger';
 import './App.css';
 
-type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile';
+type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports';
 
 const AppContent: React.FC = () => {
   const { state: authState } = useAuth();
@@ -94,6 +95,8 @@ const AppContent: React.FC = () => {
         return <AdminDashboard />;
       case 'profile':
         return <UserProfile />;
+      case 'reports':
+        return <Reports />;
       default:
         return <Dashboard />;
     }
