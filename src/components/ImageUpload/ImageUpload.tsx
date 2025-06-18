@@ -142,7 +142,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               <div className="upload-content">
                 <div className="upload-icon">📷</div>
                 <p>Click to upload or drag & drop</p>
-                <p className="upload-hint">PNG, JPG, WebP up to 5MB</p>
+                <p className="upload-hint">PNG, JPG, WebP up to 10MB</p>
               </div>
             )}
           </div>

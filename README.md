@@ -10,38 +10,54 @@ A modern, full-stack web application for tracking and managing sports card colle
 ## ✨ Features
 
 ### 🃏 **Card Management**
+
 - Add, edit, and delete sports cards with detailed information
 - Multiple image upload support with compression
 - Advanced filtering and search capabilities
 - Card valuation tracking and profit/loss calculations
 
 ### 👥 **Multi-User System**
+
 - User registration and authentication with JWT tokens
 - Shared collections - multiple users can access the same card collection
 - Role-based access control (Admin/User)
 - Secure profile management with photo uploads
 
 ### 🔧 **Admin Dashboard**
+
 - Global admin can view all users, collections, and cards
 - System statistics and user management
 - Collection membership management
 - Real-time monitoring of app usage
 
 ### 🎨 **Modern UI/UX**
+
 - Responsive design that works on all devices
 - Dark/light theme support with accessibility features
 - Intuitive navigation with breadcrumbs
 - Real-time updates and loading states
 
 ### 📱 **User Profiles**
+
 - Update email addresses and passwords
 - Upload and manage profile photos
 - Account settings and preferences
 - Quick navigation to app sections
 
+### 📊 **Advanced Reporting & Analytics**
+
+- Comprehensive reports dashboard with visual analytics
+- Portfolio performance tracking with ROI analysis
+- Collection analytics and distribution insights
+- Market analysis and investment recommendations
+- Tax reports for capital gains/losses
+- Insurance appraisal documentation
+- Export reports to PDF, CSV, and Excel formats
+
 ## 📸 Screenshots
 
 ### Dashboard - Portfolio Overview
+
 ![Dashboard Portfolio Overview](dashboard-portfolio-overview.png)
 
 > [!NOTE]
@@ -50,6 +66,7 @@ A modern, full-stack web application for tracking and managing sports card colle
 ---
 
 ### Inventory - Card Grid View
+
 ![Inventory Card Grid](inventory-card-grid.png)
 
 > [!NOTE]
@@ -58,6 +75,7 @@ A modern, full-stack web application for tracking and managing sports card colle
 ---
 
 ### Add New Card Form
+
 ![Add Card Form](add-card-form.png)
 
 > [!NOTE]
@@ -66,6 +84,7 @@ A modern, full-stack web application for tracking and managing sports card colle
 ---
 
 ### User Profile Management
+
 ![User Profile Page](user-profile-page.png)
 
 > [!NOTE]
@@ -74,10 +93,20 @@ A modern, full-stack web application for tracking and managing sports card colle
 ---
 
 ### Admin Dashboard
+
 ![Admin Dashboard](admin-dashboard.png)
 
 > [!NOTE]
 > System administrators can manage users, collections, and monitor platform statistics.
+
+---
+
+### Reports Dashboard - Analytics & Insights
+
+![Reports Dashboard](reporting-dashboard.png)
+
+> [!NOTE]
+> Comprehensive reporting dashboard with portfolio analytics, visual charts, and quick access to detailed reports including financial performance, tax summaries, and market analysis.
 
 ## 🏗️ Architecture
 
@@ -96,12 +125,14 @@ A modern, full-stack web application for tracking and managing sports card colle
 ## 🚀 Quick Start
 
 ### 1. Clone the Repository
+
 ```bash
 git clone <repository-url>
 cd sports-card-tracker
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 # Install frontend dependencies
 npm install
@@ -113,6 +144,7 @@ cd ..
 ```
 
 ### 3. Start Development Servers
+
 ```bash
 # Terminal 1: Start backend server
 cd server
@@ -123,18 +155,21 @@ npm start
 ```
 
 ### 4. Access the Application
+
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 
 ## 🛠️ Development Setup
 
 ### Backend Development
+
 ```bash
 cd server
 node memory-server.js    # Starts server on port 8000
 ```
 
 ### Frontend Development
+
 ```bash
 npm start      # Starts React development server with hot reload
 npm test       # Run test suite
@@ -142,15 +177,18 @@ npm run build  # Build for production
 ```
 
 ### Environment Configuration
+
 Create a `.env` file in the root directory:
+
 ```env
 REACT_APP_API_URL=http://localhost:8000/api
 ```
 
 For backend configuration, edit `server/memory-server.js`:
+
 ```javascript
 const PORT = 8000;
-const JWT_SECRET = 'your-super-secret-jwt-key-change-in-production';
+const JWT_SECRET = "your-super-secret-jwt-key-change-in-production";
 ```
 
 ## 🏭 Production Deployment
@@ -158,6 +196,7 @@ const JWT_SECRET = 'your-super-secret-jwt-key-change-in-production';
 ### Option 1: Manual Deployment
 
 #### 1. Build the Application
+
 ```bash
 # Build frontend
 npm run build
@@ -166,6 +205,7 @@ npm run build
 ```
 
 #### 2. Deploy Backend
+
 ```bash
 cd server
 
@@ -181,6 +221,7 @@ pm2 start memory-server.js --name "card-tracker-api"
 ```
 
 #### 3. Serve Frontend
+
 ```bash
 # Option A: Use a static file server
 npm install -g serve
@@ -194,6 +235,7 @@ serve -s build -l 3000
 ### Option 2: Docker Deployment
 
 #### Create Dockerfile for Backend
+
 ```dockerfile
 # server/Dockerfile
 FROM node:16-alpine
@@ -206,6 +248,7 @@ CMD ["node", "memory-server.js"]
 ```
 
 #### Create Dockerfile for Frontend
+
 ```dockerfile
 # Dockerfile
 FROM node:16-alpine as build
@@ -223,9 +266,10 @@ CMD ["nginx", "-g", "daemon off;"]
 ```
 
 #### Docker Compose
+
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 services:
   backend:
     build: ./server
@@ -243,6 +287,7 @@ services:
 ```
 
 Run with:
+
 ```bash
 docker-compose up -d
 ```
@@ -250,6 +295,7 @@ docker-compose up -d
 ### Option 3: Cloud Deployment
 
 #### Heroku Deployment
+
 ```bash
 # Install Heroku CLI
 npm install -g heroku
@@ -311,12 +357,14 @@ sports-card-tracker/
 ## 🔌 API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `GET /api/auth/me` - Get current user
 - `PUT /api/auth/profile` - Update user profile
 
 ### Cards
+
 - `GET /api/cards` - Get user's cards
 - `POST /api/cards` - Create new card
 - `GET /api/cards/:id` - Get specific card
@@ -324,11 +372,13 @@ sports-card-tracker/
 - `DELETE /api/cards/:id` - Delete card
 
 ### Collections
+
 - `GET /api/collections` - Get user's collections
 - `POST /api/collections` - Create collection (admin only)
 - `POST /api/collections/:id/members` - Add user to collection (admin only)
 
 ### Admin
+
 - `GET /api/admin/users` - Get all users (admin only)
 - `GET /api/admin/collections` - Get all collections (admin only)
 - `GET /api/admin/stats` - Get system statistics (admin only)
@@ -336,6 +386,7 @@ sports-card-tracker/
 ## 🎯 Usage Guide
 
 ### For Regular Users
+
 1. **Register**: Create an account at the login screen
 2. **Add Cards**: Use the "Add Card" section to input your collection
 3. **Manage Collection**: View and edit cards in the "Inventory" section
@@ -343,6 +394,7 @@ sports-card-tracker/
 5. **Update Profile**: Manage your account in the "Profile" section
 
 ### For Administrators
+
 1. **Access Admin Panel**: Use the "Admin" navigation item
 2. **View Statistics**: Monitor system usage and statistics
 3. **Manage Users**: View all registered users
@@ -352,14 +404,18 @@ sports-card-tracker/
 ## 🔧 Configuration
 
 ### Backend Configuration
+
 Edit `server/memory-server.js`:
+
 ```javascript
 const PORT = process.env.PORT || 8000;
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 ```
 
 ### Frontend Configuration
+
 Edit `.env`:
+
 ```env
 REACT_APP_API_URL=http://localhost:8000/api
 ```
@@ -371,6 +427,7 @@ For production, update the API URL to your production backend.
 ### Common Issues
 
 **Backend won't start**
+
 ```bash
 # Check if port is in use
 lsof -i :8000
@@ -380,6 +437,7 @@ kill -9 <PID>
 ```
 
 **Frontend build fails**
+
 ```bash
 # Clear cache and reinstall
 rm -rf node_modules package-lock.json
@@ -387,15 +445,19 @@ npm install
 ```
 
 **CORS errors**
+
 - Ensure backend CORS is configured for your frontend URL
 - Check that API_URL in .env matches your backend
 
 **Authentication issues**
+
 - Clear browser localStorage
 - Check JWT token expiration (default: 7 days)
 
 ### Debug Mode
+
 Enable debug logging by setting:
+
 ```javascript
 // In memory-server.js
 const DEBUG = true;
@@ -404,12 +466,14 @@ const DEBUG = true;
 ## 📋 Available Scripts
 
 ### Frontend Scripts
+
 - `npm start` - Start development server
 - `npm test` - Run tests
 - `npm run build` - Build for production
 - `npm run eject` - Eject from Create React App (⚠️ one-way operation)
 
 ### Backend Scripts
+
 - `node memory-server.js` - Start production server
 - `npm install` - Install dependencies
 
@@ -429,16 +493,20 @@ This project is licensed under the Apache License 2.0. See the LICENSE file for 
 
 - [ ] Persistent database integration (PostgreSQL/MongoDB)
 - [ ] Card price tracking APIs
-- [ ] Advanced analytics and reporting
+- [x] Advanced analytics and reporting ✅
 - [ ] Card trading marketplace
 - [ ] Mobile app development
 - [ ] Barcode scanning for card entry
-- [ ] Export to PDF/Excel formats
+- [x] Export to PDF/Excel formats ✅
 - [ ] Real-time collaboration features
+- [ ] Scheduled report generation
+- [ ] Email notifications for price changes
+- [ ] Integration with sports card marketplaces
 
 ## 📞 Support
 
 For support and questions:
+
 - Create an issue in the repository
 - Check the troubleshooting section above
 - Review the API documentation
