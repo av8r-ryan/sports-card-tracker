@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useCards } from '../../context/CardContext';
 import { Card } from '../../types';
 import BulkEbayExport from './BulkEbayExport';
-import AutoExportAllCards from './AutoExportAllCards';
 import { quickExportAllUnsoldCards, generateExportSummary } from '../../utils/quickEbayExport';
 import { instantExportAllUnsoldCards } from '../../utils/instantEbayExport';
 import './EbayListings.css';
@@ -28,21 +27,7 @@ const EbayListings: React.FC = () => {
   const [showOnlyUnsold, setShowOnlyUnsold] = useState<boolean>(true);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [showBulkExport, setShowBulkExport] = useState<boolean>(false);
-  const [autoExportOnLoad] = useState<boolean>(true); // Set to true to auto-export on page load
-
-  // Auto-export all unsold cards on component mount
-  useEffect(() => {
-    if (autoExportOnLoad && state.cards.length > 0) {
-      const unsoldCount = state.cards.filter(c => !c.sellDate).length;
-      if (unsoldCount > 0) {
-        console.log(`Auto-exporting ${unsoldCount} unsold cards...`);
-        const result = instantExportAllUnsoldCards(state.cards);
-        if (result) {
-          console.log('Auto-export complete:', result);
-        }
-      }
-    }
-  }, [autoExportOnLoad, state.cards]);
+  // Removed automatic export functionality
 
   const evaluateCard = (card: Card): ListingRecommendation | null => {
     // Skip already sold cards if filter is on
@@ -300,25 +285,8 @@ const EbayListings: React.FC = () => {
     return lines.join('\n');
   };
 
-  // Check if we should show auto-export
-  const unsoldCount = state.cards.filter(c => !c.sellDate).length;
-  const showAutoExport = unsoldCount > 0;
-
   return (
     <div className="ebay-listings">
-      {showAutoExport && (
-        <div className="auto-export-section">
-          <AutoExportAllCards 
-            cards={state.cards}
-            autoStart={false}
-            onComplete={(result) => {
-              if (result.success) {
-                console.log('Auto export completed:', result);
-              }
-            }}
-          />
-        </div>
-      )}
       
       <div className="listings-header">
         <h1>eBay Listing Recommendations</h1>
