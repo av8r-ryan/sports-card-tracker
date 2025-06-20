@@ -14,7 +14,8 @@ type CardAction =
   | { type: 'SET_CARDS'; payload: Card[] }
   | { type: 'ADD_CARD'; payload: Card }
   | { type: 'UPDATE_CARD'; payload: Card }
-  | { type: 'DELETE_CARD'; payload: string };
+  | { type: 'DELETE_CARD'; payload: string }
+  | { type: 'CLEAR_ALL_CARDS' };
 
 interface CardContextType {
   state: CardState;
@@ -25,6 +26,7 @@ interface CardContextType {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   getPortfolioStats: () => PortfolioStats;
+  clearAllCards: () => void;
 }
 
 const CardContext = createContext<CardContextType | undefined>(undefined);
@@ -60,6 +62,12 @@ const cardReducer = (state: CardState, action: CardAction): CardState => {
       return {
         ...state,
         cards: state.cards.filter(card => card.id !== action.payload)
+      };
+    case 'CLEAR_ALL_CARDS':
+      logInfo('CardContext', 'Clearing all cards');
+      return {
+        ...state,
+        cards: []
       };
     default:
       return state;
@@ -140,6 +148,11 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     dispatch({ type: 'SET_ERROR', payload: error });
   }, []);
 
+  const clearAllCards = useCallback(() => {
+    logDebug('CardProvider', 'clearAllCards called');
+    dispatch({ type: 'CLEAR_ALL_CARDS' });
+  }, []);
+
   const getPortfolioStats = useCallback((): PortfolioStats => {
     try {
       const { cards } = state;
@@ -177,8 +190,9 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setCards,
     setLoading,
     setError,
-    getPortfolioStats
-  }), [state, addCard, updateCard, deleteCard, setCards, setLoading, setError, getPortfolioStats]);
+    getPortfolioStats,
+    clearAllCards
+  }), [state, addCard, updateCard, deleteCard, setCards, setLoading, setError, getPortfolioStats, clearAllCards]);
 
   return (
     <CardContext.Provider value={contextValue}>

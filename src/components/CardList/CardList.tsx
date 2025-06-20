@@ -189,7 +189,7 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
 
       <div className="cards-grid">
         {filteredAndSortedCards.map(card => (
-          <div key={card.id} className="card-item">
+          <div key={card.id} className={`card-item ${card.sellDate ? 'sold' : ''}`}>
             <div className="card-actions">
               {onEditCard && (
                 <button onClick={() => onEditCard(card)} className="edit-btn">
@@ -202,6 +202,11 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
             </div>
             
             <div className="card-content" onClick={() => onCardSelect && onCardSelect(card)}>
+              {card.sellDate && (
+                <div className="sold-banner">
+                  <span>SOLD</span>
+                </div>
+              )}
               <div className="card-image-section">
                 <div className="card-image-container">
                   <img 

@@ -43,9 +43,9 @@ const UserProfile: React.FC = () => {
         return;
       }
 
-      // Validate file size (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        setError('Image must be less than 10MB');
+      // Validate file size (max 100MB)
+      if (file.size > 100 * 1024 * 1024) {
+        setError('Image must be less than 100MB');
         return;
       }
 

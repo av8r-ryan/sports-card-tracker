@@ -1,20 +1,31 @@
 # Sports Card Tracker
 
-A modern, full-stack web application for tracking and managing sports card collections with multi-user support, shared collections, and comprehensive admin features.
+A modern, full-stack web application for tracking and managing sports card collections with multi-user support, shared collections, comprehensive reporting, and professional-grade card data management.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-green.svg)
 ![React](https://img.shields.io/badge/react-18.x-blue.svg)
 ![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)
 
 ## ✨ Features
 
-### 🃏 **Card Management**
+### 🃏 **Enhanced Card Management**
 
-- Add, edit, and delete sports cards with detailed information
-- Multiple image upload support with compression
-- Advanced filtering and search capabilities
-- Card valuation tracking and profit/loss calculations
+- **Comprehensive Data Model**: Track 100+ data points per card including:
+  - Complete identification (manufacturer, product line, print runs)
+  - Player metadata (rookie status, HOF, career achievements)
+  - Authentication & grading details with subgrades
+  - Special features (autographs, memorabilia, patches)
+  - Market data with price history and comparables
+  - Physical attributes and condition notes
+  - Storage location and organization
+  - Insurance and transaction details
+  - Personal ratings and collection metadata
+- **Dual Form System**: Toggle between classic quick-entry and enhanced professional forms
+- **Multiple image upload** with 100MB file size support
+- **Advanced filtering** and search capabilities
+- **Sold banner overlay** for cards with sale dates
+- **Edit/Delete controls** positioned at bottom-right of cards
 
 ### 👥 **Multi-User System**
 
@@ -22,6 +33,22 @@ A modern, full-stack web application for tracking and managing sports card colle
 - Shared collections - multiple users can access the same card collection
 - Role-based access control (Admin/User)
 - Secure profile management with photo uploads
+
+### 📊 **Professional Reporting Suite**
+
+- **10+ Report Types**:
+  - Portfolio Performance with ROI Analysis
+  - Collection Analytics & Distribution
+  - Player Performance Reports
+  - Team/Set Analysis
+  - Market Trends & Investment Insights
+  - Tax Reports (Capital Gains/Losses)
+  - Insurance Appraisal Documentation
+  - Selling Opportunities
+  - Custom Reports with Dynamic Filtering
+- **Visual Analytics Dashboard** with charts and graphs
+- **Export Options**: PDF, CSV, and Excel formats
+- **Professional PDF Generation** with headers, footers, and branding
 
 ### 🔧 **Admin Dashboard**
 
@@ -36,6 +63,8 @@ A modern, full-stack web application for tracking and managing sports card colle
 - Dark/light theme support with accessibility features
 - Intuitive navigation with breadcrumbs
 - Real-time updates and loading states
+- Tabbed interface for enhanced card forms
+- Professional form styling with validation
 
 ### 📱 **User Profiles**
 
@@ -43,16 +72,6 @@ A modern, full-stack web application for tracking and managing sports card colle
 - Upload and manage profile photos
 - Account settings and preferences
 - Quick navigation to app sections
-
-### 📊 **Advanced Reporting & Analytics**
-
-- Comprehensive reports dashboard with visual analytics
-- Portfolio performance tracking with ROI analysis
-- Collection analytics and distribution insights
-- Market analysis and investment recommendations
-- Tax reports for capital gains/losses
-- Insurance appraisal documentation
-- Export reports to PDF, CSV, and Excel formats
 
 ## 📸 Screenshots
 
@@ -70,16 +89,25 @@ A modern, full-stack web application for tracking and managing sports card colle
 ![Inventory Card Grid](inventory-card-grid.png)
 
 > [!NOTE]
-> Browse and manage your card collection with advanced filtering and search capabilities.
+> Browse and manage your card collection with advanced filtering, sold banners, and repositioned controls.
 
 ---
 
-### Add New Card Form
+### Enhanced Card Form - Professional Data Entry
 
-![Add Card Form](add-card-form.png)
+![Enhanced Card Form](enhanced-card-form.png)
 
 > [!NOTE]
-> Easily add new cards to your collection with comprehensive details and image uploads.
+> Comprehensive card data entry with 10 tabbed sections covering every aspect of professional card collecting.
+
+---
+
+### Reports Dashboard - Analytics & Insights
+
+![Reports Dashboard](reporting-dashboard.png)
+
+> [!NOTE]
+> Professional reporting suite with visual analytics, 10+ report types, and multiple export formats.
 
 ---
 
@@ -99,22 +127,14 @@ A modern, full-stack web application for tracking and managing sports card colle
 > [!NOTE]
 > System administrators can manage users, collections, and monitor platform statistics.
 
----
-
-### Reports Dashboard - Analytics & Insights
-
-![Reports Dashboard](reporting-dashboard.png)
-
-> [!NOTE]
-> Comprehensive reporting dashboard with portfolio analytics, visual charts, and quick access to detailed reports including financial performance, tax summaries, and market analysis.
-
 ## 🏗️ Architecture
 
 - **Frontend**: React 18 + TypeScript + CSS3
 - **Backend**: Node.js + Express.js
 - **Database**: In-memory storage (easily replaceable with persistent DB)
 - **Authentication**: JWT tokens with bcrypt password hashing
-- **File Handling**: Base64 image storage for profile photos and card images
+- **File Handling**: Base64 image storage (100MB limit per image)
+- **Reporting**: jsPDF for PDF generation, Chart.js/Recharts for visualizations
 
 ## 📋 Prerequisites
 
@@ -189,6 +209,7 @@ For backend configuration, edit `server/memory-server.js`:
 ```javascript
 const PORT = 8000;
 const JWT_SECRET = "your-super-secret-jwt-key-change-in-production";
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 ```
 
 ## 🏭 Production Deployment
@@ -338,15 +359,23 @@ sports-card-tracker/
 │   │   ├── Auth/         # Authentication components
 │   │   ├── Dashboard/    # Dashboard components
 │   │   ├── CardList/     # Card listing components
-│   │   ├── CardForm/     # Card creation/editing
+│   │   ├── CardForm/     # Classic card form
+│   │   ├── EnhancedCardForm/ # Professional card form
+│   │   ├── Reports/      # Reporting suite
 │   │   ├── UserProfile/  # User profile management
 │   │   ├── AdminDashboard/ # Admin interface
 │   │   └── Layout/       # App layout and navigation
 │   ├── context/          # React context providers
 │   ├── hooks/            # Custom React hooks
-│   ├── services/         # API services
+│   ├── services/         # API and reporting services
 │   ├── types/            # TypeScript type definitions
+│   │   ├── index.ts      # Core types
+│   │   ├── card-enhanced.ts # Enhanced card model
+│   │   └── reports.ts    # Report types
 │   └── utils/            # Utility functions
+│       ├── pdfExport.ts  # PDF generation
+│       ├── cardMigration.ts # Data migration
+│       └── validation.ts # Form validation
 ├── server/               # Backend source
 │   ├── memory-server.js  # Main server file
 │   └── package.json      # Backend dependencies
@@ -388,10 +417,21 @@ sports-card-tracker/
 ### For Regular Users
 
 1. **Register**: Create an account at the login screen
-2. **Add Cards**: Use the "Add Card" section to input your collection
+2. **Add Cards**: Choose between:
+   - **Classic Form**: Quick entry for basic card information
+   - **Enhanced Form**: Professional entry with 100+ data fields
 3. **Manage Collection**: View and edit cards in the "Inventory" section
 4. **Track Value**: Monitor your collection's value in the "Dashboard"
-5. **Update Profile**: Manage your account in the "Profile" section
+5. **Generate Reports**: Access comprehensive analytics in the "Reports" section
+6. **Update Profile**: Manage your account in the "Profile" section
+
+### For Professional Collectors
+
+1. **Use Enhanced Forms**: Toggle to enhanced mode for comprehensive tracking
+2. **Track Authentication**: Record grading details, subgrades, and population reports
+3. **Monitor Market Data**: Track price history and market comparables
+4. **Manage Storage**: Organize by location, method, and collection category
+5. **Export Reports**: Generate professional PDFs for insurance or tax purposes
 
 ### For Administrators
 
@@ -410,6 +450,7 @@ Edit `server/memory-server.js`:
 ```javascript
 const PORT = process.env.PORT || 8000;
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE || 100 * 1024 * 1024; // 100MB
 ```
 
 ### Frontend Configuration
@@ -418,6 +459,7 @@ Edit `.env`:
 
 ```env
 REACT_APP_API_URL=http://localhost:8000/api
+REACT_APP_MAX_IMAGE_SIZE=104857600  # 100MB in bytes
 ```
 
 For production, update the API URL to your production backend.
@@ -453,6 +495,12 @@ npm install
 
 - Clear browser localStorage
 - Check JWT token expiration (default: 7 days)
+
+**Large file upload issues**
+
+- Verify MAX_FILE_SIZE is set correctly in backend
+- Check client-side file size validation matches
+- Ensure server has sufficient memory for base64 encoding
 
 ### Debug Mode
 
@@ -492,16 +540,50 @@ This project is licensed under the Apache License 2.0. See the LICENSE file for 
 ## 🔮 Future Enhancements
 
 - [ ] Persistent database integration (PostgreSQL/MongoDB)
-- [ ] Card price tracking APIs
+- [ ] Card price tracking APIs integration
 - [x] Advanced analytics and reporting ✅
+- [x] Enhanced card data model (100+ fields) ✅
+- [x] Professional PDF export with branding ✅
+- [x] Comprehensive reporting suite (10+ reports) ✅
+- [x] Visual analytics dashboard ✅
+- [x] Sold banner overlays ✅
+- [x] 100MB image upload support ✅
 - [ ] Card trading marketplace
 - [ ] Mobile app development
 - [ ] Barcode scanning for card entry
-- [x] Export to PDF/Excel formats ✅
 - [ ] Real-time collaboration features
 - [ ] Scheduled report generation
 - [ ] Email notifications for price changes
 - [ ] Integration with sports card marketplaces
+- [ ] AI-powered card recognition
+- [ ] Blockchain certificate of authenticity
+
+## 🎉 Recent Updates (v2.0.0)
+
+### Enhanced Card Management
+- Added professional-grade card data model with 100+ fields
+- Dual form system (classic and enhanced modes)
+- Comprehensive tracking for authentication, market data, and storage
+- Personal collection metadata and stories
+
+### Professional Reporting
+- 10+ report types including financial, tax, and insurance reports
+- Visual analytics dashboard with charts and graphs
+- PDF export with professional formatting
+- CSV and Excel export options
+
+### UI/UX Improvements
+- Repositioned edit/delete buttons to bottom-right
+- Added sold banner overlay for sold cards
+- Increased image upload limit to 100MB
+- Tabbed interface for enhanced forms
+- Improved responsive design
+
+### Data Features
+- Automatic migration from basic to enhanced format
+- LocalStorage for enhanced field persistence
+- Smart field detection from notes
+- Backward compatibility maintained
 
 ## 📞 Support
 

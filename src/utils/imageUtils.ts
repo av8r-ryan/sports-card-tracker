@@ -28,7 +28,7 @@ export const createImagePreview = (file: File): ImageFile => {
 };
 
 export const validateImageFile = (file: File): { isValid: boolean; error?: string } => {
-  const maxSize = 10 * 1024 * 1024; // 10MB
+  const maxSize = 100 * 1024 * 1024; // 100MB
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   
   if (!allowedTypes.includes(file.type)) {
@@ -41,7 +41,7 @@ export const validateImageFile = (file: File): { isValid: boolean; error?: strin
   if (file.size > maxSize) {
     return {
       isValid: false,
-      error: 'Image file size must be less than 10MB'
+      error: 'Image file size must be less than 100MB'
     };
   }
   
