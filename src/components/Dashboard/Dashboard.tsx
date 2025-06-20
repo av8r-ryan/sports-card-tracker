@@ -7,9 +7,32 @@ const Dashboard: React.FC = () => {
   const stats = getPortfolioStats();
 
   const formatCurrency = (amount: number) => {
+    // For very large numbers, use compact notation
+    if (Math.abs(amount) >= 1000000) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        notation: 'compact',
+        maximumFractionDigits: 1
+      }).format(amount);
+    }
+    
+    // For medium numbers, show thousands with K
+    if (Math.abs(amount) >= 10000) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        notation: 'compact',
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+    
+    // For smaller numbers, use standard notation
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount);
   };
 
@@ -34,37 +57,39 @@ const Dashboard: React.FC = () => {
     <div className="dashboard">
       <h1>Portfolio Dashboard</h1>
       
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>Total Cards</h3>
-          <p className="stat-value">{stats.totalCards}</p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Total Investment</h3>
-          <p className="stat-value">{formatCurrency(stats.totalCostBasis)}</p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Current Value</h3>
-          <p className="stat-value">{formatCurrency(stats.totalCurrentValue)}</p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Total P&L</h3>
-          <p className={`stat-value ${stats.totalProfit >= 0 ? 'profit' : 'loss'}`}>
-            {formatCurrency(stats.totalProfit)}
-          </p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Cards Sold</h3>
-          <p className="stat-value">{stats.totalSold}</p>
-        </div>
-        
-        <div className="stat-card">
-          <h3>Sales Revenue</h3>
-          <p className="stat-value">{formatCurrency(stats.totalSoldValue)}</p>
+      <div className="stats-section">
+        <div className="stats-grid">
+          <div className="stat-card">
+            <h3>Total Cards</h3>
+            <p className="stat-value">{stats.totalCards}</p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Total Investment</h3>
+            <p className="stat-value">{formatCurrency(stats.totalCostBasis)}</p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Current Value</h3>
+            <p className="stat-value">{formatCurrency(stats.totalCurrentValue)}</p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Total P&L</h3>
+            <p className={`stat-value ${stats.totalProfit >= 0 ? 'profit' : 'loss'}`}>
+              {formatCurrency(stats.totalProfit)}
+            </p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Cards Sold</h3>
+            <p className="stat-value">{stats.totalSold}</p>
+          </div>
+          
+          <div className="stat-card">
+            <h3>Sales Revenue</h3>
+            <p className="stat-value">{formatCurrency(stats.totalSoldValue)}</p>
+          </div>
         </div>
       </div>
 
