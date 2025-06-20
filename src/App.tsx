@@ -12,6 +12,7 @@ import AuthForm from './components/Auth/AuthForm';
 import AdminDashboard from './components/AdminDashboard/AdminDashboard';
 import UserProfile from './components/UserProfile/UserProfile';
 import Reports from './components/Reports/Reports';
+import EbayListings from './components/EbayListings/EbayListings';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import DebugPanel from './components/DebugPanel/DebugPanel';
 import DevTools from './components/DevTools/DevTools';
@@ -21,7 +22,7 @@ import { saveEnhancedCard } from './utils/enhancedCardIntegration';
 import { logInfo } from './utils/logger';
 import './App.css';
 
-type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports';
+type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay';
 
 const AppContent: React.FC = () => {
   const { state: authState } = useAuth();
@@ -157,6 +158,8 @@ const AppContent: React.FC = () => {
         return <UserProfile />;
       case 'reports':
         return <Reports />;
+      case 'ebay':
+        return <EbayListings />;
       default:
         return <Dashboard />;
     }

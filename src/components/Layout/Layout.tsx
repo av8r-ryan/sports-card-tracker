@@ -7,8 +7,8 @@ import './Layout.css';
 
 interface LayoutProps {
   children: React.ReactNode;
-  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports';
-  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports') => void;
+  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay';
+  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay') => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) => {
@@ -186,6 +186,17 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
           >
             <span className="nav-icon">📊</span>
             Reports
+          </button>
+          
+          <button
+            className={`nav-item ${currentView === 'ebay' ? 'active' : ''}`}
+            onClick={() => {
+              onViewChange('ebay');
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <span className="nav-icon">💰</span>
+            eBay Listings
           </button>
           
           <button
