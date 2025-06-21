@@ -13,10 +13,12 @@ When adding screenshots, please follow these guidelines:
 
 Examples:
 - `dashboard.png`
-- `add-card-form.png`
+- `add-card.png`
+- `classic-form.png`
 - `executive-dashboard.png`
 - `tax-report.png`
 - `ebay-integration.png`
+- `signup.png`
 
 ### Image Specifications
 - **Format**: PNG (preferred) or JPEG
@@ -28,9 +30,12 @@ Examples:
 
 #### Core Features
 - [ ] `dashboard.png` - Main dashboard view
+- [ ] `dashboard-quick.png` - Dashboard overview for quick start
+- [ ] `signup.png` - Sign up screen
+- [ ] `add-card.png` - Add card form
+- [ ] `classic-form.png` - Classic add card form example
 - [ ] `card-list.png` - Inventory grid view
 - [ ] `card-details.png` - Single card detail view
-- [ ] `add-card-form.png` - Classic add card form
 - [ ] `enhanced-form.png` - Enhanced add card form
 - [ ] `bulk-import.png` - CSV import interface
 
@@ -42,7 +47,9 @@ Examples:
 - [ ] `market-analysis.png` - Market analysis report
 
 #### Features
-- [ ] `ebay-integration.png` - eBay recommendations
+- [ ] `ebay-integration.png` - eBay integration dashboard
+- [ ] `ebay-sales.png` - eBay sales dashboard
+- [ ] `ebay-listings.png` - Smart listing recommendations
 - [ ] `ebay-export.png` - Bulk export interface
 - [ ] `search-filters.png` - Advanced search/filter UI
 - [ ] `settings.png` - User settings page
