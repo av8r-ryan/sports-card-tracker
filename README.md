@@ -1,262 +1,267 @@
-# Sports Card Tracker
+# 🏆 Sports Card Tracker
 
-A comprehensive web application for managing and tracking sports card collections. Built with React, TypeScript, and modern web technologies, featuring advanced analytics, reporting, and eBay integration.
+A comprehensive web application for managing and tracking sports card collections. Built with React, TypeScript, and modern web technologies, featuring advanced analytics, professional reporting, and eBay integration.
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-green.svg)
 ![React](https://img.shields.io/badge/react-18.x-blue.svg)
 ![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-## 🚀 Features
+## 📋 Table of Contents
 
-### Core Features
-- **Card Management**: Add, edit, delete, and organize your sports card collection
-- **Enhanced Data Model**: 100+ fields across 11 categories for comprehensive card tracking
-- **Dashboard Analytics**: Real-time portfolio value, ROI, and collection statistics
-- **Advanced Search**: Filter and search cards by multiple criteria
-- **Image Support**: Upload and view card images (up to 100MB)
-- **Responsive Design**: Optimized for desktop and mobile devices
-- **Authentication**: Secure user accounts with role-based access
-- **Data Persistence**: Local storage with cloud sync capabilities
+- [Features](#-features)
+- [What's New](#-whats-new)
+- [Getting Started](#-getting-started)
+- [Documentation](#-documentation)
+- [Technologies](#-technologies)
+- [Contributing](#-contributing)
+- [Support](#-support)
 
-### 📊 Advanced Reporting System
-- **Financial Performance Reports**
-  - ROI Analysis with time-based comparisons
-  - Profit/Loss statements
-  - Investment tracking
-- **Collection Analytics**
-  - Distribution by category, brand, and player
-  - Grading analysis
-  - Market trends
-- **Visual Dashboards**
-  - Interactive charts and graphs
-  - Real-time metrics
-  - Export to PDF functionality
-- **Custom Reports**
-  - Insurance valuations
-  - Tax documentation
-  - Sales history
+## ✨ Features
+
+### 📦 Collection Management
+- **Smart Card Entry**: Classic and Enhanced forms with 100+ fields
+- **Bulk Import**: CSV import for large collections
+- **Advanced Search**: Multi-criteria filtering and search
+- **Image Management**: High-resolution image support (up to 100MB)
+- **Grading Integration**: PSA, BGS, SGC, and other major grading companies
+
+### 📊 Professional Reporting Suite
+- **Executive Dashboard**: High-level KPIs and strategic insights
+- **Tax Reports**: IRS-compliant capital gains/losses documentation
+- **Insurance Appraisals**: Professional valuations for coverage
+- **Portfolio Analytics**: ROI tracking and performance metrics
+- **Market Analysis**: Trends, comparisons, and opportunities
+- **Custom Reports**: Flexible date ranges and filters
 
 ### 💰 eBay Integration
-- **Smart Listing Recommendations**
-  - AI-powered scoring algorithm
-  - Optimal pricing suggestions
-  - Best time to sell analysis
-- **Bulk Export Tools**
-  - Multiple export formats (CSV, TXT, eBay File Exchange)
-  - Custom filtering options
-  - One-click export for all unsold cards
-- **Listing Management**
-  - Pre-filled listing templates
-  - Category mapping
-  - Title optimization
+- **AI-Powered Recommendations**: Smart listing suggestions with scoring
+- **Bulk Export Tools**: Multiple formats (CSV, eBay File Exchange)
+- **Price Optimization**: Market-based pricing suggestions
+- **Timing Analysis**: Best time to list calculations
 
-### 🎨 Enhanced UI Features
-- **Modern Card Display**
-  - Grid and list views
-  - Sold banner overlay for sold cards
-  - Quick actions (edit/delete) positioned at bottom-right
-- **Improved Typography**
-  - Responsive font sizing
-  - Optimized stat card layouts
-  - 3-column grid system
-- **Professional Styling**
-  - Clean, modern interface
-  - Intuitive navigation
-  - Consistent design language
+### 📈 Analytics & Insights
+- **Real-Time Dashboard**: Live portfolio metrics and charts
+- **Performance Tracking**: ROI, win rates, and growth trends
+- **Category Analysis**: Breakdown by sport, brand, and player
+- **Risk Assessment**: Concentration and volatility metrics
+- **Investment Tools**: Hold/sell recommendations
 
-## 🛠 Technologies Used
+### 🎨 Modern UI/UX
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+- **Dark Mode**: Eye-friendly viewing (coming soon)
+- **Interactive Charts**: Powered by Recharts
+- **Drag & Drop**: Intuitive card organization
+- **Quick Actions**: Streamlined workflows
 
-- **Frontend**: React 18, TypeScript, CSS3
-- **State Management**: Context API with reducers
-- **Data Visualization**: Recharts
-- **PDF Generation**: jsPDF with auto-table
-- **Image Handling**: FileReader API with compression
-- **Authentication**: JWT-based auth system
-- **Build Tools**: Create React App, ESLint, Prettier
+## 🆕 What's New (v2.2.0)
 
-## 🏁 Getting Started
+### 🎯 Executive Dashboard
+- Portfolio health score visualization
+- Strategic insights with AI recommendations
+- Advanced risk metrics and analysis
+- Category performance matrix
+- Investment opportunity identification
+
+### 📋 Enhanced Reporting
+- **Beautiful Tax Reports**: Green-themed design with tax optimization strategies
+- **Professional Insurance Reports**: Gradient designs with comprehensive documentation
+- **Market Analysis Reports**: Detailed insights and comparisons
+- **Inventory Reports**: Complete collection breakdown
+- **Comparison Reports**: Portfolio vs market performance
+
+### 📚 Comprehensive Documentation
+- Complete user guides and tutorials
+- API reference documentation
+- Troubleshooting and FAQ sections
+- Contributing guidelines
+- Screenshot placeholders for all features
+
+### 🛠️ Technical Improvements
+- Enhanced TypeScript types
+- Improved error handling
+- Performance optimizations
+- Better accessibility support
+- Cleaner code architecture
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 14+ and npm
-- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Node.js 16.0 or higher
+- npm or yarn
+- Modern web browser
 
-### Installation
+### Quick Install
 
-1. Clone the repository:
 ```bash
+# Clone the repository
 git clone https://github.com/yourusername/sports-card-tracker.git
 cd sports-card-tracker
-```
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
+
+# Start development server
+npm run dev
 ```
 
-3. Start the development server:
-```bash
-npm start
-```
+The app will open at `http://localhost:3000`
 
-The application will open at `http://localhost:3000`.
+### First Steps
 
-### Production Build
+1. Create an account or use demo credentials
+2. Add your first card using the intuitive form
+3. Explore the dashboard to see your collection metrics
+4. Generate your first report
 
-To create a production build:
-```bash
-npm run build
-```
+For detailed setup instructions, see our [Installation Guide](docs/guides/installation.md).
 
-## 📖 Usage Guide
+## 📖 Documentation
 
-### Adding Cards
+### 📚 User Guides
+- [Quick Start Guide](docs/guides/quick-start.md) - Get running in 5 minutes
+- [Adding Cards Guide](docs/guides/adding-cards.md) - Master card entry
+- [Reports Overview](docs/features/reports.md) - Generate professional reports
+- [eBay Integration](docs/features/ebay-integration.md) - Optimize your listings
 
-1. Click "Add Card" in the navigation
-2. Choose between Classic or Enhanced form
-3. Fill in card details:
-   - **Basic Info**: Player, year, brand, card number
-   - **Collection Data**: Purchase price/date, current value
-   - **Grading Info**: Company, grade, certification number
-   - **Enhanced Fields** (optional):
-     - Authentication data
-     - Special features (autographs, memorabilia)
-     - Market analysis
-     - Storage location
-     - Investment metrics
+### 🔧 Technical Docs
+- [API Reference](docs/api/README.md) - Backend API documentation
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute
+- [Troubleshooting](docs/guides/troubleshooting.md) - Common issues
+- [FAQ](docs/guides/faq.md) - Frequently asked questions
 
-### Managing Your Collection
+### 🎯 Feature Guides
+- [Dashboard Overview](docs/features/dashboard.md)
+- [Executive Dashboard](docs/features/executive-dashboard.md)
+- [Tax Reports](docs/features/tax-reports.md)
+- [Insurance Reports](docs/features/insurance-reports.md)
 
-- **Inventory View**: Browse all cards with filtering
-- **Card Details**: Click any card for full information
-- **Quick Actions**: Edit or delete from card view
-- **Bulk Operations**: Export multiple cards at once
+## 🛠️ Technologies
 
-### Generating Reports
+### Frontend
+- **React 18** - Modern UI library
+- **TypeScript** - Type-safe development
+- **Recharts** - Beautiful data visualizations
+- **CSS3** - Modern styling with gradients and animations
+- **Context API** - State management
 
-1. Navigate to "Reports" section
-2. Choose report type:
-   - Portfolio Summary
-   - ROI Analysis
-   - Collection Distribution
-   - Sales History
-3. Customize parameters (date range, categories)
-4. Export as PDF or view on-screen
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express** - Web framework
+- **TypeScript** - Type safety
+- **JWT** - Authentication
 
-### eBay Listing Tools
-
-1. Go to "eBay Listings"
-2. Review AI-powered recommendations
-3. Use bulk export options:
-   - **Instant Export**: Quick CSV for all unsold cards
-   - **Export with Details**: Review before exporting
-   - **Custom Options**: Advanced filtering
-4. Import CSV to eBay's bulk listing tool
-
-## 🔧 Advanced Features
-
-### Enhanced Card Data Model
-
-The application supports comprehensive card tracking with:
-- **Identification**: Serial numbers, print runs, population data
-- **Player Metadata**: Career stats, achievements, hall of fame status
-- **Authentication**: Multiple grading services, crack-out history
-- **Special Features**: Autographs, game-used memorabilia, 1/1 cards
-- **Market Data**: Price history, comparable sales, demand metrics
-- **Investment Analysis**: Purchase strategy, hold recommendations
-- **Storage**: Physical location, protective measures
-- **History**: Ownership chain, exhibition history
-- **Valuation**: Insurance values, appraisal data
-
-### Data Storage
-
-All data is stored locally in your browser using the Local Storage API. Your collection data persists between sessions but is only available on the device where it was created.
+### Tools & Libraries
+- **date-fns** - Date manipulation
+- **jsPDF** - PDF generation
+- **Concurrently** - Process management
+- **ESLint/Prettier** - Code quality
 
 ## 📁 Project Structure
 
 ```
 sports-card-tracker/
-├── public/                 # Static files
-├── src/                   # React source code
+├── docs/                   # Comprehensive documentation
+│   ├── api/               # API reference
+│   ├── features/          # Feature guides
+│   ├── guides/            # User guides
+│   └── screenshots/       # UI screenshots
+├── public/                # Static assets
+├── server/                # Backend server
+├── src/                   # Frontend source
 │   ├── components/        # React components
-│   │   ├── CardList/     # Card listing with grid/list views
-│   │   ├── CardForm/     # Classic card entry form
-│   │   ├── EnhancedCardForm/ # Professional card form
-│   │   ├── Dashboard/    # Analytics dashboard
-│   │   ├── Reports/      # Reporting suite
-│   │   └── EbayListings/ # eBay integration
-│   ├── context/          # State management
-│   ├── types/            # TypeScript definitions
-│   ├── utils/            # Utility functions
-│   └── services/         # API and reporting services
-├── build/               # Production build
-└── README.md           # This file
+│   │   ├── Dashboard/     # Main dashboard
+│   │   ├── Reports/       # Reporting suite
+│   │   ├── CardForm/      # Card entry forms
+│   │   └── EbayListings/  # eBay tools
+│   ├── context/           # State management
+│   ├── services/          # Business logic
+│   ├── types/             # TypeScript types
+│   └── utils/             # Utilities
+└── README.md              # You are here!
 ```
-
-## 🔮 Recent Updates (v2.1.0)
-
-### eBay Integration
-- Added smart listing recommendations with AI scoring
-- Bulk export tools with multiple formats
-- One-click export for all unsold cards
-- Optimal pricing suggestions
-
-### UI Improvements
-- Repositioned edit/delete buttons to bottom-right
-- Added sold banner overlay for sold cards
-- Fixed stat card text overflow issues
-- Implemented 3-column grid layout
-
-### Enhanced Features
-- Increased image upload limit to 100MB
-- Added comprehensive reporting suite (10+ report types)
-- Visual analytics dashboard with charts
-- Professional PDF export with formatting
-
-### Data Model Enhancements
-- 100+ fields across 11 categories
-- Dual form system (classic and enhanced)
-- Automatic data migration
-- LocalStorage persistence
 
 ## 🤝 Contributing
 
-We welcome contributions! Please follow these steps:
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Quick Contribution Guide
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-### Development Guidelines
+### Development Setup
 
-- Follow TypeScript best practices
-- Maintain test coverage
-- Update documentation
-- Use semantic commit messages
+```bash
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Lint code
+npm run lint
+
+# Build for production
+npm run build
+```
+
+## 📈 Roadmap
+
+### Coming Soon
+- [ ] Mobile app (iOS/Android)
+- [ ] Automatic price updates
+- [ ] Social features
+- [ ] AI card recognition
+- [ ] Direct eBay API integration
+- [ ] Multi-user collections
+- [ ] Dark mode theme
+
+### Future Enhancements
+- Blockchain authentication
+- NFT integration
+- Advanced AI analytics
+- Voice commands
+- AR card viewing
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- Sports card community for feedback and suggestions
-- Contributors and testers
-- Open source libraries and tools
+- Sports card collecting community
+- Open source contributors
+- Beta testers and early adopters
+- UI/UX design inspiration from modern web apps
 
 ## 📞 Support
 
-For support, please:
-- Open an issue on GitHub
-- Check the troubleshooting section
-- Review the documentation
+### Get Help
+- 📖 [Documentation](docs/README.md)
+- ❓ [FAQ](docs/guides/faq.md)
+- 🐛 [Issue Tracker](https://github.com/yourusername/sports-card-tracker/issues)
+- 💬 [Discussions](https://github.com/yourusername/sports-card-tracker/discussions)
+- 📧 Email: support@sportscardtracker.com
+
+### Community
+- [Discord Server](https://discord.gg/sportscards)
+- [Reddit Community](https://reddit.com/r/sportscardtracker)
+- [Twitter Updates](https://twitter.com/sportscardtrack)
 
 ---
 
-**Version**: 2.1.0  
-**Last Updated**: December 2024
+<div align="center">
 
-**Built with ❤️ for collectors by collectors**
+**[Live Demo](https://sportscardtracker.com)** | **[Documentation](docs/README.md)** | **[Report Bug](https://github.com/yourusername/sports-card-tracker/issues)** | **[Request Feature](https://github.com/yourusername/sports-card-tracker/issues)**
+
+Made with ❤️ by collectors, for collectors
+
+**Version**: 2.2.0 | **Last Updated**: December 2024
+
+</div>
