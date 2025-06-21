@@ -8,6 +8,9 @@ import CollectionAnalyticsReport from './CollectionAnalyticsReport';
 import MarketAnalysisReport from './MarketAnalysisReport';
 import TaxReport from './TaxReport';
 import InsuranceReport from './InsuranceReport';
+import InventoryReport from './InventoryReport';
+import ComparisonReport from './ComparisonReport';
+import ExecutiveDashboard from './ExecutiveDashboard';
 import ReportFilters from './ReportFilters';
 import ReportExport from './ReportExport';
 import './Reports.css';
@@ -92,41 +95,13 @@ const Reports: React.FC = () => {
         );
       
       case 'detailed-inventory':
+        return <InventoryReport />;
+      
       case 'comparison-analysis':
+        return <ComparisonReport />;
+      
       case 'executive-dashboard':
-        return (
-          <div className="report-placeholder">
-            <div className="placeholder-icon">🚧</div>
-            <h3>{reportTabs.find(tab => tab.id === activeReport)?.label}</h3>
-            <p>This advanced report is being implemented. Coming soon with enhanced features!</p>
-            <div className="placeholder-features">
-              {activeReport === 'detailed-inventory' && (
-                <ul>
-                  <li>Complete catalog with high-resolution images</li>
-                  <li>Detailed specifications and condition notes</li>
-                  <li>Insurance valuation documentation</li>
-                  <li>Professional appraisal formats</li>
-                </ul>
-              )}
-              {activeReport === 'comparison-analysis' && (
-                <ul>
-                  <li>Portfolio vs market index comparisons</li>
-                  <li>Peer collection benchmarking</li>
-                  <li>Category performance analysis</li>
-                  <li>Risk-adjusted return metrics</li>
-                </ul>
-              )}
-              {activeReport === 'executive-dashboard' && (
-                <ul>
-                  <li>High-level executive summary</li>
-                  <li>Key performance indicators</li>
-                  <li>Strategic insights and recommendations</li>
-                  <li>Interactive dashboard widgets</li>
-                </ul>
-              )}
-            </div>
-          </div>
-        );
+        return <ExecutiveDashboard />;
       
       default:
         return <div>Report not found</div>;
