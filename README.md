@@ -1,8 +1,10 @@
-# 🏆 Sports Card Tracker
+# 🏆 Collectors Playbook Card Tracker
 
-A comprehensive web application for managing and tracking sports card collections. Built with React, TypeScript, and modern web technologies, featuring advanced analytics, professional reporting, and eBay integration.
+The official card collection management system for [Collectors Playbook](https://collectorsplaybook.com). A comprehensive web application for managing and tracking sports card collections, built with React, TypeScript, and modern web technologies, featuring advanced analytics, professional reporting, and eBay integration.
 
-![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)
+**Part of the Collectors Playbook ecosystem** - Visit [collectorsplaybook.com](https://collectorsplaybook.com) for collecting guides, market insights, and community resources.
+
+![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-green.svg)
 ![React](https://img.shields.io/badge/react-18.x-blue.svg)
 ![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)
@@ -59,7 +61,7 @@ A comprehensive web application for managing and tracking sports card collection
 - **Drag & Drop**: Intuitive card organization
 - **Quick Actions**: Streamlined workflows
 
-## 🆕 What's New (v2.4.0)
+## 🆕 What's New (v0.1.0)
 
 ### 🛒 Professional eBay Listing Generator
 - **Individual Listings**: One-click eBay listing creation for any card
@@ -119,11 +121,15 @@ A comprehensive web application for managing and tracking sports card collection
 - Better accessibility support
 - Cleaner code architecture
 
-### Previous Updates (v2.3.0)
+### Initial Release Features
+- Complete collection management system
+- Professional eBay listing generator
 - Executive Dashboard with portfolio health metrics
-- Enhanced Tax and Insurance Reports with modern UI
+- Enhanced Tax and Insurance Reports
 - Market Analysis and Comparison Reports
-- Comprehensive documentation structure
+- Photo-based card entry with OCR
+- Multi-user support
+- Integration with Collectors Playbook ecosystem
 
 ## 🚀 Getting Started
 
@@ -137,7 +143,7 @@ A comprehensive web application for managing and tracking sports card collection
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/sports-card-tracker.git
+git clone https://github.com/Collectors-Playbook/sports-card-tracker.git
 cd sports-card-tracker
 
 # Install dependencies
@@ -275,7 +281,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Sports card collecting community
+- [Collectors Playbook](https://collectorsplaybook.com) community
+- Sports card collecting enthusiasts worldwide
 - Open source contributors
 - Beta testers and early adopters
 - UI/UX design inspiration from modern web apps
@@ -285,23 +292,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Get Help
 - 📖 [Documentation](docs/README.md)
 - ❓ [FAQ](docs/guides/faq.md)
-- 🐛 [Issue Tracker](https://github.com/yourusername/sports-card-tracker/issues)
-- 💬 [Discussions](https://github.com/yourusername/sports-card-tracker/discussions)
-- 📧 Email: support@sportscardtracker.com
+- 🐛 [Issue Tracker](https://github.com/Collectors-Playbook/sports-card-tracker/issues)
+- 💬 [Discussions](https://github.com/Collectors-Playbook/sports-card-tracker/discussions)
+- 🌐 [Collectors Playbook](https://collectorsplaybook.com)
+- 📧 Email: support@collectorsplaybook.com
 
 ### Community
+- [Collectors Playbook Website](https://collectorsplaybook.com)
+- [GitHub Repository](https://github.com/Collectors-Playbook/sports-card-tracker)
 - [Discord Server](https://discord.gg/sportscards)
 - [Reddit Community](https://reddit.com/r/sportscardtracker)
-- [Twitter Updates](https://twitter.com/sportscardtrack)
 
 ---
 
 <div align="center">
 
-**[Live Demo](https://sportscardtracker.com)** | **[Documentation](docs/README.md)** | **[Report Bug](https://github.com/yourusername/sports-card-tracker/issues)** | **[Request Feature](https://github.com/yourusername/sports-card-tracker/issues)**
+**[Collectors Playbook](https://collectorsplaybook.com)** | **[Documentation](docs/README.md)** | **[Report Bug](https://github.com/Collectors-Playbook/sports-card-tracker/issues)** | **[Request Feature](https://github.com/Collectors-Playbook/sports-card-tracker/issues)**
 
-Made with ❤️ by collectors, for collectors
+Made with ❤️ by [Collectors Playbook](https://collectorsplaybook.com) - Your trusted resource for sports card collecting
 
-**Version**: 2.3.0 | **Last Updated**: December 2024
+**Version**: 0.1.0 | **Last Updated**: December 2024
 
 </div>
