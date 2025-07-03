@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { useCards } from '../../context/CardContext';
+import { useCards } from '../../context/DexieCardContext';
 import { Card, CardFormData, CONDITIONS, CATEGORIES, GRADING_COMPANIES } from '../../types';
 import ImageUpload from '../ImageUpload/ImageUpload';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
@@ -17,6 +17,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
   const { addCard, updateCard } = useCards();
   const isEditing = !!card;
   const [images, setImages] = useState<string[]>([]);
+  const [collections, setCollections] = useState<any[]>([]);
   
   logDebug('CardForm', 'Component initialized', { isEditing, cardId: card?.id });
 
@@ -43,12 +44,27 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
       sellPrice: undefined,
       sellDate: '',
       currentValue: 0,
-      notes: ''
+      notes: '',
+      collectionId: ''
     }
   });
 
   const sellPrice = watch('sellPrice');
   const sellDate = watch('sellDate');
+
+  // Load collections
+  useEffect(() => {
+    const loadCollections = async () => {
+      try {
+        const { collectionsDatabase } = await import('../../db/collectionsDatabase');
+        const userCollections = await collectionsDatabase.getUserCollections();
+        setCollections(userCollections);
+      } catch (error) {
+        console.error('Error loading collections:', error);
+      }
+    };
+    loadCollections();
+  }, []);
 
   const resetForm = useCallback((cardData?: Card) => {
     logDebug('CardForm', 'resetForm called', { hasCardData: !!cardData, cardId: cardData?.id });
@@ -83,7 +99,8 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
           sellPrice: cardData.sellPrice || undefined,
           sellDate: sellDate,
           currentValue: cardData.currentValue || 0,
-          notes: cardData.notes || ''
+          notes: cardData.notes || '',
+          collectionId: cardData.collectionId || ''
         };
         
         reset(formData);
@@ -107,7 +124,8 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
           sellPrice: undefined,
           sellDate: '',
           currentValue: 0,
-          notes: ''
+          notes: '',
+          collectionId: ''
         });
         setImages([]);
       }
@@ -127,7 +145,8 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
         sellPrice: undefined,
         sellDate: '',
         currentValue: 0,
-        notes: ''
+        notes: '',
+        collectionId: ''
       });
       setImages([]);
     }
@@ -188,6 +207,8 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
       
       const cardData: Card = {
         id: card?.id || `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        userId: card?.userId || '', // Will be set by the database
+        collectionId: data.collectionId || undefined, // Will use default if not specified
         player: data.player.trim(),
         team: data.team.trim(),
         year: year,
@@ -325,6 +346,21 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                 {CONDITIONS.map(condition => (
                   <option key={condition} value={condition}>
                     {condition}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="collectionId">Collection</label>
+              <select
+                id="collectionId"
+                {...register('collectionId')}
+              >
+                <option value="">Default Collection</option>
+                {collections.map((collection) => (
+                  <option key={collection.id} value={collection.id}>
+                    {collection.icon} {collection.name} {collection.isDefault ? '(Default)' : ''}
                   </option>
                 ))}
               </select>

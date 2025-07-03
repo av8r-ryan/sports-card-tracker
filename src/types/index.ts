@@ -1,5 +1,15 @@
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  role: 'admin' | 'user';
+  profilePhoto?: string | null;
+}
+
 export interface Card {
   id: string;
+  userId: string; // User who owns this card
+  collectionId?: string; // Collection this card belongs to
   player: string;
   team: string;
   year: number;
@@ -36,6 +46,7 @@ export interface CardFormData {
   sellDate?: string;
   currentValue: number;
   notes: string;
+  collectionId?: string;
 }
 
 export interface PortfolioStats {

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { useCards } from '../../context/CardContext';
+import { useCards } from '../../context/DexieCardContext';
 
 const AutoExportTrigger: React.FC = () => {
   const { state } = useCards();
 
   useEffect(() => {
     // Export all unsold cards immediately
-    const unsoldCards = state.cards.filter(card => !card.sellDate);
+    const unsoldCards = state.cards.filter(card => !('sellDate' in card) || !card.sellDate);
     
     if (unsoldCards.length === 0) {
       console.log('No unsold cards to export');

@@ -1,0 +1,388 @@
+.ebay-listing-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.ebay-listing-container {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.ebay-listing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.ebay-listing-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.ebay-listing-tabs {
+  display: flex;
+  border-bottom: 2px solid #f0f0f0;
+  padding: 0 20px;
+}
+
+.tab {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  margin-bottom: -2px;
+}
+
+.tab:hover:not(:disabled) {
+  color: #0654ba;
+}
+
+.tab.active {
+  color: #0654ba;
+  border-bottom-color: #0654ba;
+  font-weight: 600;
+}
+
+.tab:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.ebay-listing-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Settings Panel */
+.settings-panel h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.option-group {
+  margin-bottom: 20px;
+}
+
+.option-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.option-group select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.option-group select:focus {
+  outline: none;
+  border-color: #0654ba;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.generate-button {
+  width: 100%;
+  padding: 14px;
+  background: #0654ba;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 30px;
+}
+
+.generate-button:hover {
+  background: #0547a0;
+}
+
+/* Preview Panel */
+.preview-panel {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.listing-field {
+  margin-bottom: 24px;
+}
+
+.listing-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.field-with-copy {
+  display: flex;
+  gap: 10px;
+}
+
+.listing-title {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.copy-button {
+  padding: 10px 20px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.copy-button:hover {
+  background: #e0e0e0;
+}
+
+.char-count {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  color: #666;
+}
+
+.category-info,
+.condition-info {
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.pricing-info {
+  padding: 15px;
+  background: #f0fff0;
+  border-radius: 6px;
+  border: 1px solid #d0f0d0;
+}
+
+.pricing-info div {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.pricing-info div:last-child {
+  margin-bottom: 0;
+}
+
+.item-specifics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.specific-item {
+  display: flex;
+  gap: 8px;
+}
+
+.specific-key {
+  font-weight: 600;
+  color: #555;
+}
+
+.specific-value {
+  color: #333;
+}
+
+.keywords-list {
+  padding: 15px;
+  background: #fff4e6;
+  border-radius: 6px;
+  line-height: 1.6;
+}
+
+.description-preview {
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+/* Export Panel */
+.export-panel h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.export-options label {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.export-options label:hover {
+  background: #f0f0f0;
+}
+
+.export-options input[type="radio"] {
+  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+}
+
+.export-button {
+  width: 100%;
+  padding: 14px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.export-button:hover {
+  background: #218838;
+}
+
+.success-message {
+  margin-top: 20px;
+  padding: 15px;
+  background: #d4edda;
+  color: #155724;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.export-tips {
+  margin-top: 40px;
+  padding: 20px;
+  background: #e8f4f8;
+  border-radius: 6px;
+}
+
+.export-tips h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.export-tips ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.export-tips li {
+  margin-bottom: 10px;
+  color: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ebay-listing-modal {
+    padding: 10px;
+  }
+
+  .ebay-listing-container {
+    max-height: 100vh;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .tab {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .item-specifics {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCards } from '../../context/CardContext';
+import { useCards } from '../../context/DexieCardContext';
 import { addSampleDataToCollection } from '../../utils/sampleData';
 import './DevTools.css';
 

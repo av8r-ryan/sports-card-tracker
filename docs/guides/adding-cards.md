@@ -7,6 +7,7 @@ Learn everything about adding cards to your Sports Card Tracker collection, from
 - [Overview](#overview)
 - [Classic Form](#classic-form)
 - [Enhanced Form](#enhanced-form)
+- [Photo Entry](#photo-entry)
 - [Bulk Import](#bulk-import)
 - [Image Upload](#image-upload)
 - [Best Practices](#best-practices)
@@ -14,11 +15,12 @@ Learn everything about adding cards to your Sports Card Tracker collection, from
 
 ## 🎯 Overview
 
-Sports Card Tracker offers three ways to add cards:
+Sports Card Tracker offers four ways to add cards:
 
 1. **Classic Form** - Quick entry for basic information
 2. **Enhanced Form** - Comprehensive data entry with 100+ fields
-3. **Bulk Import** - Add multiple cards via CSV
+3. **Photo Entry** - Upload photos for automatic data extraction
+4. **Bulk Import** - Add multiple cards via CSV
 
 ## 📱 Classic Form
 
@@ -181,6 +183,28 @@ Target Sell Price: $10,000
 Risk Level: Medium
 Expected Hold: 2-3 years
 ```
+
+## 📸 Photo Entry
+
+The Photo Entry feature uses AI to automatically extract card information from photos. Perfect for quickly adding cards without manual data entry.
+
+### Quick Start
+
+1. Navigate to **Add Card** → **📸 Photo Scan**
+2. Upload front image (required) and back image (optional)
+3. Click **Extract Card Information**
+4. Review and edit extracted data
+5. Save to your collection
+
+### Features
+
+- **AI-Powered Extraction**: Automatically identifies player, year, brand, and more
+- **Confidence Scoring**: Shows accuracy level of extraction
+- **Front & Back Support**: Upload both sides for better results
+- **Special Feature Detection**: Identifies rookies, autographs, and relics
+- **Edit Before Saving**: Review and correct any extraction errors
+
+For a complete guide, see [Photo-Based Card Entry Guide](photo-card-entry.md).
 
 ## 📊 Bulk Import
 

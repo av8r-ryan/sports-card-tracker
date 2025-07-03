@@ -183,6 +183,14 @@
   color: #a0aec0;
 }
 
+.form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6B7280;
+  font-style: italic;
+}
+
 .form-group textarea {
   resize: vertical;
   min-height: 80px;

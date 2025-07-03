@@ -77,6 +77,24 @@
   background: #1e7e34;
 }
 
+.ebay-listing-btn {
+  padding: 8px 12px;
+  background: #0654ba;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ebay-listing-btn:hover {
+  background: #0547a0;
+}
+
 .close-btn {
   background: none;
   border: none;

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useCards } from '../../context/CardContext';
+import { useCards } from '../../context/DexieCardContext';
 import { Card } from '../../types';
 import { exportToPDF } from '../../services/reportService';
 import './InventoryReport.css';

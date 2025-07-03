@@ -11,6 +11,7 @@ interface Props {
 
 const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
   const [activeTab, setActiveTab] = useState('basic');
+  const [collections, setCollections] = useState<any[]>([]);
   const [formData, setFormData] = useState<Partial<EnhancedCard>>({
     ...card,
     identification: card?.identification || undefined,
@@ -24,6 +25,20 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
     analytics: card?.analytics || undefined,
     collectionMeta: card?.collectionMeta || undefined
   });
+
+  // Load collections
+  useEffect(() => {
+    const loadCollections = async () => {
+      try {
+        const { collectionsDatabase } = await import('../../db/collectionsDatabase');
+        const userCollections = await collectionsDatabase.getUserCollections();
+        setCollections(userCollections);
+      } catch (error) {
+        console.error('Error loading collections:', error);
+      }
+    };
+    loadCollections();
+  }, []);
 
   const tabs = [
     { id: 'basic', label: '📋 Basic Info', icon: '📋' },
@@ -830,6 +845,23 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
     <div className="form-section">
       <h3>Collection Metadata</h3>
       <div className="form-grid">
+        <div className="form-group full-width">
+          <label>Collection*</label>
+          <select
+            value={formData.collectionId || ''}
+            onChange={(e) => handleBasicChange('collectionId', e.target.value)}
+            required
+          >
+            <option value="">Select a Collection</option>
+            {collections.map(collection => (
+              <option key={collection.id} value={collection.id}>
+                {collection.icon} {collection.name} {collection.isDefault ? '(Default)' : ''}
+              </option>
+            ))}
+          </select>
+          <small className="form-hint">Assign this card to a specific collection</small>
+        </div>
+        
         <div className="form-group">
           <label>Personal Grade (1-10)</label>
           <input

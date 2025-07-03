@@ -35,30 +35,63 @@
   color: #333;
   font-size: 1.8rem;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
 }
 
 .quick-stats {
   display: flex;
-  gap: 20px;
+  gap: 16px;
+  align-items: center;
+  margin-left: 24px;
 }
 
 .stat {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #666;
-  padding: 6px 12px;
-  background: #f8f9fa;
-  border-radius: 20px;
+  color: #4a5568;
+  padding: 8px 16px;
+  background: #f7fafc;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.stat:hover {
+  background: #edf2f7;
+  border-color: #cbd5e0;
 }
 
 .stat.profit-loss.positive {
-  background: #e8f5e8;
-  color: #28a745;
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #86efac;
+}
+
+.stat.profit-loss.positive:hover {
+  background: #dcfce7;
+  border-color: #4ade80;
 }
 
 .stat.profit-loss.negative {
-  background: #fdeaea;
-  color: #dc3545;
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.stat.profit-loss.negative:hover {
+  background: #fee2e2;
+  border-color: #f87171;
 }
 
 .api-status {

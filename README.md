@@ -2,7 +2,7 @@
 
 A comprehensive web application for managing and tracking sports card collections. Built with React, TypeScript, and modern web technologies, featuring advanced analytics, professional reporting, and eBay integration.
 
-![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-green.svg)
 ![React](https://img.shields.io/badge/react-18.x-blue.svg)
 ![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)
@@ -22,6 +22,7 @@ A comprehensive web application for managing and tracking sports card collection
 
 ### 📦 Collection Management
 - **Smart Card Entry**: Classic and Enhanced forms with 100+ fields
+- **Photo-Based Entry**: Upload card photos for automatic data extraction
 - **Bulk Import**: CSV import for large collections
 - **Advanced Search**: Multi-criteria filtering and search
 - **Image Management**: High-resolution image support (up to 100MB)
@@ -36,10 +37,13 @@ A comprehensive web application for managing and tracking sports card collection
 - **Custom Reports**: Flexible date ranges and filters
 
 ### 💰 eBay Integration
+- **Professional Listing Generator**: Create optimized eBay listings instantly
+- **Smart Title Builder**: 80-character titles with key features
+- **HTML Descriptions**: Beautiful, mobile-responsive templates
+- **Bulk Export**: Generate listings for multiple cards at once
+- **File Exchange Ready**: CSV export for eBay bulk upload
 - **AI-Powered Recommendations**: Smart listing suggestions with scoring
-- **Bulk Export Tools**: Multiple formats (CSV, eBay File Exchange)
 - **Price Optimization**: Market-based pricing suggestions
-- **Timing Analysis**: Best time to list calculations
 
 ### 📈 Analytics & Insights
 - **Real-Time Dashboard**: Live portfolio metrics and charts
@@ -55,7 +59,37 @@ A comprehensive web application for managing and tracking sports card collection
 - **Drag & Drop**: Intuitive card organization
 - **Quick Actions**: Streamlined workflows
 
-## 🆕 What's New (v2.2.0)
+## 🆕 What's New (v2.4.0)
+
+### 🛒 Professional eBay Listing Generator
+- **Individual Listings**: One-click eBay listing creation for any card
+- **Bulk Export**: Select multiple cards and export to CSV
+- **Smart Titles**: Optimized 80-character titles with key features
+- **HTML Templates**: Professional, mobile-responsive descriptions
+- **Automatic Categorization**: Correct eBay category and condition mapping
+- **Item Specifics**: All fields populated automatically
+- **Multiple Export Formats**: HTML, CSV, and JSON
+
+### 🏭 Manufacturer Licensing & Accurate Detection
+- Comprehensive manufacturer database with real licensing data
+- Sport-specific brand validation (e.g., Topps for MLB, Panini for NBA/NFL)
+- Historical accuracy for vintage cards
+- Year-based manufacturer selection
+- Automatic correction of invalid manufacturer-sport combinations
+
+### 🎯 Enhanced Player & Card Detection
+- 100+ real players across all major sports
+- Accurate team-player relationships
+- Position-specific detection
+- Rookie card identification
+- Nickname recognition (e.g., "The Kid" → Ken Griffey Jr.)
+
+### 📸 Photo-Based Card Entry
+- Upload card photos for automatic data extraction
+- AI-powered OCR with confidence scoring
+- Front and back image support
+- Review and edit extracted data before saving
+- Tips for best photo capture results
 
 ### 🎯 Executive Dashboard
 - Portfolio health score visualization
@@ -84,6 +118,12 @@ A comprehensive web application for managing and tracking sports card collection
 - Performance optimizations
 - Better accessibility support
 - Cleaner code architecture
+
+### Previous Updates (v2.3.0)
+- Executive Dashboard with portfolio health metrics
+- Enhanced Tax and Insurance Reports with modern UI
+- Market Analysis and Comparison Reports
+- Comprehensive documentation structure
 
 ## 🚀 Getting Started
 
@@ -217,7 +257,7 @@ npm run build
 - [ ] Mobile app (iOS/Android)
 - [ ] Automatic price updates
 - [ ] Social features
-- [ ] AI card recognition
+- [x] AI card recognition (Photo-based entry added!)
 - [ ] Direct eBay API integration
 - [ ] Multi-user collections
 - [ ] Dark mode theme
@@ -262,6 +302,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Made with ❤️ by collectors, for collectors
 
-**Version**: 2.2.0 | **Last Updated**: December 2024
+**Version**: 2.3.0 | **Last Updated**: December 2024
 
 </div>

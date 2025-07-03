@@ -1,16 +1,18 @@
 import { Card } from '../types';
+import { cardDatabase } from '../db/simpleDatabase';
 
 // Automatically export ALL unsold cards - no user interaction needed
-export const autoExportAllUnsoldCards = () => {
-  // Get cards from localStorage
-  const cardsJson = localStorage.getItem('sportsCards');
-  if (!cardsJson) {
-    console.log('No cards found in storage');
-    return null;
-  }
-
-  const cards: Card[] = JSON.parse(cardsJson);
-  const unsoldCards = cards.filter(card => !card.sellDate);
+export const autoExportAllUnsoldCards = async () => {
+  try {
+    // Get cards from database
+    const cards = await cardDatabase.getAllCards();
+    
+    if (!cards || cards.length === 0) {
+      console.log('No cards found in database');
+      return null;
+    }
+    
+    const unsoldCards = cards.filter(card => !card.sellDate);
   
   if (unsoldCards.length === 0) {
     console.log('No unsold cards to export');
@@ -240,13 +242,17 @@ From a smoke-free environment. Thanks for looking!
     totalStartPrice: unsoldCards.reduce((sum, card) => sum + (card.currentValue * 0.85), 0),
     filename: link.download
   };
+  } catch (error) {
+    console.error('Error exporting cards:', error);
+    return null;
+  }
 };
 
 // Execute immediately when this module is imported
 if (typeof window !== 'undefined') {
-  // Auto-execute after a short delay to ensure DOM is ready
-  setTimeout(() => {
-    const result = autoExportAllUnsoldCards();
+  // Auto-execute after a short delay to ensure DOM and RxDB are ready
+  setTimeout(async () => {
+    const result = await autoExportAllUnsoldCards();
     if (result) {
       console.log('Auto-export completed:', result);
     }

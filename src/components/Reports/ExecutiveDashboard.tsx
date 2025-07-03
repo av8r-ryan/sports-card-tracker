@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useCards } from '../../context/CardContext';
+import { useCards } from '../../context/DexieCardContext';
 import { Card } from '../../types';
 import {
   Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,

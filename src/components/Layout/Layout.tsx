@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useCards } from '../../context/CardContext';
-import { exportCardsAsJSON, exportCardsAsCSV } from '../../utils/localStorage';
+import { useCards } from '../../context/DexieCardContext';
+import { exportCardsAsJSON, exportCardsAsCSV } from '../../utils/exportUtils';
 import { exportCardsToPDF } from '../../utils/pdfExport';
 import './Layout.css';
 
 interface LayoutProps {
   children: React.ReactNode;
-  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay';
-  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay') => void;
+  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections';
+  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections') => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) => {
@@ -16,6 +16,14 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
   const { state, getPortfolioStats } = useCards();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const stats = getPortfolioStats();
+  
+  // Debug logging for stats
+  console.log('Portfolio Stats:', {
+    totalCards: stats.totalCards,
+    totalCurrentValue: stats.totalCurrentValue,
+    totalProfit: stats.totalProfit,
+    cardsLength: state.cards.length
+  });
   
   const isLoading = state.loading;
   const hasError = !!state.error;
@@ -72,7 +80,10 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
       <header className="header">
         <div className="header-content">
           <div className="header-left">
-            <h1 className="app-title">Collectors Playbook Card Tracker</h1>
+            <h1 className="app-title">
+              <img src="/icon.png" alt="App Icon" className="app-icon" />
+              Collectors Playbook Card Tracker
+            </h1>
             {hasError && (
               <div className="api-status error">
                 ⚠️ {state.error}
@@ -85,13 +96,16 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
             )}
             <div className="quick-stats">
               <span className="stat">
-                {stats.totalCards} cards
+                <span>📊</span>
+                <span>{stats.totalCards} cards</span>
               </span>
               <span className="stat">
-                {formatCurrency(stats.totalCurrentValue)} value
+                <span>💰</span>
+                <span>{formatCurrency(stats.totalCurrentValue)}</span>
               </span>
               <span className={`stat profit-loss ${stats.totalProfit >= 0 ? 'positive' : 'negative'}`}>
-                {stats.totalProfit >= 0 ? '+' : ''}{formatCurrency(stats.totalProfit)}
+                <span>{stats.totalProfit >= 0 ? '📈' : '📉'}</span>
+                <span>{stats.totalProfit >= 0 ? '+' : ''}{formatCurrency(stats.totalProfit)}</span>
               </span>
             </div>
           </div>
@@ -156,6 +170,17 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
           </button>
           
           <button
+            className={`nav-item ${currentView === 'collections' ? 'active' : ''}`}
+            onClick={() => {
+              onViewChange('collections');
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <span className="nav-icon">📚</span>
+            Collections
+          </button>
+          
+          <button
             className={`nav-item ${currentView === 'inventory' ? 'active' : ''}`}
             onClick={() => {
               onViewChange('inventory');
@@ -210,17 +235,40 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
             Profile
           </button>
           
+          <button
+            className={`nav-item ${currentView === 'backup' ? 'active' : ''}`}
+            onClick={() => {
+              onViewChange('backup');
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <span className="nav-icon">💾</span>
+            Backup
+          </button>
+          
           {authState.user?.role === 'admin' && (
-            <button
-              className={`nav-item ${currentView === 'admin' ? 'active' : ''}`}
-              onClick={() => {
-                onViewChange('admin');
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <span className="nav-icon">🔧</span>
-              Admin
-            </button>
+            <>
+              <button
+                className={`nav-item ${currentView === 'admin' ? 'active' : ''}`}
+                onClick={() => {
+                  onViewChange('admin');
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <span className="nav-icon">🔧</span>
+                Admin
+              </button>
+              <button
+                className={`nav-item ${currentView === 'users' ? 'active' : ''}`}
+                onClick={() => {
+                  onViewChange('users');
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <span className="nav-icon">👥</span>
+                Users
+              </button>
+            </>
           )}
         </div>
       </nav>

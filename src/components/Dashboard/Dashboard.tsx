@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { useCards } from '../../context/CardContext';
+import { useCards } from '../../context/DexieCardContext';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -38,7 +38,11 @@ const Dashboard: React.FC = () => {
 
   const recentCards = useMemo(() => {
     return [...state.cards]
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return bTime - aTime;
+      })
       .slice(0, 5);
   }, [state.cards]);
 

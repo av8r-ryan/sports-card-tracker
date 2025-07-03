@@ -1,22 +1,49 @@
 import React, { useState, useMemo, memo, useCallback } from 'react';
-import { useCards } from '../../context/CardContext';
+import { useCards } from '../../context/DexieCardContext';
 import { Card, FilterOptions, SortOption } from '../../types';
+import { BulkEbayExport } from '../EbayListing/BulkEbayExport';
+import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
+import MoveCardsModal from '../MoveCardsModal/MoveCardsModal';
+import { collectionsDatabase } from '../../db/collectionsDatabase';
 import './CardList.css';
 
 interface CardListProps {
   onCardSelect?: (card: Card) => void;
   onEditCard?: (card: Card) => void;
+  selectedCollectionId?: string | null;
 }
 
-const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
-  const { state, deleteCard } = useCards();
+const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedCollectionId }) => {
+  const { state, deleteCard, updateCard } = useCards();
   const [filters, setFilters] = useState<FilterOptions>({});
   const [sortOption, setSortOption] = useState<SortOption>({ field: 'createdAt', direction: 'desc' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [showBulkEbay, setShowBulkEbay] = useState(false);
+  const [selectedCollection, setSelectedCollection] = useState<any>(null);
+  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
+  const [showMoveModal, setShowMoveModal] = useState(false);
+
+  // Load collection info when selectedCollectionId changes
+  React.useEffect(() => {
+    if (selectedCollectionId) {
+      import('../../db/collectionsDatabase').then(({ collectionsDatabase }) => {
+        collectionsDatabase.getCollectionById(selectedCollectionId).then(collection => {
+          setSelectedCollection(collection);
+        });
+      });
+    } else {
+      setSelectedCollection(null);
+    }
+  }, [selectedCollectionId]);
 
 
   const filteredAndSortedCards = useMemo(() => {
     let filtered = state.cards.filter(card => {
+      // First apply collection filter if provided
+      if (selectedCollectionId && card.collectionId !== selectedCollectionId) {
+        return false;
+      }
+
       const matchesSearch = searchTerm === '' || 
         card.player.toLowerCase().includes(searchTerm.toLowerCase()) ||
         card.team.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -59,7 +86,7 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
     });
 
     return filtered;
-  }, [state.cards, filters, sortOption, searchTerm]);
+  }, [state.cards, filters, sortOption, searchTerm, selectedCollectionId]);
 
   const handleDeleteCard = useCallback(async (cardId: string) => {
     if (window.confirm('Are you sure you want to delete this card?')) {
@@ -76,6 +103,46 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
     setSearchTerm('');
   }, []);
 
+  const toggleCardSelection = useCallback((cardId: string) => {
+    setSelectedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(cardId)) {
+        newSet.delete(cardId);
+      } else {
+        newSet.add(cardId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setSelectedCards(new Set(filteredAndSortedCards.map(card => card.id)));
+  }, [filteredAndSortedCards]);
+
+  const clearSelection = useCallback(() => {
+    setSelectedCards(new Set());
+  }, []);
+
+  const handleMoveCards = useCallback(async (cardIds: string[], targetCollectionId: string) => {
+    try {
+      await collectionsDatabase.moveCardsToCollection(cardIds, targetCollectionId);
+      
+      // Update cards in context
+      for (const cardId of cardIds) {
+        const card = state.cards.find(c => c.id === cardId);
+        if (card) {
+          await updateCard({ ...card, collectionId: targetCollectionId });
+        }
+      }
+      
+      clearSelection();
+      setShowMoveModal(false);
+    } catch (error) {
+      console.error('Error moving cards:', error);
+      throw error;
+    }
+  }, [state.cards, updateCard, clearSelection]);
+
   const uniqueValues = useMemo(() => ({
     teams: [...new Set(state.cards.map(card => card.team))].sort(),
     brands: [...new Set(state.cards.map(card => card.brand))].sort(),
@@ -84,12 +151,41 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
     years: [...new Set(state.cards.map(card => card.year))].sort((a, b) => b - a)
   }), [state.cards]);
 
+  if (state.loading) {
+    return (
+      <div className="card-list-container">
+        <div className="card-list-header">
+          <h1>Card Inventory</h1>
+          <div className="card-count">Loading...</div>
+        </div>
+        <LoadingSkeleton count={6} type="card" />
+      </div>
+    );
+  }
+
   return (
     <div className="card-list-container">
       <div className="card-list-header">
-        <h1>Card Inventory</h1>
+        <h1>
+          {selectedCollection ? (
+            <>
+              <span style={{ color: selectedCollection.color }}>{selectedCollection.icon}</span> {selectedCollection.name}
+            </>
+          ) : (
+            'Card Inventory'
+          )}
+        </h1>
         <div className="card-count">
           {filteredAndSortedCards.length} of {state.cards.length} cards
+          {selectedCollection && (
+            <button 
+              onClick={() => window.location.hash = ''} 
+              className="clear-collection-btn"
+              style={{ marginLeft: '10px' }}
+            >
+              ✕ Clear Collection Filter
+            </button>
+          )}
         </div>
       </div>
 
@@ -163,6 +259,9 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
           <button onClick={clearFilters} className="clear-filters-btn">
             Clear Filters
           </button>
+          <button onClick={() => setShowBulkEbay(true)} className="bulk-ebay-btn">
+            🛒 Bulk eBay Export
+          </button>
         </div>
 
         <div className="sort-section">
@@ -187,9 +286,40 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
         </div>
       </div>
 
+      {/* Bulk Selection Controls */}
+      {filteredAndSortedCards.length > 0 && (
+        <div className="bulk-selection-controls">
+          <div className="selection-info">
+            {selectedCards.size > 0 ? (
+              <>
+                <span>{selectedCards.size} card{selectedCards.size !== 1 ? 's' : ''} selected</span>
+                <button onClick={clearSelection} className="clear-selection-btn">
+                  Clear Selection
+                </button>
+                <button onClick={() => setShowMoveModal(true)} className="move-cards-btn">
+                  Move to Collection
+                </button>
+              </>
+            ) : (
+              <button onClick={selectAll} className="select-all-btn">
+                Select All ({filteredAndSortedCards.length})
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="cards-grid">
         {filteredAndSortedCards.map(card => (
-          <div key={card.id} className={`card-item ${card.sellDate ? 'sold' : ''}`}>
+          <div key={card.id} className={`card-item ${card.sellDate ? 'sold' : ''} ${selectedCards.has(card.id) ? 'selected' : ''}`}>
+            <div className="card-selection">
+              <input
+                type="checkbox"
+                checked={selectedCards.has(card.id)}
+                onChange={() => toggleCardSelection(card.id)}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
             <div className="card-actions">
               {onEditCard && (
                 <button onClick={() => onEditCard(card)} className="edit-btn">
@@ -239,6 +369,21 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard }) => {
             </button>
           )}
         </div>
+      )}
+      
+      {showBulkEbay && (
+        <BulkEbayExport 
+          cards={filteredAndSortedCards} 
+          onClose={() => setShowBulkEbay(false)} 
+        />
+      )}
+      
+      {showMoveModal && selectedCards.size > 0 && (
+        <MoveCardsModal
+          cards={state.cards.filter(card => selectedCards.has(card.id))}
+          onClose={() => setShowMoveModal(false)}
+          onMove={handleMoveCards}
+        />
       )}
     </div>
   );

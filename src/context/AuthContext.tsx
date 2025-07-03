@@ -1,12 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: 'admin' | 'user';
-  profilePhoto?: string | null;
-}
+import { userService } from '../services/userService';
+import { collectionsDatabase } from '../db/collectionsDatabase';
+import { User } from '../types';
 
 interface AuthState {
   user: User | null;
@@ -20,7 +15,8 @@ type AuthAction =
   | { type: 'LOGIN_SUCCESS'; payload: { user: User; token: string } }
   | { type: 'LOGIN_FAILURE'; payload: string }
   | { type: 'LOGOUT' }
-  | { type: 'CLEAR_ERROR' };
+  | { type: 'CLEAR_ERROR' }
+  | { type: 'UPDATE_USER'; payload: User };
 
 const initialState: AuthState = {
   user: null,
@@ -72,6 +68,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         ...state,
         error: null,
       };
+    case 'UPDATE_USER':
+      localStorage.setItem('user', JSON.stringify(action.payload));
+      return {
+        ...state,
+        user: action.payload,
+      };
     default:
       return state;
   }
@@ -83,6 +85,7 @@ interface AuthContextType {
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -123,24 +126,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      const response = await fetch('http://localhost:8000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Login failed');
+      // Use local authentication
+      const user = userService.authenticateUser(email, password);
+      
+      if (!user) {
+        throw new Error('Invalid email or password');
       }
 
-      const data = await response.json();
+      // Generate a mock token for local storage
+      const token = `local-token-${user.id}-${Date.now()}`;
+      
       dispatch({ 
         type: 'LOGIN_SUCCESS', 
-        payload: { user: data.user, token: data.token } 
+        payload: { user, token } 
       });
+      
+      // Initialize user collections
+      await collectionsDatabase.initializeUserCollections(user.id);
     } catch (error) {
       dispatch({ 
         type: 'LOGIN_FAILURE', 
@@ -154,24 +156,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      const response = await fetch('http://localhost:8000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Registration failed');
+      // Check if email already exists
+      const allUsers = userService.getAllUsers();
+      if (allUsers.some(u => u.email === email)) {
+        throw new Error('Email already registered');
       }
 
-      const data = await response.json();
+      // Create new user
+      const newUser = userService.createUser({
+        username,
+        email,
+        password,
+        role: 'user',
+        isActive: true
+      });
+
+      // Generate a mock token for local storage
+      const token = `local-token-${newUser.id}-${Date.now()}`;
+      
       dispatch({ 
         type: 'LOGIN_SUCCESS', 
-        payload: { user: data.user, token: data.token } 
+        payload: { user: newUser, token } 
       });
+      
+      // Initialize user collections
+      await collectionsDatabase.initializeUserCollections(newUser.id);
     } catch (error) {
       dispatch({ 
         type: 'LOGIN_FAILURE', 
@@ -189,8 +198,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'CLEAR_ERROR' });
   };
 
+  const updateUser = (user: User) => {
+    dispatch({ type: 'UPDATE_USER', payload: user });
+  };
+
   return (
-    <AuthContext.Provider value={{ state, login, register, logout, clearError }}>
+    <AuthContext.Provider value={{ state, login, register, logout, clearError, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

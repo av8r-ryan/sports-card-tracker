@@ -1,0 +1,243 @@
+.collections-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.collections-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.collections-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 2rem;
+}
+
+.add-collection-btn {
+  padding: 10px 20px;
+  background: #4F46E5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-collection-btn:hover {
+  background: #4338CA;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Bulk Delete Button */
+.bulk-delete-btn {
+  padding: 10px 20px;
+  background: #DC2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bulk-delete-btn:hover {
+  background: #B91C1C;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Bulk Delete Controls */
+.bulk-delete-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #FEF2F2;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #FCA5A5;
+}
+
+.selected-count {
+  font-weight: 600;
+  color: #7F1D1D;
+  margin-right: 8px;
+}
+
+.select-all-btn,
+.delete-selected-btn,
+.cancel-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.select-all-btn {
+  background: white;
+  color: #DC2626;
+  border: 1px solid #DC2626;
+}
+
+.select-all-btn:hover {
+  background: #FEE2E2;
+}
+
+.delete-selected-btn {
+  background: #DC2626;
+  color: white;
+}
+
+.delete-selected-btn:hover:not(:disabled) {
+  background: #B91C1C;
+}
+
+.delete-selected-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background: #6B7280;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #4B5563;
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Error Message */
+.error-message {
+  background: #FEE2E2;
+  color: #DC2626;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-icon {
+  font-size: 18px;
+}
+
+.dismiss-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #DC2626;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 4px;
+}
+
+/* Collections Grid */
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 24px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 2px dashed #E5E7EB;
+}
+
+.empty-state h3 {
+  margin: 0 0 12px 0;
+  color: #374151;
+  font-size: 1.5rem;
+}
+
+.empty-state p {
+  margin: 0 0 24px 0;
+  color: #6B7280;
+}
+
+.create-first-btn {
+  padding: 12px 24px;
+  background: #4F46E5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.create-first-btn:hover {
+  background: #4338CA;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .collections-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .add-collection-btn,
+  .bulk-delete-btn {
+    width: 100%;
+  }
+  
+  .bulk-delete-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .selected-count {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  
+  .collections-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .collections-container {
+    padding: 12px;
+  }
+  
+  .collections-grid {
+    gap: 16px;
+  }
+}

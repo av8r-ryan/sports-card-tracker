@@ -305,6 +305,8 @@ export interface CollectionMetadata {
 export interface EnhancedCard {
   // Core fields (keeping compatibility)
   id: string;
+  userId?: string;
+  collectionId?: string;
   createdAt: Date;
   updatedAt: Date;
   

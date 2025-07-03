@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { userService } from '../../services/userService';
 import './UserProfile.css';
 
 const UserProfile: React.FC = () => {
-  const { state: authState, logout } = useAuth();
+  const { state: authState, logout, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,24 +89,42 @@ const UserProfile: React.FC = () => {
         updateData.newPassword = formData.newPassword;
       }
 
-      const response = await fetch('http://localhost:8000/api/auth/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(updateData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update profile');
+      // Use local userService for updates
+      if (!authState.user) {
+        throw new Error('User not found');
       }
 
-      const data = await response.json();
-      
-      // Update local storage with new user data
-      localStorage.setItem('user', JSON.stringify(data.user));
+      // Verify current password if changing password
+      if (formData.newPassword) {
+        const authenticated = userService.authenticateUser(
+          authState.user.email,
+          formData.currentPassword
+        );
+        if (!authenticated) {
+          throw new Error('Current password is incorrect');
+        }
+        
+        // Update password
+        userService.resetUserPassword(authState.user.id, formData.newPassword);
+      }
+
+      // Update user profile
+      const updatedUser = userService.updateUser(authState.user.id, {
+        email: formData.email,
+        profilePhoto: previewPhoto || profilePhoto
+      });
+
+      if (!updatedUser) {
+        throw new Error('Failed to update profile');
+      }
+
+      // Update auth context with new user data
+      const newUserData = {
+        ...authState.user,
+        email: formData.email,
+        profilePhoto: previewPhoto || profilePhoto
+      };
+      updateUser(newUserData);
       
       // Update profile photo state
       if (previewPhoto) {

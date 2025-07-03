@@ -62,7 +62,7 @@ const ReportExport: React.FC<Props> = ({ reportingService, activeReport, filters
       PurchasePrice: card.purchasePrice,
       CurrentValue: card.currentValue,
       ProfitLoss: (card.currentValue || 0) - (card.purchasePrice || 0),
-      ROI: card.purchasePrice > 0 ? (((card.currentValue || 0) - card.purchasePrice) / card.purchasePrice) * 100 : 0,
+      ROI: (card.purchasePrice && card.purchasePrice > 0) ? (((card.currentValue || 0) - card.purchasePrice) / card.purchasePrice) * 100 : 0,
       PurchaseDate: card.purchaseDate,
       Notes: card.notes
     }));

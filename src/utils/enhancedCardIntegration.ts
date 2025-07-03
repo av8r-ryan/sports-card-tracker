@@ -9,6 +9,7 @@ export const enhancedToBasicCard = (enhancedCard: Partial<EnhancedCard>): Card =
   // Extract basic fields
   const basicCard: Card = {
     id: enhancedCard.id || `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    userId: '', // Will be set by the database
     createdAt: enhancedCard.createdAt || new Date(),
     updatedAt: new Date(),
     

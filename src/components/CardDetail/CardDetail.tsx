@@ -1,6 +1,7 @@
 import React, { useState, memo, useCallback } from 'react';
 import { Card } from '../../types';
 import { exportDetailedCardReport } from '../../utils/pdfExport';
+import { EbayListingPreview } from '../EbayListing/EbayListingPreview';
 import './CardDetail.css';
 
 interface CardDetailProps {
@@ -11,6 +12,7 @@ interface CardDetailProps {
 
 const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
   const [imageIndex, setImageIndex] = useState(0);
+  const [showEbayListing, setShowEbayListing] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -60,6 +62,9 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
           <div className="card-detail-actions">
             <button onClick={handleExportPDF} className="export-pdf-btn" title="Export to PDF">
               📄 PDF
+            </button>
+            <button onClick={() => setShowEbayListing(true)} className="ebay-listing-btn" title="Generate eBay Listing">
+              🛒 eBay
             </button>
             {onEdit && (
               <button onClick={() => onEdit(card)} className="edit-btn">
@@ -215,6 +220,13 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
           </div>
         </div>
       </div>
+      
+      {showEbayListing && (
+        <EbayListingPreview 
+          card={card} 
+          onClose={() => setShowEbayListing(false)} 
+        />
+      )}
     </div>
   );
 };

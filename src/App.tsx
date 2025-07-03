@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { CardProvider, useCards } from './context/CardContext';
+import { CardProvider, useCards } from './context/DexieCardContext'; // Use Dexie context
 import { useApi } from './hooks/useApi';
 import Layout from './components/Layout/Layout';
 import Dashboard from './components/Dashboard/Dashboard';
 import CardList from './components/CardList/CardList';
 import CardForm from './components/CardForm/CardForm';
 import EnhancedCardForm from './components/EnhancedCardForm/EnhancedCardForm';
+import PhotoCardForm from './components/PhotoCardForm/PhotoCardForm';
 import CardDetail from './components/CardDetail/CardDetail';
 import AuthForm from './components/Auth/AuthForm';
 import AdminDashboard from './components/AdminDashboard/AdminDashboard';
 import UserProfile from './components/UserProfile/UserProfile';
+import UserManagement from './components/UserManagement/UserManagement';
+import Collections from './components/Collections/Collections';
 import Reports from './components/Reports/Reports';
 import EbayListings from './components/EbayListings/EbayListings';
+import { BackupRestore } from './components/BackupRestore/BackupRestore';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import DebugPanel from './components/DebugPanel/DebugPanel';
 import DevTools from './components/DevTools/DevTools';
@@ -20,9 +24,11 @@ import { Card } from './types';
 import { migrateCardToEnhanced } from './utils/cardMigration';
 import { saveEnhancedCard } from './utils/enhancedCardIntegration';
 import { logInfo } from './utils/logger';
+import './utils/debugDatabase'; // Import debug utility
 import './App.css';
 
-type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay';
+type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections';
+type FormType = 'classic' | 'enhanced' | 'photo';
 
 const AppContent: React.FC = () => {
   const { state: authState } = useAuth();
@@ -31,11 +37,31 @@ const AppContent: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
-  const [useEnhancedForm, setUseEnhancedForm] = useState(true); // Toggle for enhanced form
+  const [formType, setFormType] = useState<FormType>('enhanced'); // Form type selection
+  const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   
   useApi();
   
   logInfo('App', 'Application initialized');
+
+  // Handle hash changes for collection navigation
+  React.useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#inventory?collection=')) {
+        const collectionId = hash.split('=')[1];
+        setSelectedCollectionId(collectionId);
+        setCurrentView('inventory');
+      }
+    };
+
+    // Check initial hash
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Show auth form if user is not authenticated
   if (!authState.user) {
@@ -52,6 +78,11 @@ const AppContent: React.FC = () => {
     setCurrentView(view);
     setSelectedCard(null);
     setEditingCard(null);
+    // Clear collection filter when navigating away from inventory
+    if (view !== 'inventory') {
+      setSelectedCollectionId(null);
+      window.location.hash = '';
+    }
   };
 
   const handleCardSelect = (card: Card) => {
@@ -87,71 +118,97 @@ const AppContent: React.FC = () => {
           <CardList 
             onCardSelect={handleCardSelect}
             onEditCard={handleEditCard}
+            selectedCollectionId={selectedCollectionId}
           />
         );
       case 'add-card':
-        if (useEnhancedForm) {
-          const enhancedCard = editingCard ? migrateCardToEnhanced(editingCard) : undefined;
-          return (
-            <>
-              <div style={{ marginBottom: '16px', textAlign: 'center' }}>
+        return (
+          <>
+            {/* Form Type Selector */}
+            <div style={{ 
+              marginBottom: '24px', 
+              textAlign: 'center',
+              background: '#f7fafc',
+              padding: '16px',
+              borderRadius: '12px'
+            }}>
+              <div style={{ marginBottom: '12px', fontSize: '16px', fontWeight: '600', color: '#2d3748' }}>
+                Choose Entry Method:
+              </div>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => setUseEnhancedForm(!useEnhancedForm)}
+                  onClick={() => setFormType('classic')}
                   style={{
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    border: '1px solid #e2e8f0',
-                    background: '#ffffff',
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    border: formType === 'classic' ? '2px solid #667eea' : '1px solid #e2e8f0',
+                    background: formType === 'classic' ? '#e0e7ff' : '#ffffff',
+                    color: formType === 'classic' ? '#667eea' : '#4a5568',
                     cursor: 'pointer',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    fontWeight: formType === 'classic' ? '600' : '400',
+                    transition: 'all 0.2s'
                   }}
                 >
-                  Switch to Classic Form
+                  📝 Classic Form
                 </button>
-              </div>
-              <EnhancedCardForm
-                key={editingCard?.id || 'new-card'}
-                card={enhancedCard}
-                onSave={async (data) => {
-                  try {
-                    await saveEnhancedCard(data, addCard, updateCard);
-                    handleFormSuccess();
-                  } catch (error) {
-                    console.error('Error saving enhanced card:', error);
-                    alert('Failed to save card. Please try again.');
-                  }
-                }}
-                onCancel={handleFormCancel}
-              />
-            </>
-          );
-        } else {
-          return (
-            <>
-              <div style={{ marginBottom: '16px', textAlign: 'center' }}>
                 <button
-                  onClick={() => setUseEnhancedForm(!useEnhancedForm)}
+                  onClick={() => setFormType('enhanced')}
                   style={{
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    border: '1px solid #e2e8f0',
-                    background: '#ffffff',
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    border: formType === 'enhanced' ? '2px solid #667eea' : '1px solid #e2e8f0',
+                    background: formType === 'enhanced' ? '#e0e7ff' : '#ffffff',
+                    color: formType === 'enhanced' ? '#667eea' : '#4a5568',
                     cursor: 'pointer',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    fontWeight: formType === 'enhanced' ? '600' : '400',
+                    transition: 'all 0.2s'
                   }}
                 >
-                  Switch to Enhanced Form
+                  ⚡ Enhanced Form
+                </button>
+                <button
+                  onClick={() => setFormType('photo')}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    border: formType === 'photo' ? '2px solid #667eea' : '1px solid #e2e8f0',
+                    background: formType === 'photo' ? '#e0e7ff' : '#ffffff',
+                    color: formType === 'photo' ? '#667eea' : '#4a5568',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: formType === 'photo' ? '600' : '400',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  📸 Photo Scan
                 </button>
               </div>
+            </div>
+
+            {/* Render appropriate form based on selection */}
+            {formType === 'classic' && (
               <CardForm 
                 key={editingCard?.id || 'new-card'}
                 card={editingCard || undefined}
                 onSuccess={handleFormSuccess}
                 onCancel={handleFormCancel}
               />
-            </>
-          );
-        }
+            )}
+            {formType === 'enhanced' && (
+              <EnhancedCardForm 
+                key={editingCard?.id || 'new-card-enhanced'}
+                card={editingCard || undefined}
+                onSave={() => handleFormSuccess()}
+                onCancel={handleFormCancel}
+              />
+            )}
+            {formType === 'photo' && (
+              <PhotoCardForm onSuccess={handleFormSuccess} />
+            )}
+          </>
+        );
       case 'admin':
         return <AdminDashboard />;
       case 'profile':
@@ -160,6 +217,12 @@ const AppContent: React.FC = () => {
         return <Reports />;
       case 'ebay':
         return <EbayListings />;
+      case 'backup':
+        return <BackupRestore />;
+      case 'users':
+        return <UserManagement />;
+      case 'collections':
+        return <Collections />;
       default:
         return <Dashboard />;
     }

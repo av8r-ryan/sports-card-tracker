@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useCards } from '../context/CardContext';
+import { useCards } from '../context/DexieCardContext';
 import { apiService } from '../services/api';
 import { logInfo, logError } from '../utils/logger';
 
