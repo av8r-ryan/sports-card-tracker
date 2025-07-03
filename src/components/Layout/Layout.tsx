@@ -7,14 +7,15 @@ import './Layout.css';
 
 interface LayoutProps {
   children: React.ReactNode;
-  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections';
-  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections') => void;
+  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about';
+  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about') => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) => {
   const { state: authState, logout } = useAuth();
   const { state, getPortfolioStats } = useCards();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showStats, setShowStats] = useState(true);
   const stats = getPortfolioStats();
   
   // Debug logging for stats
@@ -80,10 +81,10 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
       <header className="header">
         <div className="header-content">
           <div className="header-left">
-            <h1 className="app-title">
-              <img src="/icon.png" alt="App Icon" className="app-icon" />
-              Collectors Playbook Card Tracker
-            </h1>
+            <h2 className="app-title">
+              <img src="/logo-smp.png" alt="App Icon" className="app-icon" />
+              <span className="title-text">Collectors Playbook Card Tracker</span>
+            </h2>
             {hasError && (
               <div className="api-status error">
                 ⚠️ {state.error}
@@ -94,19 +95,25 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
                 🔄 Loading...
               </div>
             )}
-            <div className="quick-stats">
-              <span className="stat">
-                <span>📊</span>
-                <span>{stats.totalCards} cards</span>
-              </span>
-              <span className="stat">
-                <span>💰</span>
-                <span>{formatCurrency(stats.totalCurrentValue)}</span>
-              </span>
-              <span className={`stat profit-loss ${stats.totalProfit >= 0 ? 'positive' : 'negative'}`}>
-                <span>{stats.totalProfit >= 0 ? '📈' : '📉'}</span>
-                <span>{stats.totalProfit >= 0 ? '+' : ''}{formatCurrency(stats.totalProfit)}</span>
-              </span>
+            <div className="stats-container">
+              <button 
+                className="stats-toggle"
+                onClick={() => setShowStats(!showStats)}
+                aria-label="Toggle statistics"
+              >
+                <span className="stats-label">Stats</span>
+              </button>
+              <div className={`quick-stats ${showStats ? 'show' : ''}`}>
+                <span className="stat">
+                  <span>{stats.totalCards} cards</span>
+                </span>
+                <span className="stat">
+                  <span>{formatCurrency(stats.totalCurrentValue)}</span>
+                </span>
+                <span className={`stat profit-loss ${stats.totalProfit >= 0 ? 'positive' : 'negative'}`}>
+                  <span>{stats.totalProfit >= 0 ? '+' : ''}{formatCurrency(stats.totalProfit)}</span>
+                </span>
+              </div>
             </div>
           </div>
           
@@ -149,8 +156,13 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
             <button 
               className="mobile-menu-btn"
               onClick={toggleMobileMenu}
+              aria-label="Toggle navigation menu"
             >
-              ☰
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
             </button>
           </div>
         </div>
@@ -165,7 +177,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
               setIsMobileMenuOpen(false);
             }}
           >
-            <span className="nav-icon">📊</span>
             Dashboard
           </button>
           
@@ -176,7 +187,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
               setIsMobileMenuOpen(false);
             }}
           >
-            <span className="nav-icon">📚</span>
             Collections
           </button>
           
@@ -187,7 +197,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
               setIsMobileMenuOpen(false);
             }}
           >
-            <span className="nav-icon">📋</span>
             Inventory
           </button>
           
@@ -198,7 +207,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
               setIsMobileMenuOpen(false);
             }}
           >
-            <span className="nav-icon">➕</span>
             Add Card
           </button>
           
@@ -209,7 +217,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
               setIsMobileMenuOpen(false);
             }}
           >
-            <span className="nav-icon">📊</span>
             Reports
           </button>
           
@@ -220,7 +227,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
               setIsMobileMenuOpen(false);
             }}
           >
-            <span className="nav-icon">💰</span>
             eBay Listings
           </button>
           
@@ -231,7 +237,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
               setIsMobileMenuOpen(false);
             }}
           >
-            <span className="nav-icon">👤</span>
             Profile
           </button>
           
@@ -242,8 +247,17 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
               setIsMobileMenuOpen(false);
             }}
           >
-            <span className="nav-icon">💾</span>
             Backup
+          </button>
+          
+          <button
+            className={`nav-item ${currentView === 'about' ? 'active' : ''}`}
+            onClick={() => {
+              onViewChange('about');
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            About
           </button>
           
           {authState.user?.role === 'admin' && (
@@ -255,7 +269,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <span className="nav-icon">🔧</span>
                 Admin
               </button>
               <button
@@ -265,7 +278,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <span className="nav-icon">👥</span>
                 Users
               </button>
             </>

@@ -17,6 +17,7 @@ import Collections from './components/Collections/Collections';
 import Reports from './components/Reports/Reports';
 import EbayListings from './components/EbayListings/EbayListings';
 import { BackupRestore } from './components/BackupRestore/BackupRestore';
+import About from './components/About/About';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import DebugPanel from './components/DebugPanel/DebugPanel';
 import DevTools from './components/DevTools/DevTools';
@@ -27,7 +28,7 @@ import { logInfo } from './utils/logger';
 import './utils/debugDatabase'; // Import debug utility
 import './App.css';
 
-type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections';
+type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about';
 type FormType = 'classic' | 'enhanced' | 'photo';
 
 const AppContent: React.FC = () => {
@@ -223,6 +224,8 @@ const AppContent: React.FC = () => {
         return <UserManagement />;
       case 'collections':
         return <Collections />;
+      case 'about':
+        return <About />;
       default:
         return <Dashboard />;
     }
