@@ -382,7 +382,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ❓ [FAQ](docs/guides/faq.md)
 - 🐛 [Issue Tracker](https://github.com/yourusername/sports-card-tracker/issues)
 - 💬 [Discussions](https://github.com/yourusername/sports-card-tracker/discussions)
-- 📧 Email: support@sportscardtracker.com
+- 📧 Email: sct-support@collectorsplaybook.com
 
 ### Community
 
