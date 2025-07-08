@@ -203,7 +203,7 @@ A comprehensive web application for managing and tracking sports card collection
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/sports-card-tracker.git
+git clone https://github.com/Collectors-Playbook/sports-card-tracker.git
 cd sports-card-tracker
 
 # Install dependencies
@@ -380,8 +380,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 📖 [Documentation](docs/README.md)
 - ❓ [FAQ](docs/guides/faq.md)
-- 🐛 [Issue Tracker](https://github.com/yourusername/sports-card-tracker/issues)
-- 💬 [Discussions](https://github.com/yourusername/sports-card-tracker/discussions)
+- 🐛 [Issue Tracker](https://github.com/Collectors-Playbook/sports-card-tracker/issues)
+- 💬 [Discussions](https://github.com/Collectors-Playbook/sports-card-tracker/discussions)
 - 📧 Email: sct-support@collectorsplaybook.com
 
 ### Community
@@ -394,7 +394,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**[Live Demo](https://sportscardtracker.com)** | **[Documentation](docs/README.md)** | **[Report Bug](https://github.com/yourusername/sports-card-tracker/issues)** | **[Request Feature](https://github.com/yourusername/sports-card-tracker/issues)**
+**[Live Demo](https://sportscardtracker.com)** | **[Documentation](docs/README.md)** | **[Report Bug](https://github.com/Collectors-Playbook/sports-card-tracker/issues)** | **[Request Feature](https://github.com/Collectors-Playbook/sports-card-tracker/issues)**
 
 Made with ❤️ by collectors, for collectors
 
