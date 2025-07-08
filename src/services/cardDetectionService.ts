@@ -5,6 +5,7 @@ import { ExtractedCardData, DetectionConfidence, CardFeatures } from '../types/d
 import { textExtractionService } from './textExtractionService';
 import { playerDatabase } from './playerDatabase';
 import { manufacturerDatabase } from './manufacturerDatabase';
+import { realOCRService } from './realOCRService';
 
 // Common card patterns and keywords
 const CARD_PATTERNS = {
@@ -79,6 +80,21 @@ export class CardDetectionService {
     frontImage: string, 
     backImage?: string | null
   ): Promise<ExtractedCardData> {
+    // Check if we should use real OCR (environment variable or feature flag)
+    const useRealOCR = process.env.REACT_APP_USE_REAL_OCR === 'true' || 
+                       localStorage.getItem('useRealOCR') === 'true';
+
+    if (useRealOCR) {
+      try {
+        console.log('Using real OCR for card detection...');
+        return await realOCRService.processCardImages(frontImage, backImage || undefined);
+      } catch (error) {
+        console.error('Real OCR failed, falling back to simulation:', error);
+        // Fall through to simulation
+      }
+    }
+
+    // Original simulation code
     // Simulate processing time
     await this.simulateProcessing();
 

@@ -6,10 +6,19 @@ import { migrateCardToEnhanced, hasEnhancedFields } from './cardMigration';
 
 // Convert enhanced card back to basic card for storage
 export const enhancedToBasicCard = (enhancedCard: Partial<EnhancedCard>): Card => {
+  // Generate enhanced notes that include special features
+  const enhancedNotes = generateEnhancedNotes(enhancedCard);
+  
+  // Combine original notes with enhanced notes
+  const combinedNotes = [enhancedCard.notes, enhancedNotes]
+    .filter(note => note && note.trim().length > 0)
+    .join(' | ');
+  
   // Extract basic fields
   const basicCard: Card = {
-    id: enhancedCard.id || `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    userId: '', // Will be set by the database
+    id: enhancedCard.id || `card-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+    userId: enhancedCard.userId || '', // Preserve userId if it exists
+    collectionId: enhancedCard.collectionId, // Preserve collectionId
     createdAt: enhancedCard.createdAt || new Date(),
     updatedAt: new Date(),
     
@@ -31,9 +40,9 @@ export const enhancedToBasicCard = (enhancedCard: Partial<EnhancedCard>): Card =
     sellDate: enhancedCard.sellDate,
     currentValue: enhancedCard.currentValue || 0,
     
-    // Images & Notes
+    // Images & Notes - include both original notes and enhanced features
     images: enhancedCard.images || [],
-    notes: generateEnhancedNotes(enhancedCard)
+    notes: combinedNotes || ''
   };
   
   return basicCard;
@@ -43,10 +52,8 @@ export const enhancedToBasicCard = (enhancedCard: Partial<EnhancedCard>): Card =
 const generateEnhancedNotes = (card: Partial<EnhancedCard>): string => {
   const notes: string[] = [];
   
-  // Add existing notes
-  if (card.notes) {
-    notes.push(card.notes);
-  }
+  // Don't add existing notes here - they will be combined separately
+  // to avoid duplication when editing cards multiple times
   
   // Add enhanced field information
   if (card.identification) {
@@ -125,7 +132,15 @@ export const saveEnhancedData = (cardId: string, enhancedData: Partial<EnhancedC
     collectionMeta: enhancedData.collectionMeta
   };
   
+  console.log('Saving enhanced data for card:', cardId);
+  console.log('LocalStorage key:', key);
+  console.log('Data to store:', dataToStore);
+  
   localStorage.setItem(key, JSON.stringify(dataToStore));
+  
+  // Verify the save
+  const saved = localStorage.getItem(key);
+  console.log('Verification - Data saved to localStorage:', saved);
 };
 
 // Retrieve enhanced data from localStorage
@@ -133,29 +148,41 @@ export const loadEnhancedData = (cardId: string): Partial<EnhancedCard> | null =
   const key = `enhanced_card_${cardId}`;
   const data = localStorage.getItem(key);
   
+  console.log('Loading enhanced data for card:', cardId);
+  console.log('LocalStorage key:', key);
+  console.log('Raw data from localStorage:', data);
+  
   if (data) {
     try {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      console.log('Parsed enhanced data:', parsed);
+      return parsed;
     } catch (error) {
       console.error('Error parsing enhanced card data:', error);
       return null;
     }
   }
   
+  console.log('No enhanced data found for card:', cardId);
   return null;
 };
 
 // Merge basic card with enhanced data
 export const mergeCardWithEnhanced = (card: Card): EnhancedCard => {
+  console.log('Merging card with enhanced data:', card.id);
   const enhancedData = loadEnhancedData(card.id);
   
   if (enhancedData) {
-    return {
+    console.log('Found enhanced data, merging with basic card');
+    const merged = {
       ...card,
       ...enhancedData
     };
+    console.log('Merged card data:', merged);
+    return merged;
   }
   
+  console.log('No enhanced data found, migrating card to enhanced format');
   return migrateCardToEnhanced(card);
 };
 
@@ -165,16 +192,41 @@ export const saveEnhancedCard = async (
   addCard: (card: Card) => Promise<void>,
   updateCard: (card: Card) => Promise<void>
 ): Promise<void> => {
+  console.log('[saveEnhancedCard] Starting save process for enhanced card:', enhancedCard);
+  
   // Convert to basic card for database
   const basicCard = enhancedToBasicCard(enhancedCard);
+  console.log('[saveEnhancedCard] Converted to basic card:', basicCard);
   
   // Save enhanced data to localStorage
   saveEnhancedData(basicCard.id, enhancedCard);
   
   // Save to database
-  if (enhancedCard.createdAt) {
-    await updateCard(basicCard);
-  } else {
-    await addCard(basicCard);
+  // Check if this is an update (card has an ID and was created before)
+  const isUpdate = enhancedCard.id && enhancedCard.createdAt;
+  
+  console.log('[saveEnhancedCard] Save details:', {
+    id: enhancedCard.id,
+    createdAt: enhancedCard.createdAt,
+    isUpdate,
+    player: enhancedCard.player,
+    basicCardId: basicCard.id,
+    userId: basicCard.userId,
+    collectionId: basicCard.collectionId
+  });
+  
+  try {
+    if (isUpdate) {
+      console.log('[saveEnhancedCard] Updating existing card');
+      await updateCard(basicCard);
+      console.log('[saveEnhancedCard] Card updated successfully');
+    } else {
+      console.log('[saveEnhancedCard] Adding new card');
+      await addCard(basicCard);
+      console.log('[saveEnhancedCard] Card added successfully');
+    }
+  } catch (error) {
+    console.error('[saveEnhancedCard] Error saving card:', error);
+    throw error;
   }
 };

@@ -1,5 +1,6 @@
 import { Card } from '../types';
 import { cardDatabase } from '../db/simpleDatabase';
+import { backupDatabase } from '../db/backupDatabase';
 
 export interface BackupData {
   version: string;
@@ -236,47 +237,89 @@ export function loadBackupFile(file: File): Promise<BackupData> {
  * Create automatic backup (can be scheduled)
  */
 export async function createAutoBackup(): Promise<void> {
-  const BACKUP_KEY = 'sports-cards-auto-backup';
-  const MAX_BACKUPS = 5; // Keep last 5 backups
-  
   try {
     const backup = await createBackup('auto');
     
-    // Get existing backups
-    const existingBackupsJson = localStorage.getItem(BACKUP_KEY);
-    const existingBackups: BackupData[] = existingBackupsJson 
-      ? JSON.parse(existingBackupsJson)
-      : [];
+    // Save to IndexedDB instead of localStorage
+    await backupDatabase.saveBackup(backup, 'auto');
     
-    // Add new backup
-    existingBackups.unshift(backup);
+    const backupJson = JSON.stringify(backup);
+    const sizeInMB = new Blob([backupJson]).size / (1024 * 1024);
+    console.log(`Auto-backup created: ${backup.metadata.totalCards} cards (${sizeInMB.toFixed(2)} MB)`);
     
-    // Keep only the latest backups
-    const backupsToKeep = existingBackups.slice(0, MAX_BACKUPS);
-    
-    // Save to localStorage
-    localStorage.setItem(BACKUP_KEY, JSON.stringify(backupsToKeep));
-    
-    console.log(`Auto-backup created: ${backup.metadata.totalCards} cards`);
+    // Clean up old localStorage entries if they exist
+    try {
+      localStorage.removeItem('sports-cards-auto-backup');
+      localStorage.removeItem('sports-cards-auto-backup-meta');
+    } catch (e) {
+      // Ignore errors when cleaning up
+    }
   } catch (error) {
     console.error('Auto-backup failed:', error);
+    throw error;
   }
 }
 
 /**
  * Get list of automatic backups
  */
-export function getAutoBackups(): BackupData[] {
-  const BACKUP_KEY = 'sports-cards-auto-backup';
-  const backupsJson = localStorage.getItem(BACKUP_KEY);
-  
-  if (!backupsJson) return [];
-  
+export async function getAutoBackups(): Promise<BackupData[]> {
   try {
-    return JSON.parse(backupsJson);
+    const autoBackup = await backupDatabase.getAutoBackup();
+    return autoBackup ? [autoBackup] : [];
   } catch (error) {
-    console.error('Failed to parse auto-backups:', error);
+    console.error('Failed to get auto-backups:', error);
     return [];
+  }
+}
+
+/**
+ * Clear auto-backup data
+ */
+export async function clearAutoBackup(): Promise<void> {
+  try {
+    // Clear from IndexedDB
+    await backupDatabase.clearAutoBackup();
+    
+    // Also clear any legacy localStorage entries
+    try {
+      localStorage.removeItem('sports-cards-auto-backup');
+      localStorage.removeItem('sports-cards-auto-backup-meta');
+    } catch (e) {
+      // Ignore errors when cleaning up legacy data
+    }
+    
+    console.log('Auto-backup data cleared');
+  } catch (error) {
+    console.error('Failed to clear auto-backup:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get auto-backup storage size
+ */
+export async function getAutoBackupSize(): Promise<{ sizeInMB: number; exists: boolean }> {
+  try {
+    const stats = await backupDatabase.getBackupStats();
+    
+    if (stats.autoBackups === 0) {
+      return { sizeInMB: 0, exists: false };
+    }
+    
+    // Get the actual backup to calculate size
+    const autoBackup = await backupDatabase.getAutoBackup();
+    if (!autoBackup) {
+      return { sizeInMB: 0, exists: false };
+    }
+    
+    const backupJson = JSON.stringify(autoBackup);
+    const sizeInMB = new Blob([backupJson]).size / (1024 * 1024);
+    
+    return { sizeInMB, exists: true };
+  } catch (error) {
+    console.error('Failed to get auto-backup size:', error);
+    return { sizeInMB: 0, exists: false };
   }
 }
 

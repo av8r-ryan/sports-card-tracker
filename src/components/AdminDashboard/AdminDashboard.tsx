@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCards } from '../../context/DexieCardContext';
 import { cardDatabase } from '../../db/simpleDatabase';
 import { getAutoBackups } from '../../utils/backupRestore';
+import { backupDatabase } from '../../db/backupDatabase';
 import './AdminDashboard.css';
 
 interface AdminStats {
@@ -19,9 +20,20 @@ interface AdminStats {
 
 interface UserStats {
   userId: string;
+  username: string;
   cardCount: number;
   totalValue: number;
   avgValue: number;
+}
+
+interface BackupInfo {
+  id?: number;
+  timestamp: string;
+  type: 'auto' | 'manual';
+  sizeInMB: number;
+  totalCards: number;
+  totalValue: number;
+  userName?: string;
 }
 
 const AdminDashboard: React.FC = () => {
@@ -29,6 +41,7 @@ const AdminDashboard: React.FC = () => {
   const { state: cardState, clearAllCards } = useCards();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [userStats, setUserStats] = useState<UserStats[]>([]);
+  const [backups, setBackups] = useState<BackupInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -52,7 +65,19 @@ const AdminDashboard: React.FC = () => {
       // Get all cards for admin view
       const allCards = await cardDatabase.getAllCardsAdmin();
       const userStatistics = await cardDatabase.getUserStatistics();
-      const autoBackups = getAutoBackups();
+      const autoBackups = await getAutoBackups();
+      
+      // Get all backups from IndexedDB
+      const allBackups = await backupDatabase.getAllBackups();
+      const backupInfos: BackupInfo[] = allBackups.map(b => ({
+        id: b.id,
+        timestamp: b.timestamp,
+        type: b.type,
+        sizeInMB: b.sizeInMB,
+        totalCards: b.backup.metadata.totalCards,
+        totalValue: b.backup.metadata.totalValue,
+        userName: b.backup.metadata.userName
+      }));
 
       // Calculate statistics
       const totalCards = allCards.length;
@@ -86,13 +111,14 @@ const AdminDashboard: React.FC = () => {
         totalValue,
         averageCardValue,
         mostValuableCard: mostValuableCard ? `${mostValuableCard.player} (${mostValuableCard.year})` : 'N/A',
-        totalBackups: autoBackups.length,
+        totalBackups: allBackups.length,
         lastBackupDate: lastBackup ? new Date(lastBackup.timestamp).toLocaleString() : null,
         categoriesBreakdown,
         yearBreakdown
       });
 
       setUserStats(userStatistics);
+      setBackups(backupInfos.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to calculate stats');
     } finally {
@@ -215,7 +241,7 @@ const AdminDashboard: React.FC = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>User ID</th>
+                    <th>Username</th>
                     <th>Cards</th>
                     <th>Total Value</th>
                     <th>Avg Value</th>
@@ -225,7 +251,7 @@ const AdminDashboard: React.FC = () => {
                 <tbody>
                   {userStats.map(user => (
                     <tr key={user.userId}>
-                      <td>{user.userId}</td>
+                      <td>{user.username}</td>
                       <td>{user.cardCount.toLocaleString()}</td>
                       <td>${user.totalValue.toLocaleString()}</td>
                       <td>${user.avgValue.toFixed(2)}</td>
@@ -284,11 +310,47 @@ const AdminDashboard: React.FC = () => {
           </div>
 
           <div className="admin-section">
-            <h2>💾 Backup Information</h2>
-            <div className="backup-info">
-              <p><strong>Total Auto-Backups:</strong> {stats.totalBackups}</p>
-              <p><strong>Last Backup:</strong> {stats.lastBackupDate || 'Never'}</p>
-            </div>
+            <h2>💾 Backup & Restore</h2>
+            {backups.length === 0 ? (
+              <div className="backup-info">
+                <p>No backups found</p>
+              </div>
+            ) : (
+              <div className="backup-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>User</th>
+                      <th>Cards</th>
+                      <th>Total Value</th>
+                      <th>Size</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {backups.map((backup, index) => (
+                      <tr key={backup.id || index}>
+                        <td>{new Date(backup.timestamp).toLocaleString()}</td>
+                        <td>
+                          <span className={`backup-type ${backup.type}`}>
+                            {backup.type === 'auto' ? '🔄 Auto' : '📦 Manual'}
+                          </span>
+                        </td>
+                        <td>{backup.userName || 'Unknown'}</td>
+                        <td>{backup.totalCards.toLocaleString()}</td>
+                        <td>${backup.totalValue.toLocaleString()}</td>
+                        <td>{backup.sizeInMB.toFixed(2)} MB</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="backup-summary">
+                  <p><strong>Total Backups:</strong> {stats.totalBackups}</p>
+                  <p><strong>Total Size:</strong> {backups.reduce((sum, b) => sum + b.sizeInMB, 0).toFixed(2)} MB</p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="admin-section">
@@ -319,7 +381,7 @@ const AdminDashboard: React.FC = () => {
               <p><strong>App Version:</strong> 1.0.0</p>
               <p><strong>Database:</strong> Dexie (IndexedDB)</p>
               <p><strong>Browser:</strong> {navigator.userAgent.split(' ').slice(-2).join(' ')}</p>
-              <p><strong>Platform:</strong> {navigator.platform}</p>
+              <p><strong>Platform:</strong> {navigator.userAgent.includes('Mac') ? 'macOS' : navigator.userAgent.includes('Win') ? 'Windows' : navigator.userAgent.includes('Linux') ? 'Linux' : 'Unknown'}</p>
               <p><strong>Language:</strong> {navigator.language}</p>
               <p><strong>Current User:</strong> {authState.user?.username} ({authState.user?.email})</p>
               <p><strong>Current User ID:</strong> {authState.user?.id}</p>

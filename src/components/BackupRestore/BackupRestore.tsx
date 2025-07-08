@@ -8,6 +8,8 @@ import {
   createAutoBackup,
   getAutoBackups,
   exportBackupAsCSV,
+  getAutoBackupSize,
+  clearAutoBackup,
   BackupData
 } from '../../utils/backupRestore';
 import './BackupRestore.css';
@@ -154,7 +156,8 @@ export const BackupRestore: React.FC = () => {
       });
       
       // Refresh auto-backups list
-      setAutoBackups(getAutoBackups());
+      const backups = await getAutoBackups();
+      setAutoBackups(backups);
     } catch (error) {
       setMessage({
         type: 'error',
@@ -171,10 +174,56 @@ export const BackupRestore: React.FC = () => {
     setShowAutoBackups(false);
   };
 
-  const loadAutoBackups = () => {
-    setAutoBackups(getAutoBackups());
-    setShowAutoBackups(!showAutoBackups);
+  const loadAutoBackups = async () => {
+    try {
+      const backups = await getAutoBackups();
+      setAutoBackups(backups);
+      setShowAutoBackups(!showAutoBackups);
+    } catch (error) {
+      console.error('Failed to load auto-backups:', error);
+      setMessage({
+        type: 'error',
+        text: 'Failed to load auto-backups'
+      });
+    }
   };
+
+  const handleClearAutoBackup = async () => {
+    if (window.confirm('Are you sure you want to clear the auto-backup data? This will free up storage space but remove your automatic backup.')) {
+      try {
+        await clearAutoBackup();
+        setAutoBackups([]);
+        setMessage({
+          type: 'success',
+          text: 'Auto-backup data cleared successfully'
+        });
+      } catch (error) {
+        setMessage({
+          type: 'error',
+          text: 'Failed to clear auto-backup data'
+        });
+      }
+    }
+  };
+
+  // Check backup size on mount
+  React.useEffect(() => {
+    const checkBackupSize = async () => {
+      try {
+        const backupSize = await getAutoBackupSize();
+        if (backupSize.exists && backupSize.sizeInMB > 50) {
+          setMessage({
+            type: 'info',
+            text: `Auto-backup is ${backupSize.sizeInMB.toFixed(2)} MB. IndexedDB has much higher limits than localStorage.`
+          });
+        }
+      } catch (error) {
+        console.error('Failed to check backup size:', error);
+      }
+    };
+    
+    checkBackupSize();
+  }, []);
 
   return (
     <div className="backup-restore">
@@ -253,6 +302,15 @@ export const BackupRestore: React.FC = () => {
             className="restore-btn auto"
           >
             📋 View Auto-Backups ({autoBackups.length})
+          </button>
+          
+          <button
+            onClick={handleClearAutoBackup}
+            disabled={isProcessing}
+            className="restore-btn clear"
+            title="Clear auto-backup data to free up storage space"
+          >
+            🗑️ Clear Auto-Backup
           </button>
           
           <input

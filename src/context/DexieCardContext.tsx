@@ -38,6 +38,19 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         console.log('Loading cards from Dexie...');
         
+        // Clean up old localStorage backups if they exist
+        try {
+          const oldBackup = localStorage.getItem('sports-cards-auto-backup');
+          if (oldBackup) {
+            console.log('Found old localStorage backup, cleaning up...');
+            localStorage.removeItem('sports-cards-auto-backup');
+            localStorage.removeItem('sports-cards-auto-backup-meta');
+            console.log('Old localStorage backup removed');
+          }
+        } catch (e) {
+          // Ignore errors during cleanup
+        }
+        
         // First initialize collections for the current user
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -54,6 +67,7 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
         
         const cards = await cardDatabase.getAllCards();
+        console.log('[DexieCardContext] getAllCards returned:', cards.length, 'cards');
         
         if (isMounted) {
           setState({
@@ -61,12 +75,13 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             loading: false,
             error: null
           });
-          console.log(`Loaded ${cards.length} cards`);
+          console.log('[DexieCardContext] State updated with', cards.length, 'cards');
           
           // Create auto-backup on startup if we have cards
           if (cards.length > 0) {
             createAutoBackup().catch(error => {
               console.error('Auto-backup failed:', error);
+              // Silently fail - auto-backup is not critical
             });
           }
         }
@@ -90,24 +105,31 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const addCard = useCallback(async (card: Card) => {
+    console.log('[DexieCardContext.addCard] Called with card:', card);
     try {
       // If no collectionId, get the default collection
       if (!card.collectionId) {
+        console.log('[DexieCardContext.addCard] No collectionId, getting default');
         const { collectionsDatabase } = await import('../db/collectionsDatabase');
         const defaultCollection = await collectionsDatabase.getDefaultCollection();
         if (defaultCollection) {
           card.collectionId = defaultCollection.id;
+          console.log('[DexieCardContext.addCard] Set collectionId to:', card.collectionId);
         }
       }
       
+      console.log('[DexieCardContext.addCard] Calling cardDatabase.addCard');
       await cardDatabase.addCard(card);
+      console.log('[DexieCardContext.addCard] Card added to database successfully');
+      
       // Optimistically update state
       setState(prev => ({ 
         ...prev, 
         cards: [...prev.cards, card] 
       }));
+      console.log('[DexieCardContext.addCard] State updated');
     } catch (error) {
-      console.error('Error adding card:', error);
+      console.error('[DexieCardContext.addCard] Error adding card:', error);
       // Reload cards on error to ensure consistency
       const cards = await cardDatabase.getAllCards();
       setState(prev => ({ ...prev, cards }));
@@ -117,12 +139,21 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateCard = useCallback(async (card: Card) => {
     try {
+      console.log('DexieCardContext.updateCard called with:', {
+        id: card.id,
+        player: card.player,
+        currentValue: card.currentValue
+      });
+      
       await cardDatabase.updateCard(card);
+      
       // Optimistically update state
       setState(prev => ({ 
         ...prev, 
         cards: prev.cards.map(c => c.id === card.id ? card : c) 
       }));
+      
+      console.log('Card updated successfully');
     } catch (error) {
       console.error('Error updating card:', error);
       // Reload cards on error to ensure consistency

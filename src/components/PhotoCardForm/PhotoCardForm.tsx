@@ -19,12 +19,12 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
   const [showReview, setShowReview] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isDraggingFront, setIsDraggingFront] = useState(false);
+  const [isDraggingBack, setIsDraggingBack] = useState(false);
+  const [useRealOCR, setUseRealOCR] = useState(localStorage.getItem('useRealOCR') === 'true');
 
-  // Handle image upload
-  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>, side: 'front' | 'back') => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  // Handle file processing
+  const processFile = useCallback((file: File, side: 'front' | 'back') => {
     // Validate file type
     if (!file.type.startsWith('image/')) {
       setError('Please upload an image file');
@@ -49,6 +49,55 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
     };
     reader.readAsDataURL(file);
   }, []);
+
+  // Handle image upload from input
+  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>, side: 'front' | 'back') => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    processFile(file, side);
+  }, [processFile]);
+
+  // Handle drag and drop
+  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, []);
+
+  const handleDragEnter = useCallback((event: React.DragEvent<HTMLDivElement>, side: 'front' | 'back') => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (side === 'front') {
+      setIsDraggingFront(true);
+    } else {
+      setIsDraggingBack(true);
+    }
+  }, []);
+
+  const handleDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>, side: 'front' | 'back') => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (side === 'front') {
+      setIsDraggingFront(false);
+    } else {
+      setIsDraggingBack(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>, side: 'front' | 'back') => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (side === 'front') {
+      setIsDraggingFront(false);
+    } else {
+      setIsDraggingBack(false);
+    }
+
+    const files = event.dataTransfer.files;
+    if (files && files.length > 0) {
+      processFile(files[0], side);
+    }
+  }, [processFile]);
 
   // Process images and extract card data
   const processImages = async () => {
@@ -166,6 +215,27 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
       <div className="form-header">
         <h2>📸 Add Card from Photos</h2>
         <p>Upload photos of your card and we'll extract the information automatically</p>
+        <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
+            <input
+              type="checkbox"
+              checked={useRealOCR}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setUseRealOCR(checked);
+                localStorage.setItem('useRealOCR', checked.toString());
+              }}
+              style={{ cursor: 'pointer' }}
+            />
+            <span>Use Real OCR (Tesseract.js)</span>
+          </label>
+        </div>
+        <p style={{ fontSize: '12px', opacity: 0.7, marginTop: '8px' }}>
+          {useRealOCR 
+            ? 'Using Tesseract.js for real text extraction (may take longer)'
+            : 'Using simulated OCR for demo purposes'
+          }
+        </p>
       </div>
 
       {!showReview ? (
@@ -173,7 +243,13 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
           {/* Front Image Upload */}
           <div className="image-upload-container">
             <h3>Card Front (Required)</h3>
-            <div className={`image-upload-box ${frontImage ? 'has-image' : ''}`}>
+            <div 
+              className={`image-upload-box ${frontImage ? 'has-image' : ''} ${isDraggingFront ? 'dragging' : ''}`}
+              onDragOver={handleDragOver}
+              onDragEnter={(e) => handleDragEnter(e, 'front')}
+              onDragLeave={(e) => handleDragLeave(e, 'front')}
+              onDrop={(e) => handleDrop(e, 'front')}
+            >
               {frontImage ? (
                 <div className="image-preview">
                   <img src={frontImage} alt="Card front" />
@@ -205,7 +281,13 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
           {/* Back Image Upload */}
           <div className="image-upload-container">
             <h3>Card Back (Optional)</h3>
-            <div className={`image-upload-box ${backImage ? 'has-image' : ''}`}>
+            <div 
+              className={`image-upload-box ${backImage ? 'has-image' : ''} ${isDraggingBack ? 'dragging' : ''}`}
+              onDragOver={handleDragOver}
+              onDragEnter={(e) => handleDragEnter(e, 'back')}
+              onDragLeave={(e) => handleDragLeave(e, 'back')}
+              onDrop={(e) => handleDrop(e, 'back')}
+            >
               {backImage ? (
                 <div className="image-preview">
                   <img src={backImage} alt="Card back" />

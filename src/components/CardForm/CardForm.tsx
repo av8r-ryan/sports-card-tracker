@@ -253,7 +253,15 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
   return (
     <div className="card-form-container">
       <div className="card-form">
-        <h2>{isEditing ? 'Edit Card' : 'Add New Card'}</h2>
+        <div className="form-header">
+          <h2>{isEditing ? 'Edit Card' : 'Add New Card'}</h2>
+          <p>
+            {isEditing 
+              ? 'Update the details of your sports card below'
+              : 'Enter the details of your sports card to add it to your collection'
+            }
+          </p>
+        </div>
         
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-grid">

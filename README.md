@@ -1,10 +1,8 @@
-# 🏆 Collectors Playbook Card Tracker
+# 🏆 Sports Card Tracker
 
-The official card collection management system for [Collectors Playbook](https://collectorsplaybook.com). A comprehensive web application for managing and tracking sports card collections, built with React, TypeScript, and modern web technologies, featuring advanced analytics, professional reporting, and eBay integration.
+A comprehensive web application for managing and tracking sports card collections. Built with React, TypeScript, and modern web technologies, featuring advanced analytics, professional reporting, and eBay integration.
 
-**Part of the Collectors Playbook ecosystem** - Visit [collectorsplaybook.com](https://collectorsplaybook.com) for collecting guides, market insights, and community resources.
-
-![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-green.svg)
 ![React](https://img.shields.io/badge/react-18.x-blue.svg)
 ![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)
@@ -22,15 +20,25 @@ The official card collection management system for [Collectors Playbook](https:/
 
 ## ✨ Features
 
+### 👥 Multi-User Support
+
+- **User Authentication**: Secure login and registration system
+- **Role-Based Access**: Admin and regular user roles
+- **Personal Collections**: Each user has their own card collection
+- **Admin Dashboard**: Comprehensive admin tools for user management
+
 ### 📦 Collection Management
+
 - **Smart Card Entry**: Classic and Enhanced forms with 100+ fields
 - **Photo-Based Entry**: Upload card photos for automatic data extraction
+- **Collections Feature**: Organize cards into custom collections
 - **Bulk Import**: CSV import for large collections
 - **Advanced Search**: Multi-criteria filtering and search
 - **Image Management**: High-resolution image support (up to 100MB)
 - **Grading Integration**: PSA, BGS, SGC, and other major grading companies
 
 ### 📊 Professional Reporting Suite
+
 - **Executive Dashboard**: High-level KPIs and strategic insights
 - **Tax Reports**: IRS-compliant capital gains/losses documentation
 - **Insurance Appraisals**: Professional valuations for coverage
@@ -39,6 +47,7 @@ The official card collection management system for [Collectors Playbook](https:/
 - **Custom Reports**: Flexible date ranges and filters
 
 ### 💰 eBay Integration
+
 - **Professional Listing Generator**: Create optimized eBay listings instantly
 - **Smart Title Builder**: 80-character titles with key features
 - **HTML Descriptions**: Beautiful, mobile-responsive templates
@@ -48,6 +57,7 @@ The official card collection management system for [Collectors Playbook](https:/
 - **Price Optimization**: Market-based pricing suggestions
 
 ### 📈 Analytics & Insights
+
 - **Real-Time Dashboard**: Live portfolio metrics and charts
 - **Performance Tracking**: ROI, win rates, and growth trends
 - **Category Analysis**: Breakdown by sport, brand, and player
@@ -55,15 +65,54 @@ The official card collection management system for [Collectors Playbook](https:/
 - **Investment Tools**: Hold/sell recommendations
 
 ### 🎨 Modern UI/UX
+
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 - **Dark Mode**: Eye-friendly viewing (coming soon)
 - **Interactive Charts**: Powered by Recharts
 - **Drag & Drop**: Intuitive card organization
 - **Quick Actions**: Streamlined workflows
+- **Collection Icons**: Customizable emojis for collection organization
 
-## 🆕 What's New (v0.1.0)
+### 💾 Data Management
+
+- **Local Storage**: All data stored locally using IndexedDB
+- **Backup & Restore**: Manual and automatic backup options
+- **Export Options**: CSV, JSON, and custom formats
+- **Import Tools**: Bulk import from CSV files
+- **Data Migration**: Seamless upgrades between versions
+
+## 🆕 What's New (v2.5.0)
+
+### 🔧 Enhanced Admin Dashboard
+
+- **Tabular Backup Display**: Comprehensive backup information in table format
+- **Username Display**: Admin dashboard now shows usernames instead of user IDs
+- **Backup Statistics**: Size, date, type, and user information for all backups
+- **User Promotion**: Console utilities for promoting users to admin role
+- **Improved Analytics**: Better user statistics and system information
+
+### 🏠 About Page
+
+- **Application Overview**: Comprehensive information about the app
+- **Feature Highlights**: Visual cards showing key features
+- **Technology Stack**: Display of technologies used
+- **Contact Information**: Easy ways to get in touch
+- **Professional Design**: Clean, modern layout with gradient accents
+
+### 🐛 Bug Fixes & Improvements
+
+- **Storage Migration**: Fixed localStorage quota issues by moving to IndexedDB
+- **Collection Icons**: Improved styling with proper opacity and contrast
+- **Border Styling**: Removed unnecessary blue borders from card display
+- **Platform Detection**: Fixed deprecated navigator.platform usage
+- **Build Process**: Improved production build configuration
+
+## 📚 Previous Updates
+
+### v2.4.0
 
 ### 🛒 Professional eBay Listing Generator
+
 - **Individual Listings**: One-click eBay listing creation for any card
 - **Bulk Export**: Select multiple cards and export to CSV
 - **Smart Titles**: Optimized 80-character titles with key features
@@ -73,6 +122,7 @@ The official card collection management system for [Collectors Playbook](https:/
 - **Multiple Export Formats**: HTML, CSV, and JSON
 
 ### 🏭 Manufacturer Licensing & Accurate Detection
+
 - Comprehensive manufacturer database with real licensing data
 - Sport-specific brand validation (e.g., Topps for MLB, Panini for NBA/NFL)
 - Historical accuracy for vintage cards
@@ -80,6 +130,7 @@ The official card collection management system for [Collectors Playbook](https:/
 - Automatic correction of invalid manufacturer-sport combinations
 
 ### 🎯 Enhanced Player & Card Detection
+
 - 100+ real players across all major sports
 - Accurate team-player relationships
 - Position-specific detection
@@ -87,6 +138,7 @@ The official card collection management system for [Collectors Playbook](https:/
 - Nickname recognition (e.g., "The Kid" → Ken Griffey Jr.)
 
 ### 📸 Photo-Based Card Entry
+
 - Upload card photos for automatic data extraction
 - AI-powered OCR with confidence scoring
 - Front and back image support
@@ -94,6 +146,7 @@ The official card collection management system for [Collectors Playbook](https:/
 - Tips for best photo capture results
 
 ### 🎯 Executive Dashboard
+
 - Portfolio health score visualization
 - Strategic insights with AI recommendations
 - Advanced risk metrics and analysis
@@ -101,6 +154,7 @@ The official card collection management system for [Collectors Playbook](https:/
 - Investment opportunity identification
 
 ### 📋 Enhanced Reporting
+
 - **Beautiful Tax Reports**: Green-themed design with tax optimization strategies
 - **Professional Insurance Reports**: Gradient designs with comprehensive documentation
 - **Market Analysis Reports**: Detailed insights and comparisons
@@ -108,6 +162,7 @@ The official card collection management system for [Collectors Playbook](https:/
 - **Comparison Reports**: Portfolio vs market performance
 
 ### 📚 Comprehensive Documentation
+
 - Complete user guides and tutorials
 - API reference documentation
 - Troubleshooting and FAQ sections
@@ -115,21 +170,26 @@ The official card collection management system for [Collectors Playbook](https:/
 - Screenshot placeholders for all features
 
 ### 🛠️ Technical Improvements
+
 - Enhanced TypeScript types
 - Improved error handling
 - Performance optimizations
 - Better accessibility support
 - Cleaner code architecture
 
-### Initial Release Features
-- Complete collection management system
-- Professional eBay listing generator
+### v2.3.0
+
 - Executive Dashboard with portfolio health metrics
-- Enhanced Tax and Insurance Reports
+- Enhanced Tax and Insurance Reports with modern UI
 - Market Analysis and Comparison Reports
+- Comprehensive documentation structure
+
+### v2.2.0
+
+- Multi-user authentication system
+- Collections feature for card organization
+- Enhanced card forms with 100+ fields
 - Photo-based card entry with OCR
-- Multi-user support
-- Integration with Collectors Playbook ecosystem
 
 ## 🚀 Getting Started
 
@@ -143,7 +203,7 @@ The official card collection management system for [Collectors Playbook](https:/
 
 ```bash
 # Clone the repository
-git clone https://github.com/Collectors-Playbook/sports-card-tracker.git
+git clone https://github.com/yourusername/sports-card-tracker.git
 cd sports-card-tracker
 
 # Install dependencies
@@ -158,27 +218,37 @@ The app will open at `http://localhost:3000`
 ### First Steps
 
 1. Create an account or use demo credentials
-2. Add your first card using the intuitive form
-3. Explore the dashboard to see your collection metrics
-4. Generate your first report
+2. Add your first card using the intuitive form (Classic, Enhanced, or Photo)
+3. Organize cards into collections
+4. Explore the dashboard to see your collection metrics
+5. Generate professional reports or eBay listings
+
+### Default Admin Access
+
+For admin features, use:
+- Email: `admin@sportscard.local`
+- Password: `admin123`
 
 For detailed setup instructions, see our [Installation Guide](docs/guides/installation.md).
 
 ## 📖 Documentation
 
 ### 📚 User Guides
+
 - [Quick Start Guide](docs/guides/quick-start.md) - Get running in 5 minutes
 - [Adding Cards Guide](docs/guides/adding-cards.md) - Master card entry
 - [Reports Overview](docs/features/reports.md) - Generate professional reports
 - [eBay Integration](docs/features/ebay-integration.md) - Optimize your listings
 
 ### 🔧 Technical Docs
+
 - [API Reference](docs/api/README.md) - Backend API documentation
 - [Contributing Guide](CONTRIBUTING.md) - How to contribute
 - [Troubleshooting](docs/guides/troubleshooting.md) - Common issues
 - [FAQ](docs/guides/faq.md) - Frequently asked questions
 
 ### 🎯 Feature Guides
+
 - [Dashboard Overview](docs/features/dashboard.md)
 - [Executive Dashboard](docs/features/executive-dashboard.md)
 - [Tax Reports](docs/features/tax-reports.md)
@@ -187,19 +257,29 @@ For detailed setup instructions, see our [Installation Guide](docs/guides/instal
 ## 🛠️ Technologies
 
 ### Frontend
+
 - **React 18** - Modern UI library
 - **TypeScript** - Type-safe development
+- **Dexie.js** - IndexedDB wrapper for local storage
 - **Recharts** - Beautiful data visualizations
 - **CSS3** - Modern styling with gradients and animations
 - **Context API** - State management
 
-### Backend
+### Storage
+
+- **IndexedDB** - Primary data storage via Dexie.js
+- **LocalStorage** - User preferences and settings
+- **SessionStorage** - Temporary state management
+
+### Backend (Optional)
+
 - **Node.js** - JavaScript runtime
 - **Express** - Web framework
 - **TypeScript** - Type safety
 - **JWT** - Authentication
 
 ### Tools & Libraries
+
 - **date-fns** - Date manipulation
 - **jsPDF** - PDF generation
 - **Concurrently** - Process management
@@ -215,14 +295,18 @@ sports-card-tracker/
 │   ├── guides/            # User guides
 │   └── screenshots/       # UI screenshots
 ├── public/                # Static assets
-├── server/                # Backend server
+├── server/                # Backend server (optional)
 ├── src/                   # Frontend source
 │   ├── components/        # React components
 │   │   ├── Dashboard/     # Main dashboard
+│   │   ├── AdminDashboard/# Admin tools
 │   │   ├── Reports/       # Reporting suite
 │   │   ├── CardForm/      # Card entry forms
+│   │   ├── Collections/   # Collections management
+│   │   ├── About/         # About page
 │   │   └── EbayListings/  # eBay tools
 │   ├── context/           # State management
+│   ├── db/                # Database layer (Dexie)
 │   ├── services/          # Business logic
 │   ├── types/             # TypeScript types
 │   └── utils/             # Utilities
@@ -260,15 +344,19 @@ npm run build
 ## 📈 Roadmap
 
 ### Coming Soon
+
 - [ ] Mobile app (iOS/Android)
-- [ ] Automatic price updates
-- [ ] Social features
+- [ ] Automatic price updates via API integration
+- [ ] Social features and trading
 - [x] AI card recognition (Photo-based entry added!)
 - [ ] Direct eBay API integration
-- [ ] Multi-user collections
+- [x] Multi-user collections (Added in v2.2.0!)
 - [ ] Dark mode theme
+- [ ] Cloud sync and backup
+- [ ] Advanced search with filters
 
 ### Future Enhancements
+
 - Blockchain authentication
 - NFT integration
 - Advanced AI analytics
@@ -281,8 +369,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [Collectors Playbook](https://collectorsplaybook.com) community
-- Sports card collecting enthusiasts worldwide
+- Sports card collecting community
 - Open source contributors
 - Beta testers and early adopters
 - UI/UX design inspiration from modern web apps
@@ -290,27 +377,27 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 ### Get Help
+
 - 📖 [Documentation](docs/README.md)
 - ❓ [FAQ](docs/guides/faq.md)
-- 🐛 [Issue Tracker](https://github.com/Collectors-Playbook/sports-card-tracker/issues)
-- 💬 [Discussions](https://github.com/Collectors-Playbook/sports-card-tracker/discussions)
-- 🌐 [Collectors Playbook](https://collectorsplaybook.com)
-- 📧 Email: support@collectorsplaybook.com
+- 🐛 [Issue Tracker](https://github.com/yourusername/sports-card-tracker/issues)
+- 💬 [Discussions](https://github.com/yourusername/sports-card-tracker/discussions)
+- 📧 Email: support@sportscardtracker.com
 
 ### Community
-- [Collectors Playbook Website](https://collectorsplaybook.com)
-- [GitHub Repository](https://github.com/Collectors-Playbook/sports-card-tracker)
+
 - [Discord Server](https://discord.gg/sportscards)
 - [Reddit Community](https://reddit.com/r/sportscardtracker)
+- [Twitter Updates](https://twitter.com/sportscardtrack)
 
 ---
 
 <div align="center">
 
-**[Collectors Playbook](https://collectorsplaybook.com)** | **[Documentation](docs/README.md)** | **[Report Bug](https://github.com/Collectors-Playbook/sports-card-tracker/issues)** | **[Request Feature](https://github.com/Collectors-Playbook/sports-card-tracker/issues)**
+**[Live Demo](https://sportscardtracker.com)** | **[Documentation](docs/README.md)** | **[Report Bug](https://github.com/yourusername/sports-card-tracker/issues)** | **[Request Feature](https://github.com/yourusername/sports-card-tracker/issues)**
 
-Made with ❤️ by [Collectors Playbook](https://collectorsplaybook.com) - Your trusted resource for sports card collecting
+Made with ❤️ by collectors, for collectors
 
-**Version**: 0.1.0 | **Last Updated**: December 2024
+**Version**: 2.5.0 | **Last Updated**: January 2025
 
 </div>

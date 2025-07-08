@@ -23,7 +23,7 @@ const PRESET_COLORS = [
 
 const PRESET_ICONS = [
   '📦', '🏆', '⭐', '💎', '🔥', '⚡', '🎯', '🏅', '🎨', '🎪',
-  '🌟', '💰', '👑', '🎭', '🎪', '🎸', '🏀', '⚾', '🏈', '⚽'
+  '🌟', '💰', '👑', '🏒', '🎮', '🎸', '🏀', '⚾', '🏈', '⚽'
 ];
 
 const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onSubmit, onCancel }) => {

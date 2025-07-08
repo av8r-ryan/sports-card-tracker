@@ -53,13 +53,11 @@ const db = new SportsCardDatabase();
 function getCurrentUserId(): string {
   // First check the 'user' localStorage item (used by collections)
   const userStr = localStorage.getItem('user');
-  console.log('[getCurrentUserId] user localStorage:', userStr);
   
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
       const userId = user.id || 'anonymous';
-      console.log('[getCurrentUserId] from user localStorage, userId:', userId);
       return userId;
     } catch (e) {
       console.error('[getCurrentUserId] Error parsing user:', e);
@@ -68,20 +66,18 @@ function getCurrentUserId(): string {
   
   // Fall back to auth-state
   const authDataStr = localStorage.getItem('auth-state');
-  console.log('[getCurrentUserId] auth-state:', authDataStr);
   
   if (authDataStr) {
     try {
       const authData = JSON.parse(authDataStr);
       const userId = authData.user?.id || 'anonymous';
-      console.log('[getCurrentUserId] from auth-state, userId:', userId);
       return userId;
     } catch (e) {
       console.error('[getCurrentUserId] Error parsing auth-state:', e);
       return 'anonymous';
     }
   }
-  console.log('[getCurrentUserId] No auth-state, returning anonymous');
+  
   return 'anonymous';
 }
 
@@ -177,29 +173,39 @@ export const cardDatabase = {
   // Add a card
   async addCard(card: Card): Promise<void> {
     try {
+      console.log('[addCard] Starting to add card:', card);
       const now = new Date();
       const userId = getCurrentUserId();
+      console.log('[addCard] Current userId:', userId);
       
       // Get default collection if no collectionId provided
       let collectionId = card.collectionId;
       if (!collectionId) {
+        console.log('[addCard] No collectionId provided, getting default collection');
         const { collectionsDatabase } = await import('./collectionsDatabase');
         const defaultCollection = await collectionsDatabase.getDefaultCollection();
         collectionId = defaultCollection?.id;
+        console.log('[addCard] Default collection ID:', collectionId);
       }
       
       const cardToAdd: Card = {
         ...card,
-        id: card.id || `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: card.id || `card-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
         userId: card.userId || userId, // Ensure userId is set
         collectionId: collectionId, // Ensure collectionId is set
         createdAt: card.createdAt || now,
         updatedAt: now
       };
       
+      console.log('[addCard] Card to add:', cardToAdd);
       await db.cards.add(cardToAdd);
+      console.log('[addCard] Card added successfully!');
+      
+      // Verify the card was added
+      const verifyCard = await db.cards.get(cardToAdd.id);
+      console.log('[addCard] Verification - card in DB:', verifyCard);
     } catch (error) {
-      console.error('Error adding card:', error);
+      console.error('[addCard] Error adding card:', error);
       throw error;
     }
   },
@@ -207,12 +213,26 @@ export const cardDatabase = {
   // Update a card
   async updateCard(card: Card): Promise<void> {
     try {
+      console.log('simpleDatabase.updateCard called with:', {
+        id: card.id,
+        player: card.player,
+        currentValue: card.currentValue,
+        userId: card.userId,
+        collectionId: card.collectionId
+      });
+      
       const updatedCard: Card = {
         ...card,
         updatedAt: new Date()
       };
       
+      console.log('About to put card in database with collectionId:', updatedCard.collectionId);
       await db.cards.put(updatedCard);
+      console.log('Card updated in database successfully');
+      
+      // Verify the update was saved
+      const verifiedCard = await db.cards.get(card.id);
+      console.log('Verified card from database - collectionId:', verifiedCard?.collectionId);
     } catch (error) {
       console.error('Error updating card:', error);
       throw error;
@@ -286,6 +306,7 @@ export const cardDatabase = {
   // Get user statistics (admin only)
   async getUserStatistics(): Promise<Array<{
     userId: string;
+    username: string;
     cardCount: number;
     totalValue: number;
     avgValue: number;
@@ -293,6 +314,11 @@ export const cardDatabase = {
     try {
       const cards = await db.cards.toArray();
       const userStats: { [userId: string]: { count: number; value: number } } = {};
+      
+      // Get user info from localStorage
+      const usersStr = localStorage.getItem('sports-card-tracker-users');
+      const users = usersStr ? JSON.parse(usersStr) : [];
+      const userMap = new Map<string, string>(users.map((u: any) => [u.id, u.username || u.email]));
       
       cards.forEach(card => {
         if (!userStats[card.userId]) {
@@ -304,6 +330,7 @@ export const cardDatabase = {
       
       return Object.entries(userStats).map(([userId, stats]) => ({
         userId,
+        username: userMap.get(userId) || userId,
         cardCount: stats.count,
         totalValue: stats.value,
         avgValue: stats.value / stats.count
@@ -315,7 +342,7 @@ export const cardDatabase = {
   },
 
   // Subscribe to changes
-  subscribeToChanges(callback: (cards: Card[]) => void): () => void {
+  subscribeToChanges(_callback: (cards: Card[]) => void): () => void {
     // For now, we'll remove the subscription mechanism to prevent flickering
     // The context will handle state updates through optimistic updates
     return () => {

@@ -14,7 +14,7 @@ interface CardListProps {
 }
 
 const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedCollectionId }) => {
-  const { state, deleteCard, updateCard } = useCards();
+  const { state, deleteCard, setCards } = useCards();
   const [filters, setFilters] = useState<FilterOptions>({});
   const [sortOption, setSortOption] = useState<SortOption>({ field: 'createdAt', direction: 'desc' });
   const [searchTerm, setSearchTerm] = useState('');
@@ -125,23 +125,27 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
 
   const handleMoveCards = useCallback(async (cardIds: string[], targetCollectionId: string) => {
     try {
+      // Move cards to the target collection - this updates the database
       await collectionsDatabase.moveCardsToCollection(cardIds, targetCollectionId);
       
-      // Update cards in context
-      for (const cardId of cardIds) {
-        const card = state.cards.find(c => c.id === cardId);
-        if (card) {
-          await updateCard({ ...card, collectionId: targetCollectionId });
-        }
-      }
+      // Reload from database to ensure we have the latest state
+      const { cardDatabase } = await import('../../db/simpleDatabase');
+      const freshCards = await cardDatabase.getAllCards();
+      console.log('[handleMoveCards] Fresh cards from database after move:', freshCards.filter(c => cardIds.includes(c.id)).map(c => ({ id: c.id, collectionId: c.collectionId })));
+      
+      setCards(freshCards);
       
       clearSelection();
       setShowMoveModal(false);
     } catch (error) {
       console.error('Error moving cards:', error);
+      // If there's an error, reload from database to ensure consistency
+      const { cardDatabase } = await import('../../db/simpleDatabase');
+      const freshCards = await cardDatabase.getAllCards();
+      setCards(freshCards);
       throw error;
     }
-  }, [state.cards, updateCard, clearSelection]);
+  }, [state.cards, clearSelection, setCards]);
 
   const uniqueValues = useMemo(() => ({
     teams: [...new Set(state.cards.map(card => card.team))].sort(),

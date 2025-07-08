@@ -213,6 +213,13 @@ export class PlayerDatabaseService {
   }
 
   /**
+   * Get all players from the database
+   */
+  getAllPlayers(): PlayerInfo[] {
+    return Object.values(PLAYER_DATABASE).flat();
+  }
+
+  /**
    * Builds search index for fast player lookups
    */
   private buildPlayerIndex(): Map<string, PlayerInfo> {

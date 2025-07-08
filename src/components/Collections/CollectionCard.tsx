@@ -86,7 +86,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
       )}
 
       <div className="collection-header">
-        <div className="collection-icon" style={{ backgroundColor: collection.color }}>
+        <div className="collection-icon" style={{ backgroundColor: collection.color + '30' }}>
           {collection.icon}
         </div>
         {!isBulkDeleteMode && (

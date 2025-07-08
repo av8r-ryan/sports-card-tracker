@@ -22,10 +22,14 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import DebugPanel from './components/DebugPanel/DebugPanel';
 import DevTools from './components/DevTools/DevTools';
 import { Card } from './types';
-import { migrateCardToEnhanced } from './utils/cardMigration';
-import { saveEnhancedCard } from './utils/enhancedCardIntegration';
+import { saveEnhancedCard, mergeCardWithEnhanced } from './utils/enhancedCardIntegration';
 import { logInfo } from './utils/logger';
 import './utils/debugDatabase'; // Import debug utility
+import './utils/debugEnhancedCards'; // Import enhanced cards debug utility
+import './utils/testCollectionMove'; // Import collection move test utility
+import './utils/testCardSave'; // Import test card save utility
+import './utils/debugBackup'; // Import backup debug utility
+import './utils/resetAdmin'; // Import admin reset utility
 import './App.css';
 
 type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about';
@@ -200,8 +204,16 @@ const AppContent: React.FC = () => {
             {formType === 'enhanced' && (
               <EnhancedCardForm 
                 key={editingCard?.id || 'new-card-enhanced'}
-                card={editingCard || undefined}
-                onSave={() => handleFormSuccess()}
+                card={editingCard ? mergeCardWithEnhanced(editingCard) : undefined}
+                onSave={async (enhancedCardData) => {
+                  try {
+                    await saveEnhancedCard(enhancedCardData, addCard, updateCard);
+                    handleFormSuccess();
+                  } catch (error) {
+                    console.error('Error saving enhanced card:', error);
+                    alert('Failed to save card. Please try again.');
+                  }
+                }}
                 onCancel={handleFormCancel}
               />
             )}

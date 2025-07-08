@@ -372,6 +372,8 @@
   border-radius: 0 0 8px 8px;
   text-align: center;
   position: relative;
+  border: none;
+  border-left: none;
 }
 
 .card-player-name h4 {

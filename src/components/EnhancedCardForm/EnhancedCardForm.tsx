@@ -14,6 +14,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
   const [collections, setCollections] = useState<any[]>([]);
   const [formData, setFormData] = useState<Partial<EnhancedCard>>({
     ...card,
+    notes: card?.notes || '', // Ensure notes field is initialized
     identification: card?.identification || undefined,
     playerMetadata: card?.playerMetadata || { isRookie: false },
     specialFeatures: card?.specialFeatures || { hasAutograph: false, hasMemorabilia: false },
@@ -182,6 +183,16 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             </select>
           </div>
         )}
+        
+        <div className="form-group full-width">
+          <label>Notes</label>
+          <textarea
+            value={formData.notes || ''}
+            onChange={(e) => handleBasicChange('notes', e.target.value)}
+            rows={3}
+            placeholder="Additional notes about this card"
+          />
+        </div>
       </div>
     </div>
   );
