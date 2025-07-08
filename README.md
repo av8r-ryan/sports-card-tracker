@@ -384,11 +384,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 💬 [Discussions](https://github.com/Collectors-Playbook/sports-card-tracker/discussions)
 - 📧 Email: sct-support@collectorsplaybook.com
 
-### Community
+<!-- ### Community
 
 - [Discord Server](https://discord.gg/sportscards)
 - [Reddit Community](https://reddit.com/r/sportscardtracker)
-- [Twitter Updates](https://twitter.com/sportscardtrack)
+- [Twitter Updates](https://twitter.com/sportscardtrack) -->
 
 ---
 
