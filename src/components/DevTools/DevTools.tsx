@@ -7,6 +7,7 @@ const DevTools: React.FC = () => {
   const { addCard, clearAllCards } = useCards();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [isMinimized, setIsMinimized] = useState(false);
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   if (!isDevelopment) return null;
@@ -34,13 +35,17 @@ const DevTools: React.FC = () => {
   };
 
   return (
-    <div className="dev-tools">
-      <div className="dev-tools-header">
-        <h3>🛠️ Development Tools</h3>
+    <div className={`dev-tools ${isMinimized ? 'minimized' : ''}`}>
+      <div className="dev-tools-header" onClick={() => setIsMinimized(!isMinimized)}>
+        <h3>
+          <span className="toggle-icon">{isMinimized ? '▶' : '▼'}</span>
+          🛠️ Development Tools
+        </h3>
         <span className="dev-badge">DEV MODE</span>
       </div>
       
-      <div className="dev-tools-content">
+      {!isMinimized && (
+        <div className="dev-tools-content">
         <p className="dev-description">
           Use these tools to quickly populate your collection with sample data for testing.
         </p>
@@ -78,7 +83,8 @@ const DevTools: React.FC = () => {
             <li>Plus 6 more premium cards...</li>
           </ul>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

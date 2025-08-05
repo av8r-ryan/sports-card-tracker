@@ -10,6 +10,7 @@
   max-width: 400px;
   z-index: 9999;
   font-size: 14px;
+  transition: all 0.3s ease;
 }
 
 .dev-tools-header {
@@ -20,12 +21,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
 }
 
 .dev-tools-header h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-icon {
+  display: inline-block;
+  font-size: 12px;
+  transition: transform 0.3s ease;
 }
 
 .dev-badge {
@@ -40,6 +53,24 @@
 
 .dev-tools-content {
   padding: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
 }
 
 .dev-description {
@@ -157,13 +188,18 @@
 
 /* Minimized state */
 .dev-tools.minimized {
-  cursor: pointer;
-}
-
-.dev-tools.minimized .dev-tools-content {
-  display: none;
+  width: auto;
 }
 
 .dev-tools.minimized .dev-tools-header {
   border-radius: 10px;
+}
+
+.dev-tools.minimized .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+/* Hover effect on header */
+.dev-tools-header:hover {
+  background: linear-gradient(135deg, #ff7777, #ff6b7b);
 }
