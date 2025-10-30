@@ -4,6 +4,7 @@ import { collectionsDatabase } from '../db/collectionsDatabase';
 import { localAuthService } from '../services/localAuthService';
 import { User } from '../types';
 import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { seedDataManager } from '../utils/seedDataManager';
 
 interface AuthState {
   user: User | null;
@@ -151,6 +152,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Initialize user collections (handles errors internally)
       await collectionsDatabase.initializeUserCollections(user.id);
       logInfo('AuthContext', 'User collections initialization completed', { userId: user.id });
+
+      // Import seed data if needed
+      try {
+        const importedCount = await seedDataManager.importSeedData(user.id);
+        if (importedCount > 0) {
+          logInfo('AuthContext', 'Seed data imported successfully', { importedCount, userId: user.id });
+        }
+      } catch (seedError) {
+        logError('AuthContext', 'Failed to import seed data', seedError as Error, { userId: user.id });
+        // Don't fail login if seed import fails
+      }
     } catch (error) {
       logError('AuthContext', 'Login process failed', error as Error, { email });
       dispatch({
@@ -181,6 +193,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Initialize user collections (handles errors internally)
       await collectionsDatabase.initializeUserCollections(user.id);
       logInfo('AuthContext', 'User collections initialization completed for new user', { userId: user.id });
+
+      // Import seed data for new user
+      try {
+        const importedCount = await seedDataManager.importSeedData(user.id);
+        if (importedCount > 0) {
+          logInfo('AuthContext', 'Seed data imported for new user', { importedCount, userId: user.id });
+        }
+      } catch (seedError) {
+        logError('AuthContext', 'Failed to import seed data for new user', seedError as Error);
+        // Don't fail registration if seed import fails
+      }
     } catch (error) {
       logError('AuthContext', 'Registration process failed', error as Error, { username, email });
       dispatch({
