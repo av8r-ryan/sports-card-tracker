@@ -117,7 +117,7 @@
     "webpack-bundle-analyzer": "^4.10.1",
     "source-map-explorer": "^2.2.1",
     "@craco/craco": "^7.1.0",
-    "babel-plugin-transform-imports": "^3.0.0",
+    "babel-plugin-transform-imports": "^2.0.0",
     "terser-webpack-plugin": "^5.3.9"
   },
   "lint-staged": {
