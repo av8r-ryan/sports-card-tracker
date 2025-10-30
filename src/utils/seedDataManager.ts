@@ -1,5 +1,4 @@
 import { Card } from '../types';
-import { cardDatabase } from '../db/simpleDatabase';
 import { logInfo, logError } from './logger';
 
 interface SeedData {
@@ -20,6 +19,8 @@ class SeedDataManager {
     try {
       logInfo('SeedDataManager', 'Exporting cards from IndexedDB');
 
+      // Lazy import to avoid circular dependency
+      const { cardDatabase } = await import('../db/simpleDatabase');
       const allCards = await cardDatabase.getAllCards();
 
       const seedData: SeedData = {
@@ -106,6 +107,9 @@ class SeedDataManager {
       // Check if we've already imported this version
       const importedVersion = localStorage.getItem(SEED_VERSION_KEY);
 
+      // Lazy import to avoid circular dependency
+      const { cardDatabase } = await import('../db/simpleDatabase');
+
       // Check if there are any cards in the database
       const existingCards = await cardDatabase.getAllCards();
 
@@ -140,6 +144,9 @@ class SeedDataManager {
         userId,
         cardCount: seedData.cards.length,
       });
+
+      // Lazy import to avoid circular dependency
+      const { cardDatabase } = await import('../db/simpleDatabase');
 
       let importedCount = 0;
 
