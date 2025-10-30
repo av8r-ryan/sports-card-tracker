@@ -128,23 +128,29 @@ class LocalAuthService {
 
   async createDefaultAdminUser(): Promise<void> {
     try {
-      const adminEmail = 'admin@localhost';
-      const existingAdmin = await localAuthDb.users.where('email').equals(adminEmail).first();
+      // Create multiple admin accounts with different email variations
+      const adminAccounts = [
+        { email: 'admin@localhost', username: 'admin' },
+        { email: 'admin@sportscard.local', username: 'admin' },
+        { email: 'admin', username: 'admin' },
+      ];
 
-      if (!existingAdmin) {
-        const adminUser: LocalUser = {
-          id: 'admin_default',
-          username: 'admin',
-          email: adminEmail,
-          passwordHash: await simpleHash('admin'),
-          createdAt: new Date().toISOString(),
-          role: 'admin',
-        };
+      for (const account of adminAccounts) {
+        const existingAdmin = await localAuthDb.users.where('email').equals(account.email).first();
 
-        await localAuthDb.users.add(adminUser);
-        logInfo('LocalAuthService', 'Default admin user created', { email: adminEmail });
-      } else {
-        logInfo('LocalAuthService', 'Default admin user already exists', { email: adminEmail });
+        if (!existingAdmin) {
+          const adminUser: LocalUser = {
+            id: `admin_${account.email.replace(/[@.]/g, '_')}`,
+            username: account.username,
+            email: account.email,
+            passwordHash: await simpleHash('admin'),
+            createdAt: new Date().toISOString(),
+            role: 'admin',
+          };
+
+          await localAuthDb.users.add(adminUser);
+          logInfo('LocalAuthService', 'Default admin user created', { email: account.email });
+        }
       }
     } catch (error) {
       logError('LocalAuthService', 'Failed to create default admin user', error as Error);

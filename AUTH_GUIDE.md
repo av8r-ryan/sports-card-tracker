@@ -2,10 +2,11 @@
 
 ## Default Login Credentials
 
-The app uses local IndexedDB storage for authentication. A default admin account is automatically created:
+The app uses local IndexedDB storage for authentication. Multiple default admin accounts are automatically created. You can use any of these:
 
-- **Email**: `admin@localhost`
-- **Password**: `admin`
+- **Email**: `admin@localhost` | **Password**: `admin`
+- **Email**: `admin@sportscard.local` | **Password**: `admin`
+- **Email**: `admin` | **Password**: `admin`
 
 ## First-Time Login
 
@@ -27,10 +28,12 @@ In development, you can access debug functions in the browser console:
 // List all users
 await window.debugAuth.listUsers()
 
-// Check if a user exists
+// Check if a user exists (try all variations)
 await window.debugAuth.checkUser('admin@localhost')
+await window.debugAuth.checkUser('admin@sportscard.local')
+await window.debugAuth.checkUser('admin')
 
-// Manually create the admin user
+// Manually create the admin users
 await window.debugAuth.createAdmin()
 ```
 
