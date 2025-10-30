@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { userService } from '../services/userService';
 import { collectionsDatabase } from '../db/collectionsDatabase';
+import { apiService } from '../services/api';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 import { User } from '../types';
 
 interface AuthState {
@@ -107,43 +109,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Check if user is stored in localStorage on app start
+    logDebug('AuthContext', 'Checking for existing session on app start');
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     
     if (storedUser && storedToken) {
       try {
+        logDebug('AuthContext', 'Found existing session data', { hasUser: !!storedUser, hasToken: !!storedToken });
         const user = JSON.parse(storedUser);
         dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: storedToken } });
+        logInfo('AuthContext', 'Session restored successfully', { userId: user.id, username: user.username });
       } catch (error) {
+        logError('AuthContext', 'Failed to parse stored user data', error as Error, { storedUser, storedToken });
         // Clear invalid stored data
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        logWarn('AuthContext', 'Cleared invalid session data');
       }
+    } else {
+      logDebug('AuthContext', 'No existing session found');
     }
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
+    logInfo('AuthContext', 'Starting login process', { email });
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      // Use local authentication
-      const user = userService.authenticateUser(email, password);
-      
-      if (!user) {
-        throw new Error('Invalid email or password');
-      }
-
-      // Generate a mock token for local storage
-      const token = `local-token-${user.id}-${Date.now()}`;
+      // Use API authentication
+      logDebug('AuthContext', 'Authenticating user with API service');
+      const { user, token } = await apiService.login(email, password);
+      logDebug('AuthContext', 'Authentication result received', { userFound: !!user, userId: user?.id });
       
       dispatch({ 
         type: 'LOGIN_SUCCESS', 
         payload: { user, token } 
       });
       
-      // Initialize user collections
+      logInfo('AuthContext', 'Login successful, initializing user collections', { userId: user.id });
+      
+      // Initialize user collections (handles errors internally)
       await collectionsDatabase.initializeUserCollections(user.id);
+      logInfo('AuthContext', 'User collections initialization completed', { userId: user.id });
     } catch (error) {
+      logError('AuthContext', 'Login process failed', error as Error, { email });
       dispatch({ 
         type: 'LOGIN_FAILURE', 
         payload: error instanceof Error ? error.message : 'Login failed' 
@@ -153,52 +162,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const register = async (username: string, email: string, password: string): Promise<void> => {
+    logInfo('AuthContext', 'Starting registration process', { username, email });
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      // Check if email already exists
-      const allUsers = userService.getAllUsers();
-      if (allUsers.some(u => u.email === email)) {
-        throw new Error('Email already registered');
-      }
+      // Use API registration
+      logDebug('AuthContext', 'Registering user with API service');
+      const { user, token } = await apiService.register(username, email, password);
+      logDebug('AuthContext', 'Registration result received', { userFound: !!user, userId: user?.id });
 
-      // Create new user
-      const newUser = userService.createUser({
-        username,
-        email,
-        password,
-        role: 'user',
-        isActive: true
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: { user, token }
       });
 
-      // Generate a mock token for local storage
-      const token = `local-token-${newUser.id}-${Date.now()}`;
-      
-      dispatch({ 
-        type: 'LOGIN_SUCCESS', 
-        payload: { user: newUser, token } 
-      });
-      
-      // Initialize user collections
-      await collectionsDatabase.initializeUserCollections(newUser.id);
+      logInfo('AuthContext', 'Registration successful, initializing user collections', { userId: user.id });
+
+      // Initialize user collections (handles errors internally)
+      await collectionsDatabase.initializeUserCollections(user.id);
+      logInfo('AuthContext', 'User collections initialization completed for new user', { userId: user.id });
     } catch (error) {
-      dispatch({ 
-        type: 'LOGIN_FAILURE', 
-        payload: error instanceof Error ? error.message : 'Registration failed' 
+      logError('AuthContext', 'Registration process failed', error as Error, { username, email });
+      dispatch({
+        type: 'LOGIN_FAILURE',
+        payload: error instanceof Error ? error.message : 'Registration failed'
       });
       throw error;
     }
   };
 
   const logout = () => {
+    logInfo('AuthContext', 'User logout initiated', { userId: state.user?.id, username: state.user?.username });
     dispatch({ type: 'LOGOUT' });
+    logInfo('AuthContext', 'User logout completed');
   };
 
   const clearError = () => {
+    logDebug('AuthContext', 'Clearing authentication error');
     dispatch({ type: 'CLEAR_ERROR' });
   };
 
   const updateUser = (user: User) => {
+    logInfo('AuthContext', 'Updating user data', { userId: user.id, username: user.username });
     dispatch({ type: 'UPDATE_USER', payload: user });
   };
 

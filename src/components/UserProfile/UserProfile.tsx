@@ -1,10 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import { useCards } from '../../context/DexieCardContext';
 import { userService } from '../../services/userService';
+import AnimatedWrapper from '../Animation/AnimatedWrapper';
+import CollapsibleMenu from '../UI/CollapsibleMenu';
 import './UserProfile.css';
 
 const UserProfile: React.FC = () => {
   const { state: authState, logout, updateUser } = useAuth();
+  const { state: cardState } = useCards();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,6 +27,117 @@ const UserProfile: React.FC = () => {
     authState.user?.profilePhoto || null
   );
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+
+  // Achievement system
+  const achievements = useMemo(() => {
+    const totalCards = cardState.cards.length;
+    const totalValue = cardState.cards.reduce((sum, card) => sum + (card.currentValue || 0), 0);
+    const soldCards = cardState.cards.filter(card => card.sellDate).length;
+    const profit = cardState.cards.reduce((sum, card) => {
+      if (card.sellDate && card.sellPrice) {
+        return sum + (card.sellPrice - (card.purchasePrice || 0));
+      }
+      return sum;
+    }, 0);
+
+    return [
+      {
+        id: 'first-card',
+        title: 'First Card',
+        description: 'Added your first card to the collection',
+        icon: '🎯',
+        unlocked: totalCards >= 1,
+        progress: Math.min(totalCards, 1),
+        maxProgress: 1
+      },
+      {
+        id: 'card-collector',
+        title: 'Card Collector',
+        description: 'Added 10 cards to your collection',
+        icon: '📚',
+        unlocked: totalCards >= 10,
+        progress: Math.min(totalCards, 10),
+        maxProgress: 10
+      },
+      {
+        id: 'serious-collector',
+        title: 'Serious Collector',
+        description: 'Added 50 cards to your collection',
+        icon: '🏆',
+        unlocked: totalCards >= 50,
+        progress: Math.min(totalCards, 50),
+        maxProgress: 50
+      },
+      {
+        id: 'high-roller',
+        title: 'High Roller',
+        description: 'Collection value exceeds $10,000',
+        icon: '💰',
+        unlocked: totalValue >= 10000,
+        progress: Math.min(totalValue, 10000),
+        maxProgress: 10000
+      },
+      {
+        id: 'trader',
+        title: 'Trader',
+        description: 'Sold your first card',
+        icon: '💼',
+        unlocked: soldCards >= 1,
+        progress: Math.min(soldCards, 1),
+        maxProgress: 1
+      },
+      {
+        id: 'profitable-trader',
+        title: 'Profitable Trader',
+        description: 'Made $1,000+ profit from sales',
+        icon: '📈',
+        unlocked: profit >= 1000,
+        progress: Math.min(profit, 1000),
+        maxProgress: 1000
+      }
+    ];
+  }, [cardState.cards]);
+
+  // Activity timeline
+  const activityTimeline = useMemo(() => {
+    const activities: Array<{id: string; title: string; description: string; icon: string; timestamp: Date}> = [];
+    const now = new Date();
+
+    // Recent card additions
+    const recentCards = cardState.cards
+      .filter(card => card.createdAt)
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+      .slice(0, 5);
+
+    recentCards.forEach(card => {
+      activities.push({
+        id: `card-${card.id}`,
+        title: 'Card Added',
+        description: `Added ${card.year} ${card.brand} ${card.player}`,
+        timestamp: new Date(card.createdAt!),
+        icon: '➕'
+      });
+    });
+
+    // Recent sales
+    const recentSales = cardState.cards
+      .filter(card => card.sellDate)
+      .sort((a, b) => new Date(b.sellDate!).getTime() - new Date(a.sellDate!).getTime())
+      .slice(0, 3);
+
+    recentSales.forEach(card => {
+      activities.push({
+        id: `sale-${card.id}`,
+        title: 'Card Sold',
+        description: `Sold ${card.year} ${card.brand} ${card.player} for $${card.sellPrice}`,
+        timestamp: new Date(card.sellDate!),
+        icon: '💰'
+      });
+    });
+
+    // Sort by timestamp
+    return activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, 10);
+  }, [cardState.cards]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -187,15 +303,17 @@ const UserProfile: React.FC = () => {
 
   return (
     <div className="user-profile">
-      <div className="profile-header">
-        <div className="breadcrumb">
-          <span className="breadcrumb-item">Sports Card Tracker</span>
-          <span className="breadcrumb-separator">›</span>
-          <span className="breadcrumb-item current">Profile</span>
+      <AnimatedWrapper animation="fadeInDown" duration={0.6}>
+        <div className="profile-header">
+          <div className="breadcrumb">
+            <span className="breadcrumb-item">Sports Card Tracker</span>
+            <span className="breadcrumb-separator">›</span>
+            <span className="breadcrumb-item current">Profile</span>
+          </div>
+          <h1 className="text-gradient">User Profile</h1>
+          <p>Manage your account settings and preferences</p>
         </div>
-        <h1>User Profile</h1>
-        <p>Manage your account settings and preferences</p>
-      </div>
+      </AnimatedWrapper>
 
       <div className="profile-content">
         <div className="profile-card">
@@ -391,6 +509,138 @@ const UserProfile: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Achievements Section */}
+        <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.2}>
+          <div className="achievements-section card-glass">
+            <h2 className="section-title">Achievements</h2>
+            <div className="achievements-grid">
+              {achievements.map((achievement, index) => (
+                <motion.div
+                  key={achievement.id}
+                  className={`achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div className="achievement-icon">
+                    {achievement.icon}
+                  </div>
+                  <div className="achievement-content">
+                    <h3>{achievement.title}</h3>
+                    <p>{achievement.description}</p>
+                    <div className="achievement-progress">
+                      <div className="progress-bar">
+                        <div 
+                          className="progress-fill"
+                          style={{ 
+                            width: `${(achievement.progress / achievement.maxProgress) * 100}%` 
+                          }}
+                        />
+                      </div>
+                      <span className="progress-text">
+                        {achievement.progress}/{achievement.maxProgress}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </AnimatedWrapper>
+
+        {/* Activity Timeline Section */}
+        <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.4}>
+          <div className="activity-section card-glass">
+            <h2 className="section-title">Recent Activity</h2>
+            <div className="activity-timeline">
+              {activityTimeline.length > 0 ? (
+                activityTimeline.map((activity, index) => (
+                  <motion.div
+                    key={activity.id}
+                    className="activity-item"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <div className="activity-icon">
+                      {activity.icon}
+                    </div>
+                    <div className="activity-content">
+                      <h4>{activity.title}</h4>
+                      <p>{activity.description}</p>
+                      <span className="activity-time">
+                        {activity.timestamp.toLocaleDateString()} at {activity.timestamp.toLocaleTimeString()}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="no-activity">
+                  <p>No recent activity to display</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </AnimatedWrapper>
+
+        {/* Settings Section with Collapsible Menus */}
+        <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.6}>
+          <div className="settings-section card-glass">
+            <h2 className="section-title">Settings</h2>
+            
+            <CollapsibleMenu title="Account Settings" icon="👤" defaultOpen={true}>
+              <div className="settings-content">
+                <div className="setting-item">
+                  <label>Email Notifications</label>
+                  <input type="checkbox" defaultChecked />
+                </div>
+                <div className="setting-item">
+                  <label>Collection Updates</label>
+                  <input type="checkbox" defaultChecked />
+                </div>
+                <div className="setting-item">
+                  <label>Price Alerts</label>
+                  <input type="checkbox" />
+                </div>
+              </div>
+            </CollapsibleMenu>
+
+            <CollapsibleMenu title="Privacy Settings" icon="🔒">
+              <div className="settings-content">
+                <div className="setting-item">
+                  <label>Profile Visibility</label>
+                  <select>
+                    <option value="private">Private</option>
+                    <option value="friends">Friends Only</option>
+                    <option value="public">Public</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label>Collection Visibility</label>
+                  <select>
+                    <option value="private">Private</option>
+                    <option value="public">Public</option>
+                  </select>
+                </div>
+              </div>
+            </CollapsibleMenu>
+
+            <CollapsibleMenu title="Data & Export" icon="📊">
+              <div className="settings-content">
+                <div className="setting-item">
+                  <label>Export Collection</label>
+                  <button className="btn-secondary">Download CSV</button>
+                </div>
+                <div className="setting-item">
+                  <label>Backup Data</label>
+                  <button className="btn-secondary">Create Backup</button>
+                </div>
+              </div>
+            </CollapsibleMenu>
+          </div>
+        </AnimatedWrapper>
 
         <div className="danger-zone">
           <h3>Danger Zone</h3>

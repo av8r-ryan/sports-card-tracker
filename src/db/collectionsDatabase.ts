@@ -9,7 +9,7 @@ class CollectionsDatabase extends Dexie {
     
     // Define schema
     this.version(1).stores({
-      collections: 'id, userId, name, [userId+name], [userId+isDefault], createdAt'
+      collections: 'id, userId, name, isDefault, [userId+name], [userId+isDefault], createdAt'
     });
   }
 }
@@ -52,6 +52,8 @@ export const collectionsDatabase = {
   // Initialize default collection for user
   async initializeUserCollections(userId: string): Promise<void> {
     try {
+      console.log('[CollectionsDB] Initializing collections for user:', userId);
+      
       // Check if user already has a default collection
       const existingDefault = await db.collections
         .where('userId')
@@ -59,7 +61,11 @@ export const collectionsDatabase = {
         .and(collection => collection.isDefault === true)
         .first();
 
+      console.log('[CollectionsDB] Existing default collection:', existingDefault);
+
       if (!existingDefault) {
+        console.log('[CollectionsDB] Creating default collection...');
+        
         // Create default collection
         const defaultCollection: Collection = {
           id: `collection-default-${userId}`,
@@ -76,9 +82,14 @@ export const collectionsDatabase = {
         };
         
         await db.collections.add(defaultCollection);
+        console.log('[CollectionsDB] Default collection created successfully');
+      } else {
+        console.log('[CollectionsDB] Default collection already exists');
       }
     } catch (error) {
-      console.error('Error initializing user collections:', error);
+      console.error('[CollectionsDB] Error initializing user collections:', error);
+      // Don't re-throw the error - just log it and continue
+      console.warn('[CollectionsDB] Continuing without collections initialization');
     }
   },
 

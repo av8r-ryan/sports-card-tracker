@@ -135,6 +135,7 @@
   min-height: 200px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .collection-body h3 {
@@ -167,6 +168,11 @@
   padding: 12px 8px;
   background: #F9FAFB;
   border-radius: 6px;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .stat-label {
@@ -182,9 +188,11 @@
   font-size: 16px;
   font-weight: 600;
   color: #1F2937;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.2;
+  max-width: 100%;
 }
 
 .stat-value.positive {
@@ -338,9 +346,81 @@
     justify-content: space-between;
     align-items: center;
     text-align: left;
+    min-height: 50px;
   }
   
   .stat-label {
     margin-bottom: 0;
   }
+  
+  .stat-value {
+    font-size: 14px;
+    text-align: right;
+  }
+}
+
+/* Dark Theme Support */
+.dark-theme .collection-card {
+  background: var(--bg-primary, #1a1a2e) !important;
+  border-color: var(--border-glass, rgba(255, 255, 255, 0.1)) !important;
+  color: var(--text-primary, #e4e4e7) !important;
+}
+
+.dark-theme .collection-body h3 {
+  color: var(--text-primary, #e4e4e7) !important;
+}
+
+.dark-theme .collection-description {
+  color: var(--text-secondary, #a1a1aa) !important;
+}
+
+.dark-theme .stat-item {
+  background: var(--bg-tertiary, #0f3460) !important;
+}
+
+.dark-theme .stat-label {
+  color: var(--text-secondary, #a1a1aa) !important;
+}
+
+.dark-theme .stat-value {
+  color: var(--text-primary, #e4e4e7) !important;
+}
+
+.dark-theme .stat-value.positive {
+  color: var(--success, #10b981) !important;
+}
+
+.dark-theme .stat-value.negative {
+  color: var(--error, #ef4444) !important;
+}
+
+.dark-theme .category-chip {
+  background: var(--bg-tertiary, #0f3460) !important;
+  color: var(--blue-primary, #3b82f6) !important;
+}
+
+.dark-theme .tag {
+  background: var(--bg-tertiary, #0f3460) !important;
+  color: var(--text-secondary, #a1a1aa) !important;
+}
+
+.dark-theme .empty-collection-notice {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.dark-theme .empty-text {
+  color: #fbbf24 !important;
+}
+
+.dark-theme .collection-footer {
+  border-color: var(--border-glass, rgba(255, 255, 255, 0.1)) !important;
+}
+
+.dark-theme .view-collection-btn {
+  color: var(--blue-primary, #3b82f6) !important;
+}
+
+.dark-theme .view-collection-btn:hover {
+  background: var(--bg-tertiary, #0f3460) !important;
 }

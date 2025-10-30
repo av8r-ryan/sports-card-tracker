@@ -1,0 +1,769 @@
+.reduced-motion-mode {
+  position: relative;
+}
+
+.motion-toggle {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 16px;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.motion-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.motion-toggle:active {
+  transform: translateY(0);
+}
+
+.motion-icon {
+  font-size: 1.2rem;
+}
+
+.motion-text {
+  font-size: 0.8rem;
+}
+
+/* Reduced motion mode styles */
+.reduced-motion-mode.reduced-motion {
+  --animation-duration: 0.01ms;
+  --animation-iteration-count: 1;
+  --transition-duration: 0.01ms;
+  --transition-delay: 0ms;
+}
+
+.reduced-motion-mode.reduced-motion *,
+.reduced-motion-mode.reduced-motion *::before,
+.reduced-motion-mode.reduced-motion *::after {
+  animation-duration: var(--animation-duration) !important;
+  animation-iteration-count: var(--animation-iteration-count) !important;
+  animation-delay: 0ms !important;
+  transition-duration: var(--transition-duration) !important;
+  transition-delay: var(--transition-delay) !important;
+  scroll-behavior: auto !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-fade-in,
+.reduced-motion-mode.reduced-motion .animate-fade-in-up,
+.reduced-motion-mode.reduced-motion .animate-fade-in-down,
+.reduced-motion-mode.reduced-motion .animate-fade-in-left,
+.reduced-motion-mode.reduced-motion .animate-fade-in-right {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-slide-in,
+.reduced-motion-mode.reduced-motion .animate-slide-in-up,
+.reduced-motion-mode.reduced-motion .animate-slide-in-down,
+.reduced-motion-mode.reduced-motion .animate-slide-in-left,
+.reduced-motion-mode.reduced-motion .animate-slide-in-right {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-zoom-in,
+.reduced-motion-mode.reduced-motion .animate-zoom-out {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-rotate,
+.reduced-motion-mode.reduced-motion .animate-spin {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-bounce,
+.reduced-motion-mode.reduced-motion .animate-pulse {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-wiggle,
+.reduced-motion-mode.reduced-motion .animate-shake {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-float,
+.reduced-motion-mode.reduced-motion .animate-float-slow {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-heartbeat {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-glow,
+.reduced-motion-mode.reduced-motion .animate-shimmer {
+  animation: none !important;
+  filter: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-ripple {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-typewriter {
+  animation: none !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-blink {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-flip,
+.reduced-motion-mode.reduced-motion .animate-flip-reverse {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-slide-scale {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-gradient-shift {
+  animation: none !important;
+  background: var(--gradient-primary) !important;
+}
+
+.reduced-motion-mode.reduced-motion .animate-shimmer-effect {
+  animation: none !important;
+  background: var(--gradient-primary) !important;
+}
+
+/* Disable specific animations */
+.reduced-motion-mode.reduced-motion [data-animate] {
+  animation: none !important;
+  transform: none !important;
+}
+
+.reduced-motion-mode.reduced-motion [data-transition] {
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion [data-motion] {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Disable Framer Motion animations */
+.reduced-motion-mode.reduced-motion [data-framer-motion] {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-div {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-span {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-button {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-img {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-h1,
+.reduced-motion-mode.reduced-motion .motion-h2,
+.reduced-motion-mode.reduced-motion .motion-h3,
+.reduced-motion-mode.reduced-motion .motion-h4,
+.reduced-motion-mode.reduced-motion .motion-h5,
+.reduced-motion-mode.reduced-motion .motion-h6 {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-p {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-div {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-section {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-article {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-aside {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-nav {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-header {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-footer {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-main {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-ul {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-ol {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-li {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-a {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-input {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-textarea {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-select {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-label {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-form {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-fieldset {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-legend {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-table {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-thead {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-tbody {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-tfoot {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-tr {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-th {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-td {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-caption {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-colgroup {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-col {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-figure {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-figcaption {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-blockquote {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-cite {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-q {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-abbr {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-acronym {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-address {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-bdo {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-big {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-small {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-sub {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-sup {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-tt {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-i {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-b {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-u {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-s {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-strike {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-del {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-ins {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-em {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-strong {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-dfn {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-code {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-samp {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-kbd {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-var {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-pre {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-xmp {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-plaintext {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-listing {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-html {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-head {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-body {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-title {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-base {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-isindex {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-link {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-meta {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-style {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-script {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-noscript {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-applet {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-object {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-param {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-embed {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-iframe {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-map {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-area {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-img {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-object {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-param {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-embed {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-iframe {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-map {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-area {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.reduced-motion-mode.reduced-motion .motion-img {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .motion-toggle {
+    bottom: 10px;
+    left: 10px;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .motion-text {
+    display: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .motion-toggle {
+    display: none;
+  }
+  
+  .reduced-motion-mode.reduced-motion * {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

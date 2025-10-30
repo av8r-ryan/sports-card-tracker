@@ -24,7 +24,7 @@ const initializeDefaults = async () => {
   users.set(adminId, {
     id: adminId,
     username: 'admin',
-    email: 'admin@cardtracker.com',
+    email: 'admin@sportscard.local',
     password: adminPassword,
     role: 'admin',
     profilePhoto: null,
@@ -46,9 +46,79 @@ const initializeDefaults = async () => {
 
   // Add admin to default collection
   collectionMemberships.set(adminId, [defaultCollectionId]);
+
+  // Add some sample cards
+  const sampleCards = [
+    {
+      id: 'card-1',
+      player: 'Michael Jordan',
+      team: 'Chicago Bulls',
+      year: 1986,
+      brand: 'Fleer',
+      category: 'Basketball',
+      cardNumber: '57',
+      parallel: 'Regular',
+      condition: 'Mint',
+      gradingCompany: 'PSA',
+      purchasePrice: 1500,
+      purchaseDate: '2023-01-15',
+      currentValue: 2500,
+      images: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=600&fit=crop&crop=center'],
+      notes: 'Iconic rookie card in excellent condition',
+      createdBy: adminId,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'card-2',
+      player: 'LeBron James',
+      team: 'Cleveland Cavaliers',
+      year: 2003,
+      brand: 'Topps',
+      category: 'Basketball',
+      cardNumber: '111',
+      parallel: 'Regular',
+      condition: 'Near Mint',
+      gradingCompany: 'BGS',
+      purchasePrice: 800,
+      purchaseDate: '2023-02-20',
+      currentValue: 1200,
+      images: ['https://images.unsplash.com/photo-1546519638-68e1090ffcbb?w=400&h=600&fit=crop&crop=center'],
+      notes: 'LeBron rookie card, great investment',
+      createdBy: adminId,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: 'card-3',
+      player: 'Tom Brady',
+      team: 'New England Patriots',
+      year: 2000,
+      brand: 'Topps Chrome',
+      category: 'Football',
+      cardNumber: '236',
+      parallel: 'Refractor',
+      condition: 'Mint',
+      gradingCompany: 'PSA',
+      purchasePrice: 2000,
+      purchaseDate: '2023-03-10',
+      currentValue: 3500,
+      images: ['https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=400&h=600&fit=crop&crop=center'],
+      notes: 'Brady rookie refractor, pristine condition',
+      createdBy: adminId,
+      createdAt: now,
+      updatedAt: now
+    }
+  ];
+
+  // Add sample cards to the database
+  sampleCards.forEach(card => {
+    cards.set(card.id, card);
+  });
   
-  console.log('Default admin user and collection created');
-  console.log('Admin login: admin@cardtracker.com / admin123');
+    console.log('Default admin user and collection created');
+    console.log('Sample cards added:', sampleCards.length);
+    console.log('Admin login: admin@sportscard.local / admin123');
 };
 
 // Request logging middleware

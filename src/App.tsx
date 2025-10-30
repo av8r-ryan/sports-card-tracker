@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CardProvider, useCards } from './context/DexieCardContext'; // Use Dexie context
+import { ThemeProvider } from './context/ThemeContext';
 import { useApi } from './hooks/useApi';
 import Layout from './components/Layout/Layout';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -18,6 +20,9 @@ import Reports from './components/Reports/Reports';
 import EbayListings from './components/EbayListings/EbayListings';
 import { BackupRestore } from './components/BackupRestore/BackupRestore';
 import About from './components/About/About';
+import Contact from './components/Contact/Contact';
+import Docs from './components/Docs/Docs';
+import NotFound from './components/NotFound/NotFound';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import DebugPanel from './components/DebugPanel/DebugPanel';
 import DevTools from './components/DevTools/DevTools';
@@ -32,10 +37,10 @@ import './utils/debugBackup'; // Import backup debug utility
 import './utils/resetAdmin'; // Import admin reset utility
 import './App.css';
 
-type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about';
+type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about' | 'contact' | 'docs' | '404';
 type FormType = 'classic' | 'enhanced' | 'photo';
 
-const AppContent: React.FC = () => {
+const AppRoutes: React.FC = () => {
   const { state: authState } = useAuth();
   const { addCard, updateCard } = useCards();
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
@@ -44,10 +49,11 @@ const AppContent: React.FC = () => {
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [formType, setFormType] = useState<FormType>('enhanced'); // Form type selection
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
+  const location = useLocation();
   
   useApi();
   
-  logInfo('App', 'Application initialized');
+  logInfo('App', 'Application initialized', { pathname: location.pathname });
 
   // Handle hash changes for collection navigation
   React.useEffect(() => {
@@ -68,6 +74,38 @@ const AppContent: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // Handle URL-based navigation
+  React.useEffect(() => {
+    const path = location.pathname;
+    logInfo('App', 'URL changed', { path });
+    
+    if (path === '/login' || path === '/register') {
+      setAuthMode(path === '/login' ? 'login' : 'register');
+    } else if (path === '/') {
+      setCurrentView('dashboard');
+    } else {
+      const viewMap: { [key: string]: View } = {
+        '/dashboard': 'dashboard',
+        '/inventory': 'inventory',
+        '/add-card': 'add-card',
+        '/admin': 'admin',
+        '/profile': 'profile',
+        '/reports': 'reports',
+        '/ebay': 'ebay',
+        '/backup': 'backup',
+        '/users': 'users',
+        '/collections': 'collections',
+        '/about': 'about',
+        '/contact': 'contact',
+        '/docs': 'docs'
+      };
+      
+      if (viewMap[path]) {
+        setCurrentView(viewMap[path]);
+      }
+    }
+  }, [location.pathname]);
+
   // Show auth form if user is not authenticated
   if (!authState.user) {
     return (
@@ -83,6 +121,28 @@ const AppContent: React.FC = () => {
     setCurrentView(view);
     setSelectedCard(null);
     setEditingCard(null);
+    
+    // Navigate to the appropriate URL
+    const viewToPath: { [key in View]: string } = {
+      'dashboard': '/dashboard',
+      'inventory': '/inventory',
+      'add-card': '/add-card',
+      'admin': '/admin',
+      'profile': '/profile',
+      'reports': '/reports',
+      'ebay': '/ebay',
+      'backup': '/backup',
+      'users': '/users',
+      'collections': '/collections',
+      'about': '/about',
+      'contact': '/contact',
+      'docs': '/docs',
+      '404': '/404'
+    };
+    
+    const path = viewToPath[view] || '/';
+    window.history.pushState({}, '', path);
+    
     // Clear collection filter when navigating away from inventory
     if (view !== 'inventory') {
       setSelectedCollectionId(null);
@@ -238,8 +298,14 @@ const AppContent: React.FC = () => {
         return <Collections />;
       case 'about':
         return <About />;
+      case 'contact':
+        return <Contact />;
+      case 'docs':
+        return <Docs />;
+      case '404':
+        return <NotFound onNavigateHome={() => setCurrentView('dashboard')} />;
       default:
-        return <Dashboard />;
+        return <NotFound onNavigateHome={() => setCurrentView('dashboard')} />;
     }
   };
 
@@ -264,11 +330,33 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <CardProvider>
-          <AppContent />
-        </CardProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <Router>
+          <AuthProvider>
+            <CardProvider>
+              <Routes>
+                <Route path="/login" element={<AppRoutes />} />
+                <Route path="/register" element={<AppRoutes />} />
+                <Route path="/" element={<AppRoutes />} />
+                <Route path="/dashboard" element={<AppRoutes />} />
+                <Route path="/inventory" element={<AppRoutes />} />
+                <Route path="/add-card" element={<AppRoutes />} />
+                <Route path="/admin" element={<AppRoutes />} />
+                <Route path="/profile" element={<AppRoutes />} />
+                <Route path="/reports" element={<AppRoutes />} />
+                <Route path="/ebay" element={<AppRoutes />} />
+                <Route path="/backup" element={<AppRoutes />} />
+                <Route path="/users" element={<AppRoutes />} />
+                <Route path="/collections" element={<AppRoutes />} />
+                <Route path="/about" element={<AppRoutes />} />
+                <Route path="/contact" element={<AppRoutes />} />
+                <Route path="/docs" element={<AppRoutes />} />
+                <Route path="*" element={<NotFound onNavigateHome={() => window.location.href = '/'} />} />
+              </Routes>
+            </CardProvider>
+          </AuthProvider>
+        </Router>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

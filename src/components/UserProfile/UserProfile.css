@@ -470,3 +470,333 @@
     transform: none;
   }
 }
+
+/* Achievements Section */
+.achievements-section {
+  margin-bottom: 30px;
+  padding: 30px;
+}
+
+.section-title {
+  margin: 0 0 25px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.achievement-card {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.achievement-card.unlocked {
+  border-color: var(--success-primary);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.achievement-card.locked {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+}
+
+.achievement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.achievement-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.achievement-card.unlocked .achievement-icon {
+  background: var(--gradient-success);
+  animation: pulse 2s infinite;
+}
+
+.achievement-content {
+  flex: 1;
+}
+
+.achievement-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.achievement-content p {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.achievement-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.achievement-card.unlocked .progress-fill {
+  background: var(--gradient-success);
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* Activity Timeline Section */
+.activity-section {
+  margin-bottom: 30px;
+  padding: 30px;
+}
+
+.activity-timeline {
+  position: relative;
+}
+
+.activity-timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--gradient-primary);
+  opacity: 0.3;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 20px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.activity-item:last-child {
+  margin-bottom: 0;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: var(--shadow-md);
+}
+
+.activity-content {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px 20px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-glass);
+}
+
+.activity-content h4 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.activity-content p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.no-activity {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+/* Settings Section */
+.settings-section {
+  margin-bottom: 30px;
+  padding: 30px;
+}
+
+.settings-content {
+  padding: 20px 0;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-item label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.setting-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-primary);
+}
+
+.setting-item select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--border-radius-sm);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  min-width: 120px;
+}
+
+.btn-secondary {
+  background: var(--gradient-secondary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Enhanced Profile Styling */
+.user-profile {
+  background: var(--gradient-background);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.profile-header h1 {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+}
+
+.profile-card {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .achievements-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .achievement-card {
+    padding: 15px;
+  }
+  
+  .achievement-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  
+  .activity-timeline::before {
+    left: 15px;
+  }
+  
+  .activity-item {
+    padding-left: 15px;
+  }
+  
+  .activity-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+  
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .setting-item select {
+    min-width: 100%;
+  }
+}

@@ -5,10 +5,11 @@
 }
 
 .card-form {
-  background: white;
+  background: var(--bg-primary, white);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md, 0 2px 4px rgba(0, 0, 0, 0.1));
   overflow: hidden;
+  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.1));
 }
 
 .form-header {
@@ -57,7 +58,7 @@
 .form-group label {
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary, #333);
   font-size: 0.9rem;
 }
 
@@ -65,12 +66,13 @@
 .form-group select,
 .form-group textarea {
   padding: 12px;
+  background: var(--bg-secondary, white);
+  color: var(--text-primary, #333);
   font-size: 1rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-light, #e0e0e0);
   border-radius: 6px;
   outline: none;
-  transition: border-color 0.2s;
-  background: white;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .form-group input:focus,
@@ -216,3 +218,292 @@
   color: #dc3545;
   margin-left: 2px;
 }
+
+/* Step Wizard Styles */
+.step-progress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  padding: 0 20px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  border-radius: var(--border-radius-lg);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  margin: 0 5px;
+  position: relative;
+}
+
+.step-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.step-item.active {
+  background: var(--gradient-primary);
+  border-color: var(--accent-primary);
+  color: white;
+  box-shadow: var(--shadow-lg);
+}
+
+.step-item.completed {
+  background: var(--gradient-success);
+  border-color: var(--success-primary);
+  color: white;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.step-item.active .step-number {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.step-item.completed .step-number {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.step-content h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.step-content p {
+  margin: 0;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Form Step Styles */
+.form-step {
+  padding: 30px;
+  min-height: 400px;
+}
+
+.step-title {
+  margin: 0 0 30px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+/* Step Navigation */
+.step-navigation {
+  padding: 30px;
+  border-top: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.step-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.step-spacer {
+  flex: 1;
+}
+
+.step-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.prev-btn {
+  background: var(--gradient-secondary);
+  color: white;
+}
+
+.next-btn {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.submit-btn {
+  background: var(--gradient-success);
+  color: white;
+  padding: 12px 32px;
+}
+
+.step-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.step-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.step-actions {
+  text-align: center;
+}
+
+.cancel-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-glass);
+  padding: 10px 20px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: var(--gradient-danger);
+  color: white;
+  border-color: var(--danger-primary);
+}
+
+/* Error Styling */
+.error-message {
+  color: var(--danger-primary);
+  font-size: 0.8rem;
+  margin-top: 5px;
+  display: block;
+}
+
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+  border-color: var(--danger-primary);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Enhanced Form Styling */
+.card-form {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+
+.form-header {
+  background: var(--gradient-primary);
+  padding: 40px 30px;
+  text-align: center;
+  color: white;
+  margin-bottom: 0;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+.form-header h2 {
+  margin: 0 0 10px 0;
+  color: white;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.form-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .step-progress {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 10px;
+  }
+  
+  .step-item {
+    margin: 0;
+    padding: 12px 15px;
+  }
+  
+  .step-content h4 {
+    font-size: 0.8rem;
+  }
+  
+  .step-content p {
+    font-size: 0.7rem;
+  }
+  
+  .step-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .step-spacer {
+    display: none;
+  }
+  
+  .form-step {
+    padding: 20px;
+    min-height: 300px;
+  }
+  
+  .step-title {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+}
+
+/* === ADDITIONAL DARK THEME SUPPORT === */
+.dark-theme .card-form-container,
+.dark-theme .form-step,
+.dark-theme .step-progress {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .card-form {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+.dark-theme .form-group label {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .form-group input,
+.dark-theme .form-group select,
+.dark-theme .form-group textarea {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+}
+
+.dark-theme .step-item {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+.dark-theme .step-item.active {
+  border-color: var(--primary-color) !important;
+  background: var(--bg-tertiary) !important;
+}
+

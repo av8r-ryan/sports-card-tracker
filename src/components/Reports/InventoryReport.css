@@ -343,3 +343,50 @@
     padding: 8px 12px;
   }
 }
+/* === COMPREHENSIVE DARK THEME === */
+.dark-theme .inventory-report,
+.dark-theme .inventory-container,
+.dark-theme .inventory-header,
+.dark-theme .inventory-content {
+  background: var(--bg-secondary, #16213e) !important;
+  color: var(--text-primary, #e4e4e7) !important;
+}
+
+.dark-theme .inventory-card,
+.dark-theme .item-card,
+.dark-theme .category-card {
+  background: var(--bg-primary, #1a1a2e) !important;
+  border-color: var(--border-glass, rgba(255, 255, 255, 0.1)) !important;
+  color: var(--text-primary, #e4e4e7) !important;
+}
+
+.dark-theme .inventory-card h2,
+.dark-theme .inventory-card h3,
+.dark-theme .item-title {
+  color: var(--text-primary, #e4e4e7) !important;
+}
+
+.dark-theme .item-value,
+.dark-theme .category-total {
+  color: #ffffff !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.dark-theme table {
+  background: transparent !important;
+}
+
+.dark-theme th {
+  background: var(--bg-tertiary, #0f3460) !important;
+  color: var(--text-primary, #e4e4e7) !important;
+  border-color: var(--border-medium, #3f3f46) !important;
+}
+
+.dark-theme td {
+  color: var(--text-primary, #e4e4e7) !important;
+  border-color: var(--border-medium, #3f3f46) !important;
+}
+
+.dark-theme tr:hover {
+  background: var(--bg-quaternary, #162447) !important;
+}

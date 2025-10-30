@@ -1,0 +1,283 @@
+.collapsible-menu {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: var(--transition-smooth);
+}
+
+.collapsible-menu-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.collapsible-menu-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: var(--transition-smooth);
+}
+
+.collapsible-menu-header:hover::before {
+  left: 100%;
+}
+
+.collapsible-menu-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.collapsible-menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--blue-primary);
+}
+
+.collapsible-menu-text {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.collapsible-menu-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-500);
+  transition: var(--transition-fast);
+}
+
+.collapsible-menu-content {
+  overflow: hidden;
+}
+
+.collapsible-menu-inner {
+  padding: var(--space-2) var(--space-4) var(--space-4);
+}
+
+/* Size Variants */
+.collapsible-menu-sm .collapsible-menu-header {
+  padding: var(--space-3);
+}
+
+.collapsible-menu-sm .collapsible-menu-text {
+  font-size: var(--text-sm);
+}
+
+.collapsible-menu-sm .collapsible-menu-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.collapsible-menu-lg .collapsible-menu-header {
+  padding: var(--space-6);
+}
+
+.collapsible-menu-lg .collapsible-menu-text {
+  font-size: var(--text-lg);
+}
+
+.collapsible-menu-lg .collapsible-menu-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* Style Variants */
+.collapsible-menu-default {
+  background: white;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.collapsible-menu-default .collapsible-menu-header {
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.collapsible-menu-default .collapsible-menu-header:hover {
+  background: var(--gray-100);
+}
+
+.collapsible-menu-glass {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-lg);
+}
+
+.collapsible-menu-glass .collapsible-menu-header {
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.collapsible-menu-glass .collapsible-menu-header:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.collapsible-menu-glass .collapsible-menu-title {
+  color: var(--gray-800);
+}
+
+.collapsible-menu-gradient {
+  background: var(--gradient-primary);
+  border: none;
+  box-shadow: var(--shadow-lg);
+}
+
+.collapsible-menu-gradient .collapsible-menu-header {
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.collapsible-menu-gradient .collapsible-menu-header:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.collapsible-menu-gradient .collapsible-menu-title {
+  color: white;
+}
+
+.collapsible-menu-gradient .collapsible-menu-chevron {
+  color: white;
+}
+
+.collapsible-menu-minimal {
+  background: transparent;
+  border: 1px solid var(--gray-300);
+  box-shadow: none;
+}
+
+.collapsible-menu-minimal .collapsible-menu-header {
+  background: transparent;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.collapsible-menu-minimal .collapsible-menu-header:hover {
+  background: var(--gray-50);
+}
+
+/* Hover Effects */
+.collapsible-menu-header:hover .collapsible-menu-chevron {
+  color: var(--blue-primary);
+  transform: scale(1.1);
+}
+
+.collapsible-menu-header:hover .collapsible-menu-icon {
+  color: var(--orange-primary);
+  transform: scale(1.1);
+}
+
+/* Focus States */
+.collapsible-menu-header:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.collapsible-menu-header:focus-visible {
+  outline: 2px solid var(--blue-primary);
+  outline-offset: 2px;
+}
+
+/* Active States */
+.collapsible-menu-header:active {
+  transform: scale(0.98);
+}
+
+/* Content Styling */
+.collapsible-menu-inner > * {
+  margin-bottom: var(--space-2);
+}
+
+.collapsible-menu-inner > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Animation Enhancements */
+.collapsible-menu {
+  transition: var(--transition-smooth);
+}
+
+.collapsible-menu:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .collapsible-menu-header {
+    padding: var(--space-3);
+  }
+  
+  .collapsible-menu-text {
+    font-size: var(--text-sm);
+  }
+  
+  .collapsible-menu-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .collapsible-menu-default {
+    background: var(--gray-800);
+    border-color: var(--gray-700);
+  }
+  
+  .collapsible-menu-default .collapsible-menu-header {
+    background: var(--gray-700);
+    border-bottom-color: var(--gray-600);
+  }
+  
+  .collapsible-menu-default .collapsible-menu-header:hover {
+    background: var(--gray-600);
+  }
+  
+  .collapsible-menu-default .collapsible-menu-title {
+    color: var(--gray-200);
+  }
+  
+  .collapsible-menu-minimal {
+    border-color: var(--gray-600);
+  }
+  
+  .collapsible-menu-minimal .collapsible-menu-header {
+    border-bottom-color: var(--gray-600);
+  }
+  
+  .collapsible-menu-minimal .collapsible-menu-header:hover {
+    background: var(--gray-700);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .collapsible-menu,
+  .collapsible-menu-header,
+  .collapsible-menu-chevron,
+  .collapsible-menu-icon {
+    transition: none;
+  }
+  
+  .collapsible-menu:hover {
+    transform: none;
+  }
+}

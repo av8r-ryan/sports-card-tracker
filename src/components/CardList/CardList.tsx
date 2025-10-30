@@ -1,9 +1,11 @@
-import React, { useState, useMemo, memo, useCallback } from 'react';
+import React, { useState, useMemo, memo, useCallback, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCards } from '../../context/DexieCardContext';
 import { Card, FilterOptions, SortOption } from '../../types';
 import { BulkEbayExport } from '../EbayListing/BulkEbayExport';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import MoveCardsModal from '../MoveCardsModal/MoveCardsModal';
+import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import { collectionsDatabase } from '../../db/collectionsDatabase';
 import './CardList.css';
 
@@ -22,6 +24,13 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
   const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
   const [showMoveModal, setShowMoveModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const itemsPerPage = 12;
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Load collection info when selectedCollectionId changes
   React.useEffect(() => {
@@ -36,8 +45,39 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
     }
   }, [selectedCollectionId]);
 
+  // Infinite scroll setup
+  useEffect(() => {
+    if (observerRef.current) observerRef.current.disconnect();
+    
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore && filteredCards.length > currentPage * itemsPerPage) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setCurrentPage(prev => prev + 1);
+            setIsLoadingMore(false);
+          }, 500);
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-  const filteredAndSortedCards = useMemo(() => {
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) observerRef.current.disconnect();
+    };
+  }, [isLoadingMore, currentPage, itemsPerPage]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, searchTerm, sortOption]);
+
+
+  const filteredCards = useMemo(() => {
     let filtered = state.cards.filter(card => {
       // First apply collection filter if provided
       if (selectedCollectionId && card.collectionId !== selectedCollectionId) {
@@ -88,6 +128,24 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
     return filtered;
   }, [state.cards, filters, sortOption, searchTerm, selectedCollectionId]);
 
+  // Get paginated cards
+  const paginatedCards = useMemo(() => {
+    return filteredCards.slice(0, currentPage * itemsPerPage);
+  }, [filteredCards, currentPage, itemsPerPage]);
+
+  // Card flip functionality
+  const toggleCardFlip = useCallback((cardId: string) => {
+    setFlippedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(cardId)) {
+        newSet.delete(cardId);
+      } else {
+        newSet.add(cardId);
+      }
+      return newSet;
+    });
+  }, []);
+
   const handleDeleteCard = useCallback(async (cardId: string) => {
     if (window.confirm('Are you sure you want to delete this card?')) {
       try {
@@ -116,8 +174,8 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
   }, []);
 
   const selectAll = useCallback(() => {
-    setSelectedCards(new Set(filteredAndSortedCards.map(card => card.id)));
-  }, [filteredAndSortedCards]);
+    setSelectedCards(new Set(paginatedCards.map((card: any) => card.id)));
+  }, [paginatedCards]);
 
   const clearSelection = useCallback(() => {
     setSelectedCards(new Set());
@@ -180,7 +238,7 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
           )}
         </h1>
         <div className="card-count">
-          {filteredAndSortedCards.length} of {state.cards.length} cards
+          {filteredCards.length} of {state.cards.length} cards
           {selectedCollection && (
             <button 
               onClick={() => window.location.hash = ''} 
@@ -190,6 +248,23 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
               ✕ Clear Collection Filter
             </button>
           )}
+        </div>
+        
+        <div className="view-toggle">
+          <button
+            className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="Grid View"
+          >
+            ⊞
+          </button>
+          <button
+            className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+            onClick={() => setViewMode('list')}
+            title="List View"
+          >
+            ☰
+          </button>
         </div>
       </div>
 
@@ -291,7 +366,7 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
       </div>
 
       {/* Bulk Selection Controls */}
-      {filteredAndSortedCards.length > 0 && (
+      {filteredCards.length > 0 && (
         <div className="bulk-selection-controls">
           <div className="selection-info">
             {selectedCards.size > 0 ? (
@@ -306,65 +381,144 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
               </>
             ) : (
               <button onClick={selectAll} className="select-all-btn">
-                Select All ({filteredAndSortedCards.length})
+                Select All ({filteredCards.length})
               </button>
             )}
           </div>
         </div>
       )}
 
-      <div className="cards-grid">
-        {filteredAndSortedCards.map(card => (
-          <div key={card.id} className={`card-item ${card.sellDate ? 'sold' : ''} ${selectedCards.has(card.id) ? 'selected' : ''}`}>
-            <div className="card-selection">
-              <input
-                type="checkbox"
-                checked={selectedCards.has(card.id)}
-                onChange={() => toggleCardSelection(card.id)}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
-            <div className="card-actions">
-              {onEditCard && (
-                <button onClick={() => onEditCard(card)} className="edit-btn">
-                  Edit
-                </button>
-              )}
-              <button onClick={() => handleDeleteCard(card.id)} className="delete-btn">
-                Delete
-              </button>
-            </div>
-            
-            <div className="card-content" onClick={() => onCardSelect && onCardSelect(card)}>
-              {card.sellDate && (
-                <div className="sold-banner">
-                  <span>SOLD</span>
-                </div>
-              )}
-              <div className="card-image-section">
-                <div className="card-image-container">
-                  <img 
-                    src={card.images && card.images.length > 0 ? card.images[0] : '/generic.png'} 
-                    alt={`${card.player} card`} 
-                    className="card-main-image" 
-                  />
-                  {card.images && card.images.length > 1 && (
-                    <div className="image-count-badge">
-                      +{card.images.length - 1}
-                    </div>
-                  )}
-                </div>
+      <motion.div 
+        className={`cards-container ${viewMode === 'list' ? 'list-view' : 'grid-view'}`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <AnimatePresence mode="popLayout">
+          {paginatedCards.map((card, index) => (
+            <motion.div
+              key={card.id}
+              className={`card-item card-glass hover-lift ${card.sellDate ? 'sold' : ''} ${selectedCards.has(card.id) ? 'selected' : ''}`}
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.9 }}
+              transition={{ 
+                duration: 0.4, 
+                delay: index * 0.05,
+                ease: 'easeOut'
+              }}
+              whileHover={{ 
+                scale: 1.02, 
+                rotateY: 5,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="card-selection">
+                <input
+                  type="checkbox"
+                  checked={selectedCards.has(card.id)}
+                  onChange={() => toggleCardSelection(card.id)}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+              <div className="card-actions">
+                {onEditCard && (
+                  <motion.button 
+                    onClick={() => onEditCard(card)} 
+                    className="edit-btn"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    Edit
+                  </motion.button>
+                )}
+                <motion.button 
+                  onClick={() => handleDeleteCard(card.id)} 
+                  className="delete-btn"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  Delete
+                </motion.button>
               </div>
               
-              <div className="card-player-name">
-                <h4>{card.player}</h4>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+              <motion.div 
+                className="card-flip-container"
+                onClick={() => toggleCardFlip(card.id)}
+                whileHover={{ scale: 1.02 }}
+              >
+                <motion.div
+                  className={`card-flip-inner ${flippedCards.has(card.id) ? 'flipped' : ''}`}
+                  animate={{ rotateY: flippedCards.has(card.id) ? 180 : 0 }}
+                  transition={{ duration: 0.6, ease: 'easeInOut' }}
+                >
+                  {/* Front of card */}
+                  <div className="card-front">
+                    {card.sellDate && (
+                      <div className="sold-banner">
+                        <span>SOLD</span>
+                      </div>
+                    )}
+                    <div className="card-image-section">
+                      <div className="card-image-container">
+                        <img 
+                          src={card.images && card.images.length > 0 ? card.images[0] : '/generic.png'} 
+                          alt={`${card.player} card`} 
+                          className="card-main-image" 
+                        />
+                        {card.images && card.images.length > 1 && (
+                          <div className="image-count-badge">
+                            +{card.images.length - 1}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="card-player-name">
+                      <h4>{card.player}</h4>
+                    </div>
+                  </div>
 
-      {filteredAndSortedCards.length === 0 && (
+                  {/* Back of card */}
+                  <div className="card-back">
+                    <div className="card-details">
+                      <h4>{card.player}</h4>
+                      <p><strong>Team:</strong> {card.team}</p>
+                      <p><strong>Year:</strong> {card.year}</p>
+                      <p><strong>Brand:</strong> {card.brand}</p>
+                      <p><strong>Value:</strong> ${card.currentValue?.toLocaleString()}</p>
+                      {card.notes && (
+                        <p><strong>Notes:</strong> {card.notes}</p>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+        ))}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Infinite scroll loading indicator */}
+      {isLoadingMore && (
+        <motion.div 
+          className="loading-more"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className="loading-spinner"></div>
+          <p>Loading more cards...</p>
+        </motion.div>
+      )}
+
+      {/* Load more trigger */}
+      {filteredCards.length > currentPage * itemsPerPage && (
+        <div ref={loadMoreRef} className="load-more-trigger"></div>
+      )}
+
+      {filteredCards.length === 0 && (
         <div className="empty-state">
           <p>No cards found matching your criteria.</p>
           {(Object.keys(filters).length > 0 || searchTerm) && (
@@ -377,7 +531,7 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
       
       {showBulkEbay && (
         <BulkEbayExport 
-          cards={filteredAndSortedCards} 
+          cards={filteredCards} 
           onClose={() => setShowBulkEbay(false)} 
         />
       )}

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useCards } from '../../context/DexieCardContext';
 import { cardDatabase } from '../../db/simpleDatabase';
 import { getAutoBackups } from '../../utils/backupRestore';
 import { backupDatabase } from '../../db/backupDatabase';
+import AnimatedWrapper from '../Animation/AnimatedWrapper';
+import CollapsibleMenu from '../UI/CollapsibleMenu';
 import './AdminDashboard.css';
 
 interface AdminStats {
@@ -212,181 +215,287 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="admin-dashboard">
-      <h1>🔧 Admin Dashboard</h1>
+      <AnimatedWrapper animation="fadeInDown" duration={0.6}>
+        <h1 className="text-gradient">🔧 Admin Dashboard</h1>
+      </AnimatedWrapper>
 
       {stats && (
         <>
-          <div className="admin-stats">
-            <div className="stat-card">
-              <h3>Total Users</h3>
-              <p className="stat-value">{stats.totalUsers.toLocaleString()}</p>
+          <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.2}>
+            <div className="admin-stats">
+              <motion.div 
+                className="stat-card card-glass hover-lift"
+                whileHover={{ scale: 1.05, rotateY: 5 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <h3>Total Users</h3>
+                <p className="stat-value animate-pulse">{stats.totalUsers.toLocaleString()}</p>
+              </motion.div>
+              <motion.div 
+                className="stat-card card-glass hover-lift"
+                whileHover={{ scale: 1.05, rotateY: 5 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <h3>Total Cards</h3>
+                <p className="stat-value animate-pulse">{stats.totalCards.toLocaleString()}</p>
+              </motion.div>
+              <motion.div 
+                className="stat-card card-glass hover-lift"
+                whileHover={{ scale: 1.05, rotateY: 5 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <h3>Total Value</h3>
+                <p className="stat-value animate-pulse">${stats.totalValue.toLocaleString()}</p>
+              </motion.div>
+              <motion.div 
+                className="stat-card card-glass hover-lift"
+                whileHover={{ scale: 1.05, rotateY: 5 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <h3>Average Card Value</h3>
+                <p className="stat-value animate-pulse">${stats.averageCardValue.toFixed(2)}</p>
+              </motion.div>
             </div>
-            <div className="stat-card">
-              <h3>Total Cards</h3>
-              <p className="stat-value">{stats.totalCards.toLocaleString()}</p>
-            </div>
-            <div className="stat-card">
-              <h3>Total Value</h3>
-              <p className="stat-value">${stats.totalValue.toLocaleString()}</p>
-            </div>
-            <div className="stat-card">
-              <h3>Average Card Value</h3>
-              <p className="stat-value">${stats.averageCardValue.toFixed(2)}</p>
-            </div>
-          </div>
+          </AnimatedWrapper>
 
-          <div className="admin-section">
-            <h2>👥 User Statistics</h2>
-            <div className="user-stats-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Username</th>
-                    <th>Cards</th>
-                    <th>Total Value</th>
-                    <th>Avg Value</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userStats.map(user => (
-                    <tr key={user.userId}>
-                      <td>{user.username}</td>
-                      <td>{user.cardCount.toLocaleString()}</td>
-                      <td>${user.totalValue.toLocaleString()}</td>
-                      <td>${user.avgValue.toFixed(2)}</td>
-                      <td>
-                        <button 
-                          className="clear-user-btn"
-                          onClick={() => {
-                            setSelectedUserId(user.userId);
-                            setShowClearConfirm(true);
-                          }}
-                        >
-                          Clear
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="admin-section">
-            <h2>📊 Category Breakdown (All Users)</h2>
-            <div className="breakdown-grid">
-              {Object.entries(stats.categoriesBreakdown).map(([category, count]) => (
-                <div key={category} className="breakdown-item">
-                  <span className="category">{category}</span>
-                  <span className="count">{count} cards</span>
-                  <span className="percentage">
-                    {((count / stats.totalCards) * 100).toFixed(1)}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="admin-section">
-            <h2>📅 Year Distribution (All Users)</h2>
-            <div className="year-chart">
-              {Object.entries(stats.yearBreakdown)
-                .sort(([a], [b]) => Number(b) - Number(a))
-                .slice(0, 10)
-                .map(([year, count]) => (
-                  <div key={year} className="year-bar">
-                    <span className="year-label">{year}</span>
-                    <div className="bar-container">
-                      <div 
-                        className="bar" 
-                        style={{ width: `${(count / stats.totalCards) * 100}%` }}
-                      />
-                    </div>
-                    <span className="year-count">{count}</span>
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          <div className="admin-section">
-            <h2>💾 Backup & Restore</h2>
-            {backups.length === 0 ? (
-              <div className="backup-info">
-                <p>No backups found</p>
-              </div>
-            ) : (
-              <div className="backup-table">
+          <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.4}>
+            <CollapsibleMenu title="User Statistics" icon="👥" defaultOpen={true}>
+              <div className="user-stats-table">
                 <table>
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Type</th>
-                      <th>User</th>
+                      <th>Username</th>
                       <th>Cards</th>
                       <th>Total Value</th>
-                      <th>Size</th>
+                      <th>Avg Value</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {backups.map((backup, index) => (
-                      <tr key={backup.id || index}>
-                        <td>{new Date(backup.timestamp).toLocaleString()}</td>
+                    {userStats.map((user, index) => (
+                      <motion.tr 
+                        key={user.userId}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                      >
+                        <td>{user.username}</td>
+                        <td>{user.cardCount.toLocaleString()}</td>
+                        <td>${user.totalValue.toLocaleString()}</td>
+                        <td>${user.avgValue.toFixed(2)}</td>
                         <td>
-                          <span className={`backup-type ${backup.type}`}>
-                            {backup.type === 'auto' ? '🔄 Auto' : '📦 Manual'}
-                          </span>
+                          <motion.button 
+                            className="clear-user-btn"
+                            onClick={() => {
+                              setSelectedUserId(user.userId);
+                              setShowClearConfirm(true);
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            Clear
+                          </motion.button>
                         </td>
-                        <td>{backup.userName || 'Unknown'}</td>
-                        <td>{backup.totalCards.toLocaleString()}</td>
-                        <td>${backup.totalValue.toLocaleString()}</td>
-                        <td>{backup.sizeInMB.toFixed(2)} MB</td>
-                      </tr>
+                      </motion.tr>
                     ))}
                   </tbody>
                 </table>
-                <div className="backup-summary">
-                  <p><strong>Total Backups:</strong> {stats.totalBackups}</p>
-                  <p><strong>Total Size:</strong> {backups.reduce((sum, b) => sum + b.sizeInMB, 0).toFixed(2)} MB</p>
-                </div>
               </div>
-            )}
-          </div>
+            </CollapsibleMenu>
+          </AnimatedWrapper>
 
-          <div className="admin-section">
-            <h2>⚙️ Database Management</h2>
-            <div className="admin-actions">
-              <button 
-                onClick={exportDatabaseInfo}
-                className="admin-btn export"
-              >
-                📊 Export Database Info
-              </button>
-              
-              <button 
-                onClick={() => {
-                  setSelectedUserId(null);
-                  setShowClearConfirm(true);
-                }}
-                className="admin-btn danger"
-              >
-                🗑️ Clear All Data
-              </button>
-            </div>
-          </div>
+          <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.6}>
+            <CollapsibleMenu title="Category Breakdown" icon="📊">
+              <div className="breakdown-grid">
+                {Object.entries(stats.categoriesBreakdown).map(([category, count], index) => (
+                  <motion.div 
+                    key={category} 
+                    className="breakdown-item card-glass"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <span className="category">{category}</span>
+                    <span className="count">{count} cards</span>
+                    <span className="percentage">
+                      {((count / stats.totalCards) * 100).toFixed(1)}%
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </CollapsibleMenu>
+          </AnimatedWrapper>
 
-          <div className="admin-section">
-            <h2>ℹ️ System Information</h2>
-            <div className="system-info">
-              <p><strong>App Version:</strong> 1.0.0</p>
-              <p><strong>Database:</strong> Dexie (IndexedDB)</p>
-              <p><strong>Browser:</strong> {navigator.userAgent.split(' ').slice(-2).join(' ')}</p>
-              <p><strong>Platform:</strong> {navigator.userAgent.includes('Mac') ? 'macOS' : navigator.userAgent.includes('Win') ? 'Windows' : navigator.userAgent.includes('Linux') ? 'Linux' : 'Unknown'}</p>
-              <p><strong>Language:</strong> {navigator.language}</p>
-              <p><strong>Current User:</strong> {authState.user?.username} ({authState.user?.email})</p>
-              <p><strong>Current User ID:</strong> {authState.user?.id}</p>
-            </div>
-          </div>
+          <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.8}>
+            <CollapsibleMenu title="Year Distribution" icon="📅">
+              <div className="year-chart">
+                {Object.entries(stats.yearBreakdown)
+                  .sort(([a], [b]) => Number(b) - Number(a))
+                  .slice(0, 10)
+                  .map(([year, count], index) => (
+                    <motion.div 
+                      key={year} 
+                      className="year-bar"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                    >
+                      <span className="year-label">{year}</span>
+                      <div className="bar-container">
+                        <motion.div 
+                          className="bar" 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(count / stats.totalCards) * 100}%` }}
+                          transition={{ duration: 0.8, delay: index * 0.1 }}
+                        />
+                      </div>
+                      <span className="year-count">{count}</span>
+                    </motion.div>
+                  ))}
+              </div>
+            </CollapsibleMenu>
+          </AnimatedWrapper>
+
+          <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={1.0}>
+            <CollapsibleMenu title="Backup & Restore" icon="💾">
+              {backups.length === 0 ? (
+                <div className="backup-info">
+                  <p>No backups found</p>
+                </div>
+              ) : (
+                <div className="backup-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>User</th>
+                        <th>Cards</th>
+                        <th>Total Value</th>
+                        <th>Size</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {backups.map((backup, index) => (
+                        <motion.tr 
+                          key={backup.id || index}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                        >
+                          <td>{new Date(backup.timestamp).toLocaleString()}</td>
+                          <td>
+                            <span className={`backup-type ${backup.type}`}>
+                              {backup.type === 'auto' ? '🔄 Auto' : '📦 Manual'}
+                            </span>
+                          </td>
+                          <td>{backup.userName || 'Unknown'}</td>
+                          <td>{backup.totalCards.toLocaleString()}</td>
+                          <td>${backup.totalValue.toLocaleString()}</td>
+                          <td>{backup.sizeInMB.toFixed(2)} MB</td>
+                        </motion.tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="backup-summary">
+                    <p><strong>Total Backups:</strong> {stats.totalBackups}</p>
+                    <p><strong>Total Size:</strong> {backups.reduce((sum, b) => sum + b.sizeInMB, 0).toFixed(2)} MB</p>
+                  </div>
+                </div>
+              )}
+            </CollapsibleMenu>
+          </AnimatedWrapper>
+
+          <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={1.2}>
+            <CollapsibleMenu title="Database Management" icon="⚙️">
+              <div className="admin-actions">
+                <motion.button 
+                  onClick={exportDatabaseInfo}
+                  className="admin-btn export"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  📊 Export Database Info
+                </motion.button>
+                
+                <motion.button 
+                  onClick={() => {
+                    setSelectedUserId(null);
+                    setShowClearConfirm(true);
+                  }}
+                  className="admin-btn danger"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  🗑️ Clear All Data
+                </motion.button>
+              </div>
+            </CollapsibleMenu>
+          </AnimatedWrapper>
+
+          <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={1.4}>
+            <CollapsibleMenu title="System Information" icon="ℹ️">
+              <div className="system-info">
+                <motion.div 
+                  className="info-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <strong>App Version:</strong> 1.0.0
+                </motion.div>
+                <motion.div 
+                  className="info-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <strong>Database:</strong> Dexie (IndexedDB)
+                </motion.div>
+                <motion.div 
+                  className="info-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                >
+                  <strong>Browser:</strong> {navigator.userAgent.split(' ').slice(-2).join(' ')}
+                </motion.div>
+                <motion.div 
+                  className="info-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
+                >
+                  <strong>Platform:</strong> {navigator.userAgent.includes('Mac') ? 'macOS' : navigator.userAgent.includes('Win') ? 'Windows' : navigator.userAgent.includes('Linux') ? 'Linux' : 'Unknown'}
+                </motion.div>
+                <motion.div 
+                  className="info-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                >
+                  <strong>Language:</strong> {navigator.language}
+                </motion.div>
+                <motion.div 
+                  className="info-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.6 }}
+                >
+                  <strong>Current User:</strong> {authState.user?.username} ({authState.user?.email})
+                </motion.div>
+                <motion.div 
+                  className="info-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.7 }}
+                >
+                  <strong>Current User ID:</strong> {authState.user?.id}
+                </motion.div>
+              </div>
+            </CollapsibleMenu>
+          </AnimatedWrapper>
         </>
       )}
 

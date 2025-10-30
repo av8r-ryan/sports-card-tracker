@@ -1,0 +1,275 @@
+.keyboard-navigation {
+  position: relative;
+}
+
+.shortcut-display {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--gradient-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.shortcuts-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.shortcuts-modal {
+  background: var(--card-background);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.shortcuts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--gradient-primary);
+}
+
+.shortcuts-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.shortcuts-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.shortcuts-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: var(--card-background);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.shortcut-item:hover {
+  background: var(--hover-background);
+  border-color: var(--primary-color);
+}
+
+.shortcut-key {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  min-width: 80px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shortcut-description {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.shortcuts-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  background: var(--card-background);
+  text-align: center;
+}
+
+.shortcuts-footer p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.shortcuts-footer kbd {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* Focus indicators */
+.keyboard-navigation *:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.keyboard-navigation *:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.keyboard-navigation *:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Skip links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--gradient-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  z-index: 1000;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Focus trap styles */
+.focus-trap {
+  position: relative;
+}
+
+.focus-trap::before,
+.focus-trap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.focus-trap::before {
+  background: rgba(102, 126, 234, 0.1);
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .shortcut-key {
+    background: var(--text-primary);
+    color: var(--background-primary);
+  }
+  
+  .shortcut-item {
+    border: 2px solid var(--text-primary);
+  }
+  
+  .keyboard-navigation *:focus {
+    outline: 3px solid var(--text-primary);
+    outline-offset: 3px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .shortcut-item {
+    transition: none;
+  }
+  
+  .skip-link {
+    transition: none;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .shortcuts-overlay {
+    padding: 10px;
+  }
+  
+  .shortcuts-modal {
+    max-height: 90vh;
+  }
+  
+  .shortcut-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .shortcut-key {
+    min-width: auto;
+    align-self: flex-start;
+  }
+  
+  .shortcuts-content {
+    gap: 20px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .shortcuts-overlay,
+  .shortcut-display {
+    display: none;
+  }
+}

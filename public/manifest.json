@@ -1,20 +1,166 @@
 {
-  "short_name": "Card Tracker",
-  "name": "Collectors Playbook Card Tracker",
+  "name": "CardFlex™ - Collectors Playbook",
+  "short_name": "CardFlex™",
+  "description": "Track and manage your sports card collection with advanced analytics and eBay integration",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#667eea",
+  "background_color": "#1a1a2e",
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "lifestyle"],
   "icons": [
     {
-      "src": "favicon.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "/logo-smp.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo-smp.png",
+      "src": "/logo-smp.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "screenshots": [
+    {
+      "src": "/screenshots/dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard view showing card collection overview"
+    },
+    {
+      "src": "/screenshots/mobile-dashboard.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile dashboard view"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add New Card",
+      "short_name": "Add Card",
+      "description": "Quickly add a new sports card to your collection",
+      "url": "/?view=add-card",
+      "icons": [
+        {
+          "src": "/icons/add-card.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "View Collection",
+      "short_name": "Collection",
+      "description": "Browse your card collection",
+      "url": "/?view=inventory",
+      "icons": [
+        {
+          "src": "/icons/collection.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "short_name": "Reports",
+      "description": "View collection analytics and reports",
+      "url": "/?view=reports",
+      "icons": [
+        {
+          "src": "/icons/reports.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://sports-card-tracker.com/manifest.json"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "file_handlers": [
+    {
+      "action": "/import",
+      "accept": {
+        "text/csv": [".csv"],
+        "application/json": [".json"],
+        "application/vnd.ms-excel": [".xls", ".xlsx"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+cardtracker",
+      "url": "/card?id=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "image",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  "handle_links": "preferred",
+  "capture_links": "new-client",
+  "scope_extensions": [
+    {
+      "origin": "https://api.sports-card-tracker.com"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "Collection Stats",
+      "short_name": "Stats",
+      "description": "Quick view of your collection statistics",
+      "tag": "collection-stats",
+      "template": "stats-template",
+      "ms_ac_template": "stats-template",
+      "data": {
+        "src": "/api/widgets/stats"
+      },
+      "type": "application/json",
+      "auth": true,
+      "update": 3600
+    }
+  ],
+  "permissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "features": [
+    "Cross Platform",
+    "Offline Support",
+    "Push Notifications",
+    "Background Sync",
+    "File Handling",
+    "Share Target",
+    "Shortcuts",
+    "Widgets"
+  ]
 }

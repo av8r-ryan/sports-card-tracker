@@ -1,19 +1,30 @@
 import { useEffect, useRef } from 'react';
 import { useCards } from '../context/DexieCardContext';
+import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/api';
 import { logInfo, logError } from '../utils/logger';
 
 export const useApi = () => {
   const { setCards, setLoading, setError } = useCards();
+  const { state: authState } = useAuth();
   const hasLoadedRef = useRef(false);
 
   useEffect(() => {
-    // Only load once on mount
+    // Reset loading state when user logs out
+    if (!authState.user || !authState.token) {
+      hasLoadedRef.current = false;
+      return;
+    }
+    
+    // Only load once on mount and only if user is authenticated
     if (hasLoadedRef.current) return;
     
     const loadCards = async () => {
       try {
-        logInfo('useApi', 'Loading cards from API');
+        logInfo('useApi', 'Loading cards from API', { 
+          userId: authState.user?.id, 
+          hasToken: !!authState.token 
+        });
         setLoading(true);
         setError(null);
         
@@ -22,6 +33,8 @@ export const useApi = () => {
         
         // Load cards from API
         const cards = await apiService.getAllCards();
+        console.log('API Cards loaded:', cards);
+        console.log('First card images:', cards[0]?.images);
         setCards(cards);
         
         logInfo('useApi', `Loaded ${cards.length} cards from API`);
@@ -40,7 +53,7 @@ export const useApi = () => {
     };
 
     loadCards();
-  }, [setCards, setError, setLoading]); // Include dependencies
+  }, [setCards, setError, setLoading, authState.user, authState.token]); // Include auth dependencies
 
   return {
     // Health check function for manual use

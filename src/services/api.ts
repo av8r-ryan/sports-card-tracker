@@ -1,4 +1,4 @@
-import { Card } from '../types';
+import { Card, User } from '../types';
 import { logDebug, logInfo, logError } from '../utils/logger';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -30,6 +30,12 @@ class ApiService {
     
     // Get auth token from localStorage
     const token = localStorage.getItem('token');
+    
+    logDebug('ApiService', `Token status for ${url}`, { 
+      hasToken: !!token, 
+      tokenLength: token?.length || 0,
+      tokenPreview: token ? `${token.substring(0, 20)}...` : 'none'
+    });
     
     const config: RequestInit = {
       headers: {
@@ -216,6 +222,34 @@ class ApiService {
       logError('ApiService', 'Health check failed', error as Error);
       throw error;
     }
+  }
+
+  public async login(email: string, password: string): Promise<{ user: User; token: string }> {
+    logInfo('ApiService', 'Attempting login', { email });
+    const response = await this.request<{ user: User; token: string }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+    
+    // Store token in localStorage
+    localStorage.setItem('token', response.token);
+    logInfo('ApiService', 'Login successful, token stored', { userId: response.user.id });
+    
+    return response;
+  }
+
+  public async register(username: string, email: string, password: string): Promise<{ user: User; token: string }> {
+    logInfo('ApiService', 'Attempting registration', { username, email });
+    const response = await this.request<{ user: User; token: string }>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ username, email, password })
+    });
+    
+    // Store token in localStorage
+    localStorage.setItem('token', response.token);
+    logInfo('ApiService', 'Registration successful, token stored', { userId: response.user.id });
+    
+    return response;
   }
 }
 

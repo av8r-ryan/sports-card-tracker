@@ -393,3 +393,37 @@
     padding: 16px;
   }
 }
+
+/* === DARK THEME SUPPORT === */
+.dark-theme .backup-restore,
+.dark-theme .backup-section {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .backup-card,
+.dark-theme .restore-card,
+.dark-theme .backup-info {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .backup-table {
+  background: transparent !important;
+}
+
+.dark-theme .backup-table th {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .backup-table td {
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+}
+
+.dark-theme .backup-table tr:hover {
+  background: var(--bg-quaternary) !important;
+}
+

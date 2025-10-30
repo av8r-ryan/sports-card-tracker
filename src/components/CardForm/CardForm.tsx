@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCards } from '../../context/DexieCardContext';
 import { Card, CardFormData, CONDITIONS, CATEGORIES, GRADING_COMPANIES } from '../../types';
 import ImageUpload from '../ImageUpload/ImageUpload';
+import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 import './CardForm.css';
 
@@ -18,8 +20,69 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
   const isEditing = !!card;
   const [images, setImages] = useState<string[]>([]);
   const [collections, setCollections] = useState<any[]>([]);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<Partial<CardFormData>>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   
-  logDebug('CardForm', 'Component initialized', { isEditing, cardId: card?.id });
+  const steps = [
+    { id: 1, title: 'Basic Info', description: 'Player and team information' },
+    { id: 2, title: 'Card Details', description: 'Year, brand, and card specifics' },
+    { id: 3, title: 'Condition & Value', description: 'Grading and pricing information' },
+    { id: 4, title: 'Images & Notes', description: 'Photos and additional details' }
+  ];
+  
+  logDebug('CardForm', 'Component initialized', { isEditing, cardId: card?.id, currentStep });
+
+  // Step navigation functions
+  const nextStep = useCallback(() => {
+    if (currentStep < steps.length) {
+      setCurrentStep(prev => prev + 1);
+      logDebug('CardForm', 'Moving to next step', { from: currentStep, to: currentStep + 1 });
+    }
+  }, [currentStep, steps.length]);
+
+  const prevStep = useCallback(() => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1);
+      logDebug('CardForm', 'Moving to previous step', { from: currentStep, to: currentStep - 1 });
+    }
+  }, [currentStep]);
+
+  const goToStep = useCallback((step: number) => {
+    if (step >= 1 && step <= steps.length) {
+      setCurrentStep(step);
+      logDebug('CardForm', 'Jumping to step', { to: step });
+    }
+  }, [steps.length]);
+
+  // Real-time validation
+  const validateStep = useCallback((step: number, data: any) => {
+    const errors: Record<string, string> = {};
+    
+    switch (step) {
+      case 1:
+        if (!data.player?.trim()) errors.player = 'Player name is required';
+        if (!data.team?.trim()) errors.team = 'Team is required';
+        break;
+      case 2:
+        if (!data.year || data.year < 1900 || data.year > new Date().getFullYear() + 1) {
+          errors.year = 'Please enter a valid year';
+        }
+        if (!data.brand?.trim()) errors.brand = 'Brand is required';
+        break;
+      case 3:
+        if (!data.currentValue || data.currentValue <= 0) {
+          errors.currentValue = 'Please enter a valid current value';
+        }
+        if (!data.purchasePrice || data.purchasePrice <= 0) {
+          errors.purchasePrice = 'Please enter a valid purchase price';
+        }
+        break;
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  }, []);
 
   const {
     register,
@@ -252,227 +315,411 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
 
   return (
     <div className="card-form-container">
-      <div className="card-form">
-        <div className="form-header">
-          <h2>{isEditing ? 'Edit Card' : 'Add New Card'}</h2>
-          <p>
-            {isEditing 
-              ? 'Update the details of your sports card below'
-              : 'Enter the details of your sports card to add it to your collection'
-            }
-          </p>
-        </div>
+      <div className="card-form card-glass">
+        <AnimatedWrapper animation="fadeInUp" duration={0.6}>
+          <div className="form-header">
+            <h2 className="text-gradient">{isEditing ? 'Edit Card' : 'Add New Card'}</h2>
+            <p>
+              {isEditing 
+                ? 'Update the details of your sports card below'
+                : 'Enter the details of your sports card to add it to your collection'
+              }
+            </p>
+          </div>
+        </AnimatedWrapper>
+
+        {/* Step Progress Indicator */}
+        <AnimatedWrapper animation="fadeInDown" duration={0.6} delay={0.2}>
+          <div className="step-progress">
+            {steps.map((step, index) => (
+              <motion.div
+                key={step.id}
+                className={`step-item ${currentStep >= step.id ? 'active' : ''} ${currentStep > step.id ? 'completed' : ''}`}
+                onClick={() => goToStep(step.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="step-number">
+                  {currentStep > step.id ? '✓' : step.id}
+                </div>
+                <div className="step-content">
+                  <h4>{step.title}</h4>
+                  <p>{step.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </AnimatedWrapper>
         
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="player">Player Name *</label>
-              <input
-                id="player"
-                type="text"
-                {...register('player', { required: true })}
-                placeholder="Enter player name"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="team">Team *</label>
-              <input
-                id="team"
-                type="text"
-                {...register('team', { required: true })}
-                placeholder="Enter team name"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="year">Year *</label>
-              <input
-                id="year"
-                type="number"
-                {...register('year', { required: true })}
-                placeholder="Enter year"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="brand">Brand *</label>
-              <input
-                id="brand"
-                type="text"
-                {...register('brand', { required: true })}
-                placeholder="Enter brand (e.g., Topps, Panini)"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="category">Category *</label>
-              <select
-                id="category"
-                {...register('category', { required: true })}
+          <AnimatePresence mode="wait">
+            {/* Step 1: Basic Info */}
+            {currentStep === 1 && (
+              <motion.div
+                key="step-1"
+                className="form-step"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
               >
-                <option value="">Select a category</option>
-                {CATEGORIES.map(category => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <h3 className="step-title">Basic Information</h3>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label htmlFor="player">Player Name *</label>
+                    <input
+                      id="player"
+                      type="text"
+                      {...register('player', { required: true })}
+                      placeholder="Enter player name"
+                      className={validationErrors.player ? 'error' : ''}
+                      onChange={(e) => {
+                        register('player').onChange(e);
+                        validateStep(1, { ...watch(), player: e.target.value });
+                      }}
+                    />
+                    {validationErrors.player && (
+                      <span className="error-message">{validationErrors.player}</span>
+                    )}
+                  </div>
 
-            <div className="form-group">
-              <label htmlFor="cardNumber">Card Number *</label>
-              <input
-                id="cardNumber"
-                type="text"
-                {...register('cardNumber', { required: true })}
-                placeholder="Enter card number"
-              />
-            </div>
+                  <div className="form-group">
+                    <label htmlFor="team">Team *</label>
+                    <input
+                      id="team"
+                      type="text"
+                      {...register('team', { required: true })}
+                      placeholder="Enter team name"
+                      className={validationErrors.team ? 'error' : ''}
+                      onChange={(e) => {
+                        register('team').onChange(e);
+                        validateStep(1, { ...watch(), team: e.target.value });
+                      }}
+                    />
+                    {validationErrors.team && (
+                      <span className="error-message">{validationErrors.team}</span>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-            <div className="form-group">
-              <label htmlFor="gradingCompany">Grading Company</label>
-              <select
-                id="gradingCompany"
-                {...register('gradingCompany')}
+            {/* Step 2: Card Details */}
+            {currentStep === 2 && (
+              <motion.div
+                key="step-2"
+                className="form-step"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
               >
-                <option value="">No grading</option>
-                {GRADING_COMPANIES.map(company => (
-                  <option key={company} value={company}>
-                    {company}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <h3 className="step-title">Card Details</h3>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label htmlFor="year">Year *</label>
+                    <input
+                      id="year"
+                      type="number"
+                      {...register('year', { required: true, min: 1900, max: new Date().getFullYear() + 1 })}
+                      placeholder="Enter year"
+                      className={validationErrors.year ? 'error' : ''}
+                      onChange={(e) => {
+                        register('year').onChange(e);
+                        validateStep(2, { ...watch(), year: parseInt(e.target.value) });
+                      }}
+                    />
+                    {validationErrors.year && (
+                      <span className="error-message">{validationErrors.year}</span>
+                    )}
+                  </div>
 
-            <div className="form-group">
-              <label htmlFor="condition">Condition *</label>
-              <select
-                id="condition"
-                {...register('condition', { required: true })}
+                  <div className="form-group">
+                    <label htmlFor="brand">Brand *</label>
+                    <input
+                      id="brand"
+                      type="text"
+                      {...register('brand', { required: true })}
+                      placeholder="Enter brand name"
+                      className={validationErrors.brand ? 'error' : ''}
+                      onChange={(e) => {
+                        register('brand').onChange(e);
+                        validateStep(2, { ...watch(), brand: e.target.value });
+                      }}
+                    />
+                    {validationErrors.brand && (
+                      <span className="error-message">{validationErrors.brand}</span>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="category">Category *</label>
+                    <select
+                      id="category"
+                      {...register('category', { required: true })}
+                    >
+                      <option value="">Select a category</option>
+                      {CATEGORIES.map(category => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="cardNumber">Card Number *</label>
+                    <input
+                      id="cardNumber"
+                      type="text"
+                      {...register('cardNumber', { required: true })}
+                      placeholder="Enter card number"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="parallel">Parallel/Insert</label>
+                    <input
+                      id="parallel"
+                      type="text"
+                      {...register('parallel')}
+                      placeholder="Enter parallel type (optional)"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 3: Condition & Value */}
+            {currentStep === 3 && (
+              <motion.div
+                key="step-3"
+                className="form-step"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
               >
-                {CONDITIONS.map(condition => (
-                  <option key={condition} value={condition}>
-                    {condition}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <h3 className="step-title">Condition & Value</h3>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label htmlFor="condition">Condition</label>
+                    <select
+                      id="condition"
+                      {...register('condition')}
+                    >
+                      {CONDITIONS.map(condition => (
+                        <option key={condition} value={condition}>
+                          {condition}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-            <div className="form-group">
-              <label htmlFor="collectionId">Collection</label>
-              <select
-                id="collectionId"
-                {...register('collectionId')}
+                  <div className="form-group">
+                    <label htmlFor="gradingCompany">Grading Company</label>
+                    <select
+                      id="gradingCompany"
+                      {...register('gradingCompany')}
+                    >
+                      <option value="">Select grading company</option>
+                      {GRADING_COMPANIES.map(company => (
+                        <option key={company} value={company}>
+                          {company}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="gradingCompany">Grading Company</label>
+                    <input
+                      id="gradingCompany"
+                      type="text"
+                      {...register('gradingCompany')}
+                      placeholder="Enter grading company (e.g., PSA, BGS)"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="purchasePrice">Purchase Price *</label>
+                    <input
+                      id="purchasePrice"
+                      type="number"
+                      step="0.01"
+                      {...register('purchasePrice', { required: true, min: 0 })}
+                      placeholder="Enter purchase price"
+                      className={validationErrors.purchasePrice ? 'error' : ''}
+                      onChange={(e) => {
+                        register('purchasePrice').onChange(e);
+                        validateStep(3, { ...watch(), purchasePrice: parseFloat(e.target.value) });
+                      }}
+                    />
+                    {validationErrors.purchasePrice && (
+                      <span className="error-message">{validationErrors.purchasePrice}</span>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="currentValue">Current Value *</label>
+                    <input
+                      id="currentValue"
+                      type="number"
+                      step="0.01"
+                      {...register('currentValue', { required: true, min: 0 })}
+                      placeholder="Enter current value"
+                      className={validationErrors.currentValue ? 'error' : ''}
+                      onChange={(e) => {
+                        register('currentValue').onChange(e);
+                        validateStep(3, { ...watch(), currentValue: parseFloat(e.target.value) });
+                      }}
+                    />
+                    {validationErrors.currentValue && (
+                      <span className="error-message">{validationErrors.currentValue}</span>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="purchaseDate">Purchase Date</label>
+                    <input
+                      id="purchaseDate"
+                      type="date"
+                      {...register('purchaseDate')}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="sellPrice">Sell Price</label>
+                    <input
+                      id="sellPrice"
+                      type="number"
+                      step="0.01"
+                      {...register('sellPrice', { min: 0 })}
+                      placeholder="Enter sell price (optional)"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="sellDate">Sell Date</label>
+                    <input
+                      id="sellDate"
+                      type="date"
+                      {...register('sellDate')}
+                      disabled={!sellPrice}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 4: Images & Notes */}
+            {currentStep === 4 && (
+              <motion.div
+                key="step-4"
+                className="form-step"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
               >
-                <option value="">Default Collection</option>
-                {collections.map((collection) => (
-                  <option key={collection.id} value={collection.id}>
-                    {collection.icon} {collection.name} {collection.isDefault ? '(Default)' : ''}
-                  </option>
-                ))}
-              </select>
+                <h3 className="step-title">Images & Notes</h3>
+                <div className="form-grid">
+                  <div className="form-group full-width">
+                    <label htmlFor="collectionId">Collection</label>
+                    <select
+                      id="collectionId"
+                      {...register('collectionId')}
+                    >
+                      <option value="">Select a collection</option>
+                      {collections.map(collection => (
+                        <option key={collection.id} value={collection.id}>
+                          {collection.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group full-width">
+                    <label>Card Images</label>
+                    <ImageUpload
+                      images={images}
+                      onImagesChange={setImages}
+                      maxImages={5}
+                    />
+                  </div>
+
+                  <div className="form-group full-width">
+                    <label htmlFor="notes">Notes</label>
+                    <textarea
+                      id="notes"
+                      {...register('notes')}
+                      rows={4}
+                      placeholder="Enter any additional notes about this card..."
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+
+          {/* Step Navigation */}
+          <motion.div 
+            className="step-navigation"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <div className="step-buttons">
+              {currentStep > 1 && (
+                <motion.button
+                  type="button"
+                  onClick={prevStep}
+                  className="step-btn prev-btn"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  ← Previous
+                </motion.button>
+              )}
+              
+              <div className="step-spacer"></div>
+              
+              {currentStep < steps.length ? (
+                <motion.button
+                  type="button"
+                  onClick={nextStep}
+                  className="step-btn next-btn"
+                  disabled={Object.keys(validationErrors).length > 0}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Next →
+                </motion.button>
+              ) : (
+                <motion.button
+                  type="submit"
+                  className="step-btn submit-btn"
+                  disabled={isSubmitting || Object.keys(validationErrors).length > 0}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {isSubmitting ? 'Saving...' : (isEditing ? 'Update Card' : 'Add Card')}
+                </motion.button>
+              )}
             </div>
-
-            <div className="form-group">
-              <label htmlFor="parallel">Parallel/Insert</label>
-              <input
-                id="parallel"
-                type="text"
-                {...register('parallel')}
-                placeholder="Enter parallel type (optional)"
-              />
+            
+            <div className="step-actions">
+              <button
+                type="button"
+                onClick={onCancel}
+                className="cancel-btn"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="purchasePrice">Purchase Price *</label>
-              <input
-                id="purchasePrice"
-                type="number"
-                step="0.01"
-                {...register('purchasePrice', { required: true })}
-                placeholder="0.00"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="purchaseDate">Purchase Date *</label>
-              <input
-                id="purchaseDate"
-                type="date"
-                {...register('purchaseDate', { required: true })}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="currentValue">Current Value *</label>
-              <input
-                id="currentValue"
-                type="number"
-                step="0.01"
-                {...register('currentValue', { required: true })}
-                placeholder="0.00"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="sellPrice">Sell Price</label>
-              <input
-                id="sellPrice"
-                type="number"
-                step="0.01"
-                {...register('sellPrice')}
-                placeholder="0.00 (optional)"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="sellDate">Sell Date</label>
-              <input
-                id="sellDate"
-                type="date"
-                {...register('sellDate')}
-              />
-            </div>
-          </div>
-
-          <div className="form-group full-width">
-            <label>Card Images</label>
-            <ImageUpload
-              images={images}
-              onImagesChange={setImages}
-              maxImages={5}
-              disabled={isSubmitting}
-            />
-          </div>
-
-          <div className="form-group full-width">
-            <label htmlFor="notes">Notes</label>
-            <textarea
-              id="notes"
-              {...register('notes')}
-              rows={4}
-              placeholder="Enter any additional notes about this card..."
-            />
-          </div>
-
-          <div className="form-actions">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="cancel-btn"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="submit-btn"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : (isEditing ? 'Update Card' : 'Add Card')}
-            </button>
-          </div>
+          </motion.div>
         </form>
       </div>
     </div>

@@ -1,0 +1,984 @@
+/* Dark Theme Variables */
+.dark-theme {
+  /* Background Colors */
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #0f3460;
+  --bg-quaternary: #162447;
+  
+  /* Text Colors */
+  --text-primary: #e4e4e7;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  
+  /* Border Colors */
+  --border-light: #27272a;
+  --border-medium: #3f3f46;
+  --border-dark: #52525b;
+  --border-glass: rgba(255, 255, 255, 0.1);
+  
+  /* Accent Colors */
+  --primary-color: #667eea;
+  --primary-hover: #5568d3;
+  --accent-primary: #667eea;
+  --accent-secondary: #764ba2;
+  
+  /* Status Colors */
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --danger-color: #dc2626;
+  --warning-color: #f59e0b;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --shadow-glass-hover: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --gradient-warning: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+  --gradient-error: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  --gradient-background: linear-gradient(180deg, #16213e 0%, #0f3460 100%);
+  
+  /* Card Glass Effect */
+  --card-glass-bg: rgba(255, 255, 255, 0.05);
+  --card-glass-border: rgba(255, 255, 255, 0.1);
+  
+  /* Backdrop */
+  --backdrop-filter: blur(10px);
+}
+
+/* Dark Theme Component Overrides */
+
+/* Global white background fixes */
+.dark-theme .card-glass,
+.dark-theme .stat-card,
+.dark-theme .card-item,
+.dark-theme .recent-cards,
+.dark-theme .top-performers,
+.dark-theme .filters-section,
+.dark-theme .card-form,
+.dark-theme .profile-card,
+.dark-theme .admin-card,
+.dark-theme .report-card,
+.dark-theme .collection-card,
+.dark-theme .ebay-card,
+.dark-theme .filters-section,
+.dark-theme .user-stats-table,
+.dark-theme .backup-table,
+.dark-theme .card-detail-modal,
+.dark-theme .modal-content,
+.dark-theme .form-container,
+.dark-theme .settings-card,
+.dark-theme .achievement-card,
+.dark-theme .activity-item,
+.dark-theme .breakdown-item,
+.dark-theme .year-bar,
+.dark-theme .info-item {
+  background: var(--bg-primary, #16213e) !important;
+  border-color: var(--border-glass, rgba(255, 255, 255, 0.1)) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Form elements */
+.dark-theme input,
+.dark-theme select,
+.dark-theme textarea,
+.dark-theme .form-group input,
+.dark-theme .form-group select,
+.dark-theme .form-group textarea,
+.dark-theme .search-input,
+.dark-theme .filter-select {
+  background: var(--bg-secondary, #1a1a2e) !important;
+  color: var(--text-primary, #e4e4e7) !important;
+  border-color: var(--border-light, #27272a) !important;
+}
+
+/* Text colors */
+.dark-theme .stat-card h3,
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4,
+.dark-theme h5,
+.dark-theme h6,
+.dark-theme p,
+.dark-theme label,
+.dark-theme span {
+  color: var(--text-primary, #e4e4e7) !important;
+}
+
+.dark-theme .stat-value {
+  color: #ffffff !important;
+}
+
+.dark-theme .stat-value.profit {
+  color: var(--success-color) !important;
+}
+
+.dark-theme .stat-value.loss {
+  color: var(--error-color) !important;
+}
+
+.dark-theme .card-player-name,
+.dark-theme .card-player-name h4 {
+  background: rgba(0, 0, 0, 0.3) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .card-subtitle {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .search-input,
+.dark-theme .filter-select,
+.dark-theme .sort-select {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-medium) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.dark-theme .modal-overlay {
+  background: rgba(0, 0, 0, 0.85) !important;
+}
+
+.dark-theme .modal-content {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+}
+
+.dark-theme .modal-header {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-bottom-color: var(--border-medium);
+}
+
+.dark-theme .modal-title {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .user-dropdown {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+.dark-theme .user-dropdown button {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .user-dropdown button:hover {
+  background: var(--bg-quaternary) !important;
+}
+
+.dark-theme .export-dropdown {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+.dark-theme .export-dropdown button {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .export-dropdown button:hover {
+  background: var(--bg-quaternary) !important;
+}
+
+.dark-theme .navigation {
+  background: var(--bg-primary) !important;
+  border-bottom-color: var(--border-medium);
+}
+
+.dark-theme .nav-item {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .nav-item:hover {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .nav-item.active {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+}
+
+.dark-theme .bulk-selection-controls {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary);
+}
+
+.dark-theme .empty-state {
+  color: var(--text-secondary);
+}
+
+.dark-theme .card-detail-modal {
+  color: var(--text-primary);
+}
+
+.dark-theme .card-detail-info h3 {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .card-detail-team {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .value-label,
+.dark-theme .meta-label {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .value-amount,
+.dark-theme .meta-value {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .card-detail-notes {
+  background: rgba(102, 126, 234, 0.1) !important;
+  border-left-color: var(--primary-color);
+}
+
+.dark-theme .card-detail-meta {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark-theme .footer {
+  background: var(--bg-primary) !important;
+  border-top-color: var(--border-medium);
+  color: var(--text-secondary);
+}
+
+/* Reports Dark Theme */
+.dark-theme .reports-container,
+.dark-theme .reports-content,
+.dark-theme .report-section {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary);
+}
+
+.dark-theme .report-card {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Collections Dark Theme */
+.dark-theme .collections-container,
+.dark-theme .collection-card {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary);
+}
+
+.dark-theme .collection-card {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Admin Dashboard Dark Theme */
+.dark-theme .admin-dashboard {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary);
+}
+
+.dark-theme .user-stats-table,
+.dark-theme .backup-table {
+  color: var(--text-primary);
+}
+
+.dark-theme .user-stats-table th,
+.dark-theme .backup-table th {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .user-stats-table tr:hover,
+.dark-theme .backup-table tr:hover {
+  background: var(--bg-quaternary) !important;
+}
+
+/* Profile Dark Theme */
+.dark-theme .user-profile,
+.dark-theme .profile-card {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary);
+}
+
+.dark-theme .profile-card {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+}
+
+.dark-theme .achievement-card {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+}
+
+.dark-theme .activity-item {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Auth Form Dark Theme */
+.dark-theme .auth-form-container {
+  background: var(--bg-secondary) !important;
+}
+
+.dark-theme .auth-form {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary);
+}
+
+.dark-theme .auth-form input {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-medium) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Additional comprehensive overrides */
+.dark-theme .card-list-container,
+.dark-theme .card-form-container,
+.dark-theme .dashboard,
+.dark-theme .reports-container,
+.dark-theme .collections-container,
+.dark-theme .ebay-listings,
+.dark-theme .user-profile,
+.dark-theme .admin-dashboard,
+.dark-theme .backup-restore,
+.dark-theme .about-container,
+.dark-theme .contact-container,
+.dark-theme .docs-container {
+  background: var(--bg-secondary, #16213e) !important;
+}
+
+/* All card-like elements */
+.dark-theme .listing-card,
+.dark-theme .team-card,
+.dark-theme .value-card,
+.dark-theme .method-card,
+.dark-theme .feature-card,
+.dark-theme .knowledge-card,
+.dark-theme .article-card,
+.dark-theme .faq-item,
+.dark-theme .suggestion-card,
+.dark-theme .option-card,
+.dark-theme .nav-tab,
+.dark-theme .step-item,
+.dark-theme .form-step,
+.dark-theme .builder-collection,
+.dark-theme .group-card {
+  background: var(--bg-primary, #1a1a2e) !important;
+  border-color: var(--border-glass, rgba(255, 255, 255, 0.1)) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Tables */
+.dark-theme table,
+.dark-theme .table,
+.dark-theme thead,
+.dark-theme tbody,
+.dark-theme tr,
+.dark-theme td {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+}
+
+.dark-theme th {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Buttons */
+.dark-theme button:not(.btn-primary):not(.btn-danger):not(.btn-success) {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+}
+
+/* Sections and panels */
+.dark-theme .hero-section,
+.dark-theme .stats-section,
+.dark-theme .timeline-section,
+.dark-theme .team-section,
+.dark-theme .values-section,
+.dark-theme .overview-section,
+.dark-theme .contact-section,
+.dark-theme .knowledge-base-section,
+.dark-theme .faq-section,
+.dark-theme .form-section {
+  background: var(--bg-primary, #1a1a2e) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Chat widget */
+.dark-theme .chat-widget,
+.dark-theme .chat-header,
+.dark-theme .chat-messages,
+.dark-theme .chat-input-container {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Modals */
+.dark-theme .modal {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Dropdowns and menus */
+.dark-theme .dropdown,
+.dark-theme .submenu-third-level {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+.dark-theme .auth-form input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* eBay Listings Dark Theme */
+.dark-theme .ebay-listings {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary);
+}
+
+.dark-theme .listing-card {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Contact & About Pages */
+.dark-theme .contact-container,
+.dark-theme .about-container {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary);
+}
+
+.dark-theme .method-card,
+.dark-theme .feature-card,
+.dark-theme .knowledge-card,
+.dark-theme .team-card {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary);
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* === COMPREHENSIVE DARK THEME - ALL PAGES === */
+
+/* Page containers */
+.dark-theme body,
+.dark-theme .app,
+.dark-theme .layout,
+.dark-theme .main-content {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* All white backgrounds to dark */
+.dark-theme div[style*="background: white"],
+.dark-theme div[style*="background:white"],
+.dark-theme div[style*="background-color: white"],
+.dark-theme div[style*="background-color:white"] {
+  background: var(--bg-primary) !important;
+}
+
+/* Card-like components */
+.dark-theme .card,
+.dark-theme .panel,
+.dark-theme .section,
+.dark-theme .container,
+.dark-theme .box,
+.dark-theme .widget {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* NotFound / 404 Page */
+.dark-theme .not-found-container {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .error-code,
+.dark-theme .error-title,
+.dark-theme .error-message {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .suggestion-card,
+.dark-theme .floating-card {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .search-result-item {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Docs Page */
+.dark-theme .docs-container,
+.dark-theme .docs-content,
+.dark-theme .docs-sidebar {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .docs-article,
+.dark-theme .doc-card {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* About Page - Timeline, Team, Values */
+.dark-theme .timeline-section,
+.dark-theme .timeline-item,
+.dark-theme .team-section,
+.dark-theme .values-section,
+.dark-theme .hero-section {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .timeline-content,
+.dark-theme .value-card {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Contact Page - Forms, KB, Chat */
+.dark-theme .contact-form,
+.dark-theme .form-container,
+.dark-theme .knowledge-base-section,
+.dark-theme .faq-section {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .chat-widget,
+.dark-theme .chat-messages,
+.dark-theme .chat-message {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .article-card,
+.dark-theme .faq-item {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Collections Page */
+.dark-theme .collections-container,
+.dark-theme .collections-grid,
+.dark-theme .collection-card,
+.dark-theme .visual-builder,
+.dark-theme .smart-groups,
+.dark-theme .group-card {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .builder-collection {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* eBay Listings - All components */
+.dark-theme .listings-header,
+.dark-theme .listings-controls,
+.dark-theme .listings-grid,
+.dark-theme .sync-panel,
+.dark-theme .bulk-operations-panel,
+.dark-theme .operation-item {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ai-suggestions,
+.dark-theme .ai-suggestion {
+  background: var(--card-glass-bg) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Reports - All report types */
+.dark-theme .reports-container,
+.dark-theme .reports-header,
+.dark-theme .reports-content,
+.dark-theme .report-section {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .report-option,
+.dark-theme .nav-tab {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .report-option:hover,
+.dark-theme .nav-tab:hover {
+  background: var(--bg-tertiary) !important;
+}
+
+/* User Profile - Achievements, Activity */
+.dark-theme .user-profile,
+.dark-theme .achievements-section,
+.dark-theme .activity-section,
+.dark-theme .settings-section {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Admin Dashboard */
+.dark-theme .admin-dashboard,
+.dark-theme .admin-stats,
+.dark-theme .admin-actions {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .system-info {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Backup & Restore */
+.dark-theme .backup-restore,
+.dark-theme .backup-section {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* User Management */
+.dark-theme .user-management,
+.dark-theme .users-table {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Enhanced Card Form - Wizard Steps */
+.dark-theme .card-form,
+.dark-theme .form-step,
+.dark-theme .step-progress {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .step-item.active,
+.dark-theme .step-item.completed {
+  border-color: var(--primary-color) !important;
+}
+
+/* Photo Card Form */
+.dark-theme .photo-card-form {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Image Upload */
+.dark-theme .image-upload,
+.dark-theme .drop-zone {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Debug & Dev Tools */
+.dark-theme .debug-panel,
+.dark-theme .dev-tools {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Loading & Empty States */
+.dark-theme .loading-state,
+.dark-theme .empty-state {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .loading-skeleton {
+  background: var(--bg-tertiary) !important;
+}
+
+/* Tooltips & Popovers */
+.dark-theme .tooltip,
+.dark-theme .popover {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Badges & Tags */
+.dark-theme .badge,
+.dark-theme .tag {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Progress bars */
+.dark-theme .progress-bar {
+  background: var(--bg-tertiary) !important;
+}
+
+.dark-theme .progress-fill {
+  background: var(--primary-color) !important;
+}
+
+/* Buttons - Secondary styles */
+.dark-theme button:not([class*="btn-primary"]):not([class*="btn-danger"]):not([class*="btn-success"]):not([class*="btn-warning"]) {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Links */
+.dark-theme a {
+  color: var(--primary-color) !important;
+}
+
+.dark-theme a:hover {
+  color: var(--primary-hover) !important;
+}
+
+/* Scrollbars */
+.dark-theme ::-webkit-scrollbar {
+  background: var(--bg-tertiary);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--border-dark);
+}
+
+/* Code blocks */
+.dark-theme code,
+.dark-theme pre {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Horizontal rules */
+.dark-theme hr {
+  border-color: var(--border-medium) !important;
+}
+
+/* Specific overrides for any missed white backgrounds */
+.dark-theme [style*="background: #fff"],
+.dark-theme [style*="background:#fff"],
+.dark-theme [style*="background: #ffffff"],
+.dark-theme [style*="background:#ffffff"],
+.dark-theme [style*="background:white"],
+.dark-theme [style*="background: white"] {
+  background: var(--bg-primary) !important;
+}
+
+/* === AGGRESSIVE GLOBAL WHITE BACKGROUND FIXES === */
+
+/* All divs, sections, articles with white backgrounds */
+.dark-theme div[style*="background"],
+.dark-theme section[style*="background"],
+.dark-theme article[style*="background"] {
+  background: var(--bg-primary) !important;
+}
+
+/* All report-related selectors */
+.dark-theme [class*="report"],
+.dark-theme [class*="Report"] {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme [class*="report"] div,
+.dark-theme [class*="Report"] div,
+.dark-theme [class*="report"] section,
+.dark-theme [class*="Report"] section {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* All card-like elements in reports */
+.dark-theme [class*="report"] [class*="card"],
+.dark-theme [class*="Report"] [class*="card"],
+.dark-theme [class*="report"] [class*="Card"],
+.dark-theme [class*="Report"] [class*="Card"] {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* All headings in dark theme */
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4,
+.dark-theme h5,
+.dark-theme h6 {
+  color: var(--text-primary) !important;
+}
+
+/* All paragraphs and labels */
+.dark-theme p,
+.dark-theme label,
+.dark-theme span:not([class*="icon"]) {
+  color: var(--text-primary) !important;
+}
+
+/* All numeric values and stats */
+.dark-theme [class*="value"],
+.dark-theme [class*="Value"],
+.dark-theme [class*="amount"],
+.dark-theme [class*="Amount"],
+.dark-theme [class*="total"],
+.dark-theme [class*="Total"] {
+  color: #ffffff !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.5) !important;
+  filter: contrast(1.3) brightness(1.2) !important;
+}
+
+/* All tables everywhere */
+.dark-theme table,
+.dark-theme .table {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme thead,
+.dark-theme th {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+}
+
+.dark-theme tbody,
+.dark-theme td {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+}
+
+.dark-theme tr:hover {
+  background: var(--bg-quaternary) !important;
+}
+
+/* All containers, wrappers, sections */
+.dark-theme [class*="container"],
+.dark-theme [class*="Container"],
+.dark-theme [class*="wrapper"],
+.dark-theme [class*="Wrapper"],
+.dark-theme [class*="section"],
+.dark-theme [class*="Section"] {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* All content areas */
+.dark-theme [class*="content"],
+.dark-theme [class*="Content"],
+.dark-theme [class*="body"],
+.dark-theme [class*="Body"] {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* All headers */
+.dark-theme [class*="header"],
+.dark-theme [class*="Header"] {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* All panels and boxes */
+.dark-theme [class*="panel"],
+.dark-theme [class*="Panel"],
+.dark-theme [class*="box"],
+.dark-theme [class*="Box"] {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* All grids */
+.dark-theme [class*="grid"],
+.dark-theme [class*="Grid"] {
+  background: var(--bg-secondary) !important;
+}
+
+/* Charts and visualizations */
+.dark-theme [class*="chart"],
+.dark-theme [class*="Chart"],
+.dark-theme [class*="graph"],
+.dark-theme [class*="Graph"] {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+}
+
+/* Modals and dialogs */
+.dark-theme [class*="modal"],
+.dark-theme [class*="Modal"],
+.dark-theme [class*="dialog"],
+.dark-theme [class*="Dialog"] {
+  background: var(--bg-primary) !important;
+  border-color: var(--border-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* All forms */
+.dark-theme [class*="form"],
+.dark-theme [class*="Form"] {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Lists */
+.dark-theme [class*="list"],
+.dark-theme [class*="List"],
+.dark-theme [class*="item"],
+.dark-theme [class*="Item"] {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Sidebars and navigation */
+.dark-theme [class*="sidebar"],
+.dark-theme [class*="Sidebar"],
+.dark-theme [class*="nav"],
+.dark-theme [class*="Nav"] {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+

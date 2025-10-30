@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useCards } from '../../context/DexieCardContext';
+import { useTheme } from '../../context/ThemeContext';
 import { exportCardsAsJSON, exportCardsAsCSV } from '../../utils/exportUtils';
 import { exportCardsToPDF } from '../../utils/pdfExport';
 import './Layout.css';
 
 interface LayoutProps {
   children: React.ReactNode;
-  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about';
-  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about') => void;
+  currentView: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about' | 'contact' | 'docs' | '404';
+  onViewChange: (view: 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about' | 'contact' | 'docs' | '404') => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) => {
   const { state: authState, logout } = useAuth();
   const { state, getPortfolioStats } = useCards();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showStats, setShowStats] = useState(true);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showExportSubmenu, setShowExportSubmenu] = useState(false);
+  
+  // Debug logging for submenu state
+  console.log('Export submenu state:', showExportSubmenu);
   const stats = getPortfolioStats();
   
   // Debug logging for stats
@@ -30,8 +36,12 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
   const hasError = !!state.error;
 
   const handleExport = (format: 'json' | 'csv' | 'pdf') => {
+    console.log('Export function called with format:', format);
+    console.log('Cards available:', state.cards.length);
+    
     try {
       if (format === 'pdf') {
+        console.log('Exporting as PDF...');
         exportCardsToPDF(state.cards, {
           includeStats: true,
           groupBy: 'none',
@@ -40,6 +50,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
         return;
       }
 
+      console.log('Exporting as', format.toUpperCase());
       const filename = `sports-cards-${new Date().toISOString().split('T')[0]}`;
       const data = format === 'json' 
         ? exportCardsAsJSON(state.cards)
@@ -57,6 +68,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      
+      console.log('Export completed successfully');
     } catch (error) {
       console.error('Export failed:', error);
       alert('Export failed. Please try again.');
@@ -76,14 +89,31 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  // Close submenu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showExportSubmenu) {
+        const target = event.target as Element;
+        if (!target.closest('.submenu-item')) {
+          setShowExportSubmenu(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showExportSubmenu]);
+
   return (
     <div className="layout">
       <header className="header">
         <div className="header-content">
           <div className="header-left">
-            <h2 className="app-title">
+            <h2 className="app-title" onClick={() => onViewChange('dashboard')} style={{ cursor: 'pointer' }}>
               <img src="/logo-smp.png" alt="App Icon" className="app-icon" />
-              <span className="title-text">Collectors Playbook Card Tracker</span>
+              <span className="title-text">CardFlex™</span>
             </h2>
             {hasError && (
               <div className="api-status error">
@@ -95,63 +125,116 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
                 🔄 Loading...
               </div>
             )}
-            <div className="stats-container">
-              <button 
-                className="stats-toggle"
-                onClick={() => setShowStats(!showStats)}
-                aria-label="Toggle statistics"
-              >
-                <span className="stats-label">Stats</span>
-              </button>
-              <div className={`quick-stats ${showStats ? 'show' : ''}`}>
-                <span className="stat">
-                  <span>{stats.totalCards} cards</span>
-                </span>
-                <span className="stat">
-                  <span>{formatCurrency(stats.totalCurrentValue)}</span>
-                </span>
-                <span className={`stat profit-loss ${stats.totalProfit >= 0 ? 'positive' : 'negative'}`}>
-                  <span>{stats.totalProfit >= 0 ? '+' : ''}{formatCurrency(stats.totalProfit)}</span>
-                </span>
-              </div>
-            </div>
           </div>
           
           <div className="header-right">
-            <div className="user-info" onClick={() => onViewChange('profile')}>
-              {authState.user?.profilePhoto ? (
-                <img src={authState.user.profilePhoto} alt="Profile" className="profile-photo-small" />
-              ) : (
-                <div className="default-avatar-small">
-                  <span>{authState.user?.username?.charAt(0).toUpperCase()}</span>
+            <button 
+              className="theme-toggle-btn" 
+              onClick={toggleTheme}
+              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
+            
+            <div className="user-menu-container">
+              <div 
+                className="user-info" 
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
+                {authState.user?.profilePhoto ? (
+                  <img src={authState.user.profilePhoto} alt="Profile" className="profile-photo-small" />
+                ) : (
+                  <div className="default-avatar-small">
+                    <span>{authState.user?.username?.charAt(0).toUpperCase()}</span>
+                  </div>
+                )}
+                <span className="username">
+                  {authState.user?.username}
+                  {authState.user?.role === 'admin' && <span className="admin-badge">Admin</span>}
+                </span>
+                <svg className="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                  <path d="M6 8L2 4h8L6 8z"/>
+                </svg>
+              </div>
+              
+              {showUserMenu && (
+                <div className="user-dropdown">
+                  <button onClick={() => { onViewChange('profile'); setShowUserMenu(false); }}>
+                    👤 Profile
+                  </button>
+                  <button onClick={() => { onViewChange('backup'); setShowUserMenu(false); }}>
+                    💾 Backup & Restore
+                  </button>
+                  
+                  <div className="submenu-item">
+                    <button 
+                      className="submenu-label"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Export submenu clicked, current state:', showExportSubmenu);
+                        setShowExportSubmenu(!showExportSubmenu);
+                      }}
+                      style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                        📤 Export
+                        <svg 
+                          className={`submenu-arrow ${showExportSubmenu ? 'rotated' : ''}`} 
+                          width="12" 
+                          height="12" 
+                          viewBox="0 0 12 12" 
+                          fill="currentColor"
+                          style={{ marginLeft: 'auto' }}
+                        >
+                          <path d="M4 2l4 4-4 4V2z"/>
+                        </svg>
+                      </span>
+                    </button>
+                    <div className="submenu-third-level" style={{ 
+                      display: showExportSubmenu ? 'block' : 'none', 
+                      opacity: showExportSubmenu ? 1 : 0,
+                      position: 'absolute',
+                      left: 'calc(100% + 4px)',
+                      top: '0',
+                      minWidth: '180px',
+                      background: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+                      zIndex: 10000,
+                      padding: '8px 0'
+                    }}>
+                      <button onClick={() => { console.log('PDF export clicked'); handleExport('pdf'); setShowUserMenu(false); setShowExportSubmenu(false); }}>
+                        📄 Export as PDF
+                      </button>
+                      <button onClick={() => { console.log('JSON export clicked'); handleExport('json'); setShowUserMenu(false); setShowExportSubmenu(false); }}>
+                        📋 Export as JSON
+                      </button>
+                      <button onClick={() => { console.log('CSV export clicked'); handleExport('csv'); setShowUserMenu(false); setShowExportSubmenu(false); }}>
+                        📊 Export as CSV
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {authState.user?.role === 'admin' && (
+                    <>
+                      <button onClick={() => { onViewChange('admin'); setShowUserMenu(false); }}>
+                        ⚙️ Admin Dashboard
+                      </button>
+                      <button onClick={() => { onViewChange('users'); setShowUserMenu(false); }}>
+                        👥 User Management
+                      </button>
+                    </>
+                  )}
+                  <div className="dropdown-divider"></div>
+                  <button onClick={() => { logout(); setShowUserMenu(false); }} className="logout-menu-item">
+                    🚪 Logout
+                  </button>
                 </div>
               )}
-              <span className="username">
-                {authState.user?.username}
-                {authState.user?.role === 'admin' && <span className="admin-badge">Admin</span>}
-              </span>
             </div>
-            
-            <div className="export-menu">
-              <button className="export-btn">
-                Export
-              </button>
-              <div className="export-dropdown">
-                <button onClick={() => handleExport('pdf')}>
-                  📄 Export as PDF
-                </button>
-                <button onClick={() => handleExport('json')}>
-                  📋 Export as JSON
-                </button>
-                <button onClick={() => handleExport('csv')}>
-                  📊 Export as CSV
-                </button>
-              </div>
-            </div>
-            
-            <button className="logout-btn" onClick={logout}>
-              Logout
-            </button>
             
             <button 
               className="mobile-menu-btn"
@@ -231,26 +314,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
           </button>
           
           <button
-            className={`nav-item ${currentView === 'profile' ? 'active' : ''}`}
-            onClick={() => {
-              onViewChange('profile');
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Profile
-          </button>
-          
-          <button
-            className={`nav-item ${currentView === 'backup' ? 'active' : ''}`}
-            onClick={() => {
-              onViewChange('backup');
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Backup
-          </button>
-          
-          <button
             className={`nav-item ${currentView === 'about' ? 'active' : ''}`}
             onClick={() => {
               onViewChange('about');
@@ -260,28 +323,15 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
             About
           </button>
           
-          {authState.user?.role === 'admin' && (
-            <>
-              <button
-                className={`nav-item ${currentView === 'admin' ? 'active' : ''}`}
-                onClick={() => {
-                  onViewChange('admin');
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                Admin
-              </button>
-              <button
-                className={`nav-item ${currentView === 'users' ? 'active' : ''}`}
-                onClick={() => {
-                  onViewChange('users');
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                Users
-              </button>
-            </>
-          )}
+          <button
+            className={`nav-item ${currentView === 'contact' ? 'active' : ''}`}
+            onClick={() => {
+              onViewChange('contact');
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            Contact
+          </button>
         </div>
       </nav>
 
@@ -291,7 +341,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
 
       <footer className="footer">
         <div className="footer-content">
-          <p>&copy; 2025 Collectors Playbook Card Tracker.</p>
+          <p>&copy; 2025 Collectors Playbook.</p>
         </div>
       </footer>
     </div>
