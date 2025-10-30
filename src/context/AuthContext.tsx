@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { userService } from '../services/userService';
+
 import { collectionsDatabase } from '../db/collectionsDatabase';
 import { apiService } from '../services/api';
-import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 import { User } from '../types';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 interface AuthState {
   user: User | null;
@@ -12,7 +12,7 @@ interface AuthState {
   error: string | null;
 }
 
-type AuthAction = 
+type AuthAction =
   | { type: 'LOGIN_START' }
   | { type: 'LOGIN_SUCCESS'; payload: { user: User; token: string } }
   | { type: 'LOGIN_FAILURE'; payload: string }
@@ -112,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logDebug('AuthContext', 'Checking for existing session on app start');
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
-    
+
     if (storedUser && storedToken) {
       try {
         logDebug('AuthContext', 'Found existing session data', { hasUser: !!storedUser, hasToken: !!storedToken });
@@ -134,28 +134,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<void> => {
     logInfo('AuthContext', 'Starting login process', { email });
     dispatch({ type: 'LOGIN_START' });
-    
+
     try {
       // Use API authentication
       logDebug('AuthContext', 'Authenticating user with API service');
       const { user, token } = await apiService.login(email, password);
       logDebug('AuthContext', 'Authentication result received', { userFound: !!user, userId: user?.id });
-      
-      dispatch({ 
-        type: 'LOGIN_SUCCESS', 
-        payload: { user, token } 
+
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: { user, token },
       });
-      
+
       logInfo('AuthContext', 'Login successful, initializing user collections', { userId: user.id });
-      
+
       // Initialize user collections (handles errors internally)
       await collectionsDatabase.initializeUserCollections(user.id);
       logInfo('AuthContext', 'User collections initialization completed', { userId: user.id });
     } catch (error) {
       logError('AuthContext', 'Login process failed', error as Error, { email });
-      dispatch({ 
-        type: 'LOGIN_FAILURE', 
-        payload: error instanceof Error ? error.message : 'Login failed' 
+      dispatch({
+        type: 'LOGIN_FAILURE',
+        payload: error instanceof Error ? error.message : 'Login failed',
       });
       throw error;
     }
@@ -164,7 +164,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (username: string, email: string, password: string): Promise<void> => {
     logInfo('AuthContext', 'Starting registration process', { username, email });
     dispatch({ type: 'LOGIN_START' });
-    
+
     try {
       // Use API registration
       logDebug('AuthContext', 'Registering user with API service');
@@ -173,7 +173,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       dispatch({
         type: 'LOGIN_SUCCESS',
-        payload: { user, token }
+        payload: { user, token },
       });
 
       logInfo('AuthContext', 'Registration successful, initializing user collections', { userId: user.id });
@@ -185,7 +185,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       logError('AuthContext', 'Registration process failed', error as Error, { username, email });
       dispatch({
         type: 'LOGIN_FAILURE',
-        payload: error instanceof Error ? error.message : 'Registration failed'
+        payload: error instanceof Error ? error.message : 'Registration failed',
       });
       throw error;
     }

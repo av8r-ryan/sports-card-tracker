@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+
 import { Collection, CollectionStats } from '../../types/collection';
 import './CollectionCard.css';
 
@@ -21,25 +22,23 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
   onDelete,
   onSetAsDefault,
   isSelected = false,
-  isBulkDeleteMode = false
+  isBulkDeleteMode = false,
 }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
   const profitLoss = stats.totalValue - stats.totalCost;
-  const profitLossPercent = stats.totalCost > 0 
-    ? ((profitLoss / stats.totalCost) * 100).toFixed(1)
-    : '0';
+  const profitLossPercent = stats.totalCost > 0 ? ((profitLoss / stats.totalCost) * 100).toFixed(1) : '0';
 
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  
+
   const canBeDeleted = !collection.isDefault && stats.cardCount === 0;
   const showSelectionCheckbox = isBulkDeleteMode && canBeDeleted;
 
@@ -61,17 +60,17 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
   }, [showMenu]);
 
   return (
-    <div 
+    <div
       className={`collection-card ${isSelected ? 'selected' : ''} ${showSelectionCheckbox ? 'selectable' : ''} ${isBulkDeleteMode && !showSelectionCheckbox ? 'disabled' : ''}`}
-      style={{ 
+      style={{
         borderColor: collection.color,
-        backgroundColor: collection.color + '10'
+        backgroundColor: `${collection.color}10`,
       }}
     >
       {showSelectionCheckbox && (
         <div className="selection-checkbox">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             checked={isSelected}
             onChange={(e) => {
               e.stopPropagation();
@@ -80,51 +79,56 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
           />
         </div>
       )}
-      
-      {collection.isDefault && (
-        <div className="default-badge">Default</div>
-      )}
+
+      {collection.isDefault && <div className="default-badge">Default</div>}
 
       <div className="collection-header">
-        <div className="collection-icon" style={{ backgroundColor: collection.color + '30' }}>
+        <div className="collection-icon" style={{ backgroundColor: `${collection.color}30` }}>
           {collection.icon}
         </div>
         {!isBulkDeleteMode && (
           <div className="collection-actions" ref={menuRef}>
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowMenu(!showMenu);
-              }} 
-              className="action-btn menu-btn" 
+              }}
+              className="action-btn menu-btn"
               title="Actions"
             >
               ⋮
             </button>
             {showMenu && (
               <div className="action-menu">
-                <button onClick={(e) => { e.stopPropagation(); onEdit(); setShowMenu(false); }} className="menu-item">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit();
+                    setShowMenu(false);
+                  }}
+                  className="menu-item"
+                >
                   ✏️ Edit
                 </button>
                 {!collection.isDefault && (
-                  <button 
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      onSetAsDefault(); 
-                      setShowMenu(false); 
-                    }} 
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSetAsDefault();
+                      setShowMenu(false);
+                    }}
                     className="menu-item"
                   >
                     ⭐ Set as Default
                   </button>
                 )}
                 {!collection.isDefault && (
-                  <button 
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      onDelete(); 
-                      setShowMenu(false); 
-                    }} 
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete();
+                      setShowMenu(false);
+                    }}
                     className="menu-item delete"
                   >
                     🗑️ Delete
@@ -138,9 +142,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
 
       <div className="collection-body" onClick={onSelect}>
         <h3>{collection.name}</h3>
-        {collection.description && (
-          <p className="collection-description">{collection.description}</p>
-        )}
+        {collection.description && <p className="collection-description">{collection.description}</p>}
 
         <div className="collection-stats">
           <div className="stat-item">
@@ -154,7 +156,8 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
           <div className="stat-item">
             <span className="stat-label">P/L</span>
             <span className={`stat-value ${profitLoss >= 0 ? 'positive' : 'negative'}`}>
-              {profitLoss >= 0 ? '+' : ''}{formatCurrency(profitLoss)}
+              {profitLoss >= 0 ? '+' : ''}
+              {formatCurrency(profitLoss)}
               <small>({profitLossPercent}%)</small>
             </span>
           </div>
@@ -182,8 +185,10 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
 
         {collection.tags && collection.tags.length > 0 && (
           <div className="collection-tags">
-            {collection.tags.map(tag => (
-              <span key={tag} className="tag">#{tag}</span>
+            {collection.tags.map((tag) => (
+              <span key={tag} className="tag">
+                #{tag}
+              </span>
             ))}
           </div>
         )}

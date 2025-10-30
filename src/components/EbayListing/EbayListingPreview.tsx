@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Card } from '../../types';
+
 import { ebayListingService, EbayListingOptions, EbayListing } from '../../services/ebayListingService';
+import { Card } from '../../types';
 import './EbayListingPreview.css';
 
 interface EbayListingPreviewProps {
@@ -17,7 +18,7 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
     returnPolicy: true,
     watermarkImages: false,
     includeGradingDetails: true,
-    includeMarketData: true
+    includeMarketData: true,
   });
 
   const [listing, setListing] = useState<EbayListing | null>(null);
@@ -35,7 +36,7 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
     if (!listing) return;
 
     const exported = ebayListingService.exportListing(listing, exportFormat);
-    
+
     if (exportFormat === 'html') {
       // Copy HTML to clipboard
       navigator.clipboard.writeText(exported).then(() => {
@@ -68,24 +69,26 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
       <div className="ebay-listing-container">
         <div className="ebay-listing-header">
           <h2>Generate eBay Listing</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
         </div>
 
         <div className="ebay-listing-tabs">
-          <button 
+          <button
             className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
             Settings
           </button>
-          <button 
+          <button
             className={`tab ${activeTab === 'preview' ? 'active' : ''}`}
             onClick={() => setActiveTab('preview')}
             disabled={!listing}
           >
             Preview
           </button>
-          <button 
+          <button
             className={`tab ${activeTab === 'export' ? 'active' : ''}`}
             onClick={() => setActiveTab('export')}
             disabled={!listing}
@@ -98,12 +101,12 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
           {activeTab === 'settings' && (
             <div className="settings-panel">
               <h3>Listing Options</h3>
-              
+
               <div className="option-group">
                 <label>Listing Format</label>
-                <select 
-                  value={options.listingFormat} 
-                  onChange={(e) => setOptions({...options, listingFormat: e.target.value as any})}
+                <select
+                  value={options.listingFormat}
+                  onChange={(e) => setOptions({ ...options, listingFormat: e.target.value as any })}
                 >
                   <option value="auction">Auction Only</option>
                   <option value="buyItNow">Buy It Now Only</option>
@@ -113,9 +116,9 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
 
               <div className="option-group">
                 <label>Duration</label>
-                <select 
-                  value={options.duration} 
-                  onChange={(e) => setOptions({...options, duration: parseInt(e.target.value) as any})}
+                <select
+                  value={options.duration}
+                  onChange={(e) => setOptions({ ...options, duration: parseInt(e.target.value) as any })}
                 >
                   <option value="3">3 Days</option>
                   <option value="5">5 Days</option>
@@ -127,9 +130,9 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
 
               <div className="option-group">
                 <label>Shipping Type</label>
-                <select 
-                  value={options.shippingType} 
-                  onChange={(e) => setOptions({...options, shippingType: e.target.value as any})}
+                <select
+                  value={options.shippingType}
+                  onChange={(e) => setOptions({ ...options, shippingType: e.target.value as any })}
                 >
                   <option value="standard">Standard (First Class)</option>
                   <option value="expedited">Expedited (Priority)</option>
@@ -139,10 +142,10 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
 
               <div className="option-group checkbox-group">
                 <label>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={options.includeImages}
-                    onChange={(e) => setOptions({...options, includeImages: e.target.checked})}
+                    onChange={(e) => setOptions({ ...options, includeImages: e.target.checked })}
                   />
                   Include Images
                 </label>
@@ -150,10 +153,10 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
 
               <div className="option-group checkbox-group">
                 <label>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={options.watermarkImages}
-                    onChange={(e) => setOptions({...options, watermarkImages: e.target.checked})}
+                    onChange={(e) => setOptions({ ...options, watermarkImages: e.target.checked })}
                     disabled={!options.includeImages}
                   />
                   Watermark Images
@@ -162,10 +165,10 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
 
               <div className="option-group checkbox-group">
                 <label>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={options.returnPolicy}
-                    onChange={(e) => setOptions({...options, returnPolicy: e.target.checked})}
+                    onChange={(e) => setOptions({ ...options, returnPolicy: e.target.checked })}
                   />
                   Accept Returns (30 days)
                 </label>
@@ -173,10 +176,10 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
 
               <div className="option-group checkbox-group">
                 <label>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={options.includeGradingDetails}
-                    onChange={(e) => setOptions({...options, includeGradingDetails: e.target.checked})}
+                    onChange={(e) => setOptions({ ...options, includeGradingDetails: e.target.checked })}
                     disabled={!card.gradingCompany}
                   />
                   Include Grading Details
@@ -185,10 +188,10 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
 
               <div className="option-group checkbox-group">
                 <label>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={options.includeMarketData}
-                    onChange={(e) => setOptions({...options, includeMarketData: e.target.checked})}
+                    onChange={(e) => setOptions({ ...options, includeMarketData: e.target.checked })}
                   />
                   Include Market Data
                 </label>
@@ -205,16 +208,8 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
               <div className="listing-field">
                 <label>Title (80 char max):</label>
                 <div className="field-with-copy">
-                  <input 
-                    type="text" 
-                    value={listing.title} 
-                    readOnly 
-                    className="listing-title"
-                  />
-                  <button 
-                    className="copy-button" 
-                    onClick={() => copyToClipboard(listing.title)}
-                  >
+                  <input type="text" value={listing.title} readOnly className="listing-title" />
+                  <button className="copy-button" onClick={() => copyToClipboard(listing.title)}>
                     Copy
                   </button>
                 </div>
@@ -238,12 +233,8 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
               <div className="listing-field">
                 <label>Pricing:</label>
                 <div className="pricing-info">
-                  {listing.startingPrice && (
-                    <div>Starting Price: ${listing.startingPrice.toFixed(2)}</div>
-                  )}
-                  {listing.buyItNowPrice && (
-                    <div>Buy It Now: ${listing.buyItNowPrice.toFixed(2)}</div>
-                  )}
+                  {listing.startingPrice && <div>Starting Price: ${listing.startingPrice.toFixed(2)}</div>}
+                  {listing.buyItNowPrice && <div>Buy It Now: ${listing.buyItNowPrice.toFixed(2)}</div>}
                   <div>Shipping: ${listing.shippingCost.toFixed(2)}</div>
                 </div>
               </div>
@@ -262,17 +253,12 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
 
               <div className="listing-field">
                 <label>Search Keywords:</label>
-                <div className="keywords-list">
-                  {listing.searchKeywords.join(', ')}
-                </div>
+                <div className="keywords-list">{listing.searchKeywords.join(', ')}</div>
               </div>
 
               <div className="listing-field">
                 <label>Description Preview:</label>
-                <div 
-                  className="description-preview" 
-                  dangerouslySetInnerHTML={{ __html: listing.description }}
-                />
+                <div className="description-preview" dangerouslySetInnerHTML={{ __html: listing.description }} />
               </div>
             </div>
           )}
@@ -280,30 +266,30 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
           {activeTab === 'export' && listing && (
             <div className="export-panel">
               <h3>Export Listing</h3>
-              
+
               <div className="export-options">
                 <label>
-                  <input 
-                    type="radio" 
-                    value="html" 
+                  <input
+                    type="radio"
+                    value="html"
                     checked={exportFormat === 'html'}
                     onChange={(e) => setExportFormat(e.target.value as any)}
                   />
                   HTML (Copy to clipboard)
                 </label>
                 <label>
-                  <input 
-                    type="radio" 
-                    value="csv" 
+                  <input
+                    type="radio"
+                    value="csv"
                     checked={exportFormat === 'csv'}
                     onChange={(e) => setExportFormat(e.target.value as any)}
                   />
                   CSV (Download file)
                 </label>
                 <label>
-                  <input 
-                    type="radio" 
-                    value="json" 
+                  <input
+                    type="radio"
+                    value="json"
                     checked={exportFormat === 'json'}
                     onChange={(e) => setExportFormat(e.target.value as any)}
                   />
@@ -315,11 +301,7 @@ export const EbayListingPreview: React.FC<EbayListingPreviewProps> = ({ card, on
                 {exportFormat === 'html' ? 'Copy to Clipboard' : 'Download File'}
               </button>
 
-              {copied && (
-                <div className="success-message">
-                  ✓ Copied to clipboard!
-                </div>
-              )}
+              {copied && <div className="success-message">✓ Copied to clipboard!</div>}
 
               <div className="export-tips">
                 <h4>Tips for eBay:</h4>

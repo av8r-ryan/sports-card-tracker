@@ -1,7 +1,8 @@
+import { format } from 'date-fns';
 import React, { useMemo, useState } from 'react';
+
 import { ReportingService } from '../../services/reportingService';
 import { ReportFilter } from '../../types/reports';
-import { format } from 'date-fns';
 import './TaxReport.css';
 
 interface Props {
@@ -12,9 +13,9 @@ interface Props {
 const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [filterType, setFilterType] = useState<'all' | 'short-term' | 'long-term'>('all');
-  
-  const taxData = useMemo(() => 
-    reportingService.generateTaxReport(selectedYear, filters), 
+
+  const taxData = useMemo(
+    () => reportingService.generateTaxReport(selectedYear, filters),
     [reportingService, selectedYear, filters]
   );
 
@@ -22,28 +23,25 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(value);
   };
 
-  const availableYears = Array.from(
-    { length: 5 }, 
-    (_, i) => new Date().getFullYear() - i
-  );
+  const availableYears = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
   // Calculate additional metrics
   const totalTransactions = taxData.shortTermGains.length + taxData.longTermGains.length;
   const totalGains = [...taxData.shortTermGains, ...taxData.longTermGains]
-    .filter(t => t.gainLoss > 0)
+    .filter((t) => t.gainLoss > 0)
     .reduce((sum, t) => sum + t.gainLoss, 0);
   const totalLosses = [...taxData.shortTermGains, ...taxData.longTermGains]
-    .filter(t => t.gainLoss < 0)
+    .filter((t) => t.gainLoss < 0)
     .reduce((sum, t) => sum + t.gainLoss, 0);
 
   // Filter transactions based on selected type
   const filteredTransactions = useMemo(() => {
     const allTransactions = [...taxData.shortTermGains, ...taxData.longTermGains];
-    
+
     switch (filterType) {
       case 'short-term':
         return taxData.shortTermGains;
@@ -57,11 +55,11 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
   // Get category icons
   const getCategoryIcon = (category: string) => {
     const icons: Record<string, string> = {
-      'Baseball': '⚾',
-      'Basketball': '🏀',
-      'Football': '🏈',
-      'Pokemon': '🎮',
-      'Other': '🃏'
+      Baseball: '⚾',
+      Basketball: '🏀',
+      Football: '🏈',
+      Pokemon: '🎮',
+      Other: '🃏',
     };
     return icons[category] || '🃏';
   };
@@ -80,8 +78,8 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
           <div className="empty-icon">📊</div>
           <h2 className="empty-title">No Transactions Found</h2>
           <p className="empty-message">
-            No card sales were recorded for {selectedYear}. 
-            Tax reports will be generated when you sell cards from your collection.
+            No card sales were recorded for {selectedYear}. Tax reports will be generated when you sell cards from your
+            collection.
           </p>
         </div>
       </div>
@@ -105,8 +103,10 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
           >
-            {availableYears.map(year => (
-              <option key={year} value={year}>{year}</option>
+            {availableYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
             ))}
           </select>
         </div>
@@ -153,7 +153,7 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             </div>
           </div>
         </div>
-        
+
         <div className="summary-card losses">
           <div className="card-header">
             <h3 className="card-title">Total Capital Losses</h3>
@@ -171,7 +171,7 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             </div>
           </div>
         </div>
-        
+
         <div className="summary-card net">
           <div className="card-header">
             <h3 className="card-title">Net Capital Gain/Loss</h3>
@@ -204,24 +204,23 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             <div className="strategy-number">1</div>
             <h3 className="strategy-title">Hold for Long-Term</h3>
             <p className="strategy-description">
-              Hold cards for over 365 days to qualify for lower long-term capital gains tax rates, 
-              potentially saving 10-20% on taxes.
+              Hold cards for over 365 days to qualify for lower long-term capital gains tax rates, potentially saving
+              10-20% on taxes.
             </p>
           </div>
           <div className="strategy-card">
             <div className="strategy-number">2</div>
             <h3 className="strategy-title">Tax Loss Harvesting</h3>
             <p className="strategy-description">
-              Offset gains by selling underperforming cards. You can deduct up to $3,000 
-              in losses against ordinary income annually.
+              Offset gains by selling underperforming cards. You can deduct up to $3,000 in losses against ordinary
+              income annually.
             </p>
           </div>
           <div className="strategy-card">
             <div className="strategy-number">3</div>
             <h3 className="strategy-title">Strategic Timing</h3>
             <p className="strategy-description">
-              Time your sales across tax years to manage your tax bracket and optimize 
-              your overall tax liability.
+              Time your sales across tax years to manage your tax bracket and optimize your overall tax liability.
             </p>
           </div>
         </div>
@@ -235,19 +234,19 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             Transaction Details
           </h2>
           <div className="breakdown-filters">
-            <button 
+            <button
               className={`filter-button ${filterType === 'all' ? 'active' : ''}`}
               onClick={() => setFilterType('all')}
             >
               All Transactions
             </button>
-            <button 
+            <button
               className={`filter-button ${filterType === 'short-term' ? 'active' : ''}`}
               onClick={() => setFilterType('short-term')}
             >
               Short-Term
             </button>
-            <button 
+            <button
               className={`filter-button ${filterType === 'long-term' ? 'active' : ''}`}
               onClick={() => setFilterType('long-term')}
             >
@@ -255,7 +254,7 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             </button>
           </div>
         </div>
-        
+
         <div className="transactions-container">
           <table className="transactions-table">
             <thead>
@@ -275,9 +274,7 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
                 <tr key={index}>
                   <td>
                     <div className="card-info">
-                      <div className="card-category">
-                        {getCategoryIcon(transaction.card.category)}
-                      </div>
+                      <div className="card-category">{getCategoryIcon(transaction.card.category)}</div>
                       <div className="card-details-cell">
                         <div className="player-name">{transaction.card.player}</div>
                         <div className="card-meta">
@@ -314,14 +311,11 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             <h3 className="insight-title">Tax Efficiency Score</h3>
           </div>
           <p className="insight-content">
-            {taxData.longTermGains.length > taxData.shortTermGains.length 
+            {taxData.longTermGains.length > taxData.shortTermGains.length
               ? `Great job! ${((taxData.longTermGains.length / totalTransactions) * 100).toFixed(0)}% of your sales qualified for favorable long-term capital gains treatment.`
-              : `Consider holding cards longer. Only ${((taxData.longTermGains.length / totalTransactions) * 100).toFixed(0)}% of your sales qualified for long-term rates.`
-            }
+              : `Consider holding cards longer. Only ${((taxData.longTermGains.length / totalTransactions) * 100).toFixed(0)}% of your sales qualified for long-term rates.`}
           </p>
-          <div className="insight-action">
-            Learn more about tax strategies →
-          </div>
+          <div className="insight-action">Learn more about tax strategies →</div>
         </div>
 
         <div className="insight-card">
@@ -330,13 +324,11 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             <h3 className="insight-title">Estimated Tax Impact</h3>
           </div>
           <p className="insight-content">
-            Based on your net gain of {formatCurrency(taxData.netGainLoss)}, 
-            you may owe approximately {formatCurrency(taxData.netGainLoss * 0.15)} to {formatCurrency(taxData.netGainLoss * 0.28)} 
+            Based on your net gain of {formatCurrency(taxData.netGainLoss)}, you may owe approximately{' '}
+            {formatCurrency(taxData.netGainLoss * 0.15)} to {formatCurrency(taxData.netGainLoss * 0.28)}
             in taxes, depending on your tax bracket and filing status.
           </p>
-          <div className="insight-action">
-            Calculate exact tax liability →
-          </div>
+          <div className="insight-action">Calculate exact tax liability →</div>
         </div>
 
         <div className="insight-card">
@@ -345,13 +337,10 @@ const TaxReport: React.FC<Props> = ({ reportingService, filters }) => {
             <h3 className="insight-title">Important Deadlines</h3>
           </div>
           <p className="insight-content">
-            Remember to report these transactions on your {selectedYear + 1} tax return. 
-            Form 8949 and Schedule D are due by April 15, {selectedYear + 1}. 
-            Consider making estimated tax payments if your gains are substantial.
+            Remember to report these transactions on your {selectedYear + 1} tax return. Form 8949 and Schedule D are
+            due by April 15, {selectedYear + 1}. Consider making estimated tax payments if your gains are substantial.
           </p>
-          <div className="insight-action">
-            Set tax reminders →
-          </div>
+          <div className="insight-action">Set tax reminders →</div>
         </div>
       </div>
 

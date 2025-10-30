@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+
 import { accessibilityManager } from '../../utils/accessibility';
 import './ReducedMotionMode.css';
 
@@ -40,18 +41,15 @@ const ReducedMotionMode: React.FC<ReducedMotionModeProps> = ({ children, classNa
     const newState = !isReducedMotion;
     setIsReducedMotion(newState);
     accessibilityManager.updateReducedMotionMode();
-    
+
     // Announce change
-    accessibilityManager.announce(
-      `Reduced motion mode ${newState ? 'enabled' : 'disabled'}`,
-      'polite'
-    );
+    accessibilityManager.announce(`Reduced motion mode ${newState ? 'enabled' : 'disabled'}`, 'polite');
   };
 
   return (
     <div className={`reduced-motion-mode ${isReducedMotion ? 'reduced-motion' : ''} ${className}`}>
       {children}
-      
+
       {/* Toggle Button */}
       <AnimatePresence>
         {showToggle && (
@@ -64,12 +62,8 @@ const ReducedMotionMode: React.FC<ReducedMotionModeProps> = ({ children, classNa
             aria-label={`${isReducedMotion ? 'Disable' : 'Enable'} reduced motion mode`}
             title={`${isReducedMotion ? 'Disable' : 'Enable'} reduced motion mode`}
           >
-            <div className="motion-icon">
-              {isReducedMotion ? '⏸️' : '▶️'}
-            </div>
-            <span className="motion-text">
-              {isReducedMotion ? 'Reduced Motion' : 'Full Motion'}
-            </span>
+            <div className="motion-icon">{isReducedMotion ? '⏸️' : '▶️'}</div>
+            <span className="motion-text">{isReducedMotion ? 'Reduced Motion' : 'Full Motion'}</span>
           </motion.button>
         )}
       </AnimatePresence>
@@ -331,7 +325,7 @@ export const reducedMotionUtils = {
       return fallback;
     }
     return zIndex;
-  }
+  },
 };
 
 export default ReducedMotionMode;

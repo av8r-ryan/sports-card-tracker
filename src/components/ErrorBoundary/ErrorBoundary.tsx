@@ -1,4 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+
 import { logError } from '../../utils/logger';
 import './ErrorBoundary.css';
 
@@ -26,7 +27,7 @@ class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: ''
+      errorId: '',
     };
   }
 
@@ -35,7 +36,7 @@ class ErrorBoundary extends Component<Props, State> {
     return {
       hasError: true,
       error,
-      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      errorId: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     };
   }
 
@@ -43,12 +44,12 @@ class ErrorBoundary extends Component<Props, State> {
     // Log error details
     logError('ErrorBoundary', 'Component caught an error', error, {
       componentStack: errorInfo.componentStack,
-      errorId: this.state.errorId
+      errorId: this.state.errorId,
     });
 
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
 
     // Call custom error handler if provided
@@ -66,10 +67,8 @@ class ErrorBoundary extends Component<Props, State> {
 
     // Reset error boundary when resetKeys change
     if (hasError && resetKeys && prevProps.resetKeys) {
-      const hasResetKeyChanged = resetKeys.some((key, index) => 
-        key !== prevProps.resetKeys![index]
-      );
-      
+      const hasResetKeyChanged = resetKeys.some((key, index) => key !== prevProps.resetKeys![index]);
+
       if (hasResetKeyChanged) {
         this.resetErrorBoundary();
       }
@@ -99,7 +98,7 @@ class ErrorBoundary extends Component<Props, State> {
         errorId: this.state.errorId,
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
-        url: window.location.href
+        url: window.location.href,
       });
     }
   };
@@ -114,7 +113,7 @@ class ErrorBoundary extends Component<Props, State> {
         hasError: false,
         error: null,
         errorInfo: null,
-        errorId: ''
+        errorId: '',
       });
     }, 100);
   };
@@ -136,11 +135,12 @@ class ErrorBoundary extends Component<Props, State> {
       componentStack: errorInfo?.componentStack,
       userAgent: navigator.userAgent,
       url: window.location.href,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Copy to clipboard
-    navigator.clipboard.writeText(JSON.stringify(bugReport, null, 2))
+    navigator.clipboard
+      .writeText(JSON.stringify(bugReport, null, 2))
       .then(() => {
         alert('Bug report copied to clipboard! Please paste it in your bug report.');
       })
@@ -163,10 +163,8 @@ class ErrorBoundary extends Component<Props, State> {
           <div className="error-boundary-content">
             <div className="error-icon">⚠️</div>
             <h1 className="error-title">Something went wrong</h1>
-            <p className="error-message">
-              We're sorry, but something unexpected happened. Our team has been notified.
-            </p>
-            
+            <p className="error-message">We're sorry, but something unexpected happened. Our team has been notified.</p>
+
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="error-details">
                 <summary>Error Details (Development Only)</summary>
@@ -186,29 +184,18 @@ class ErrorBoundary extends Component<Props, State> {
             )}
 
             <div className="error-actions">
-              <button 
-                className="error-button primary" 
-                onClick={this.handleRetry}
-              >
+              <button className="error-button primary" onClick={this.handleRetry}>
                 Try Again
               </button>
-              <button 
-                className="error-button secondary" 
-                onClick={this.handleReload}
-              >
+              <button className="error-button secondary" onClick={this.handleReload}>
                 Reload Page
               </button>
-              <button 
-                className="error-button secondary" 
-                onClick={this.handleReportBug}
-              >
+              <button className="error-button secondary" onClick={this.handleReportBug}>
                 Report Bug
               </button>
             </div>
 
-            <div className="error-id">
-              Error ID: {this.state.errorId}
-            </div>
+            <div className="error-id">Error ID: {this.state.errorId}</div>
           </div>
         </div>
       );

@@ -1,10 +1,9 @@
-import React, { useState, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo, Suspense } from 'react';
+
 import { useCards } from '../../context/DexieCardContext';
 import { ReportingService } from '../../services/reportingService';
 import { ReportFilter, ReportTemplate } from '../../types/reports';
-import AnimatedWrapper from '../Animation/AnimatedWrapper';
-import CollapsibleMenu from '../UI/CollapsibleMenu';
 import {
   LazyReportsDashboard,
   LazyPortfolioPerformanceReport,
@@ -15,10 +14,11 @@ import {
   LazyInventoryReport,
   LazyComparisonReport,
   LazyExecutiveDashboard,
-  LazyInvestmentInsightsReport,
   LazyReportFilters,
-  LazyReportExport
+  LazyReportExport,
 } from '../../utils/lazyLoading';
+import AnimatedWrapper from '../Animation/AnimatedWrapper';
+import CollapsibleMenu from '../UI/CollapsibleMenu';
 import './Reports.css';
 
 const Reports: React.FC = () => {
@@ -27,10 +27,7 @@ const Reports: React.FC = () => {
   const [filters, setFilters] = useState<ReportFilter>({});
   const [showFilters, setShowFilters] = useState(false);
 
-  const reportingService = useMemo(() => 
-    new ReportingService(state.cards), 
-    [state.cards]
-  );
+  const reportingService = useMemo(() => new ReportingService(state.cards), [state.cards]);
 
   const reportTabs = [
     { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
@@ -43,7 +40,7 @@ const Reports: React.FC = () => {
     { id: 'investment-insights', label: 'Investment Insights', icon: '🔍' },
     { id: 'detailed-inventory', label: 'Detailed Inventory', icon: '📦' },
     { id: 'comparison-analysis', label: 'Comparisons', icon: '⚖️' },
-    { id: 'executive-dashboard', label: 'Executive Dashboard', icon: '🎯' }
+    { id: 'executive-dashboard', label: 'Executive Dashboard', icon: '🎯' },
   ] as const;
 
   const handleSelectReport = (reportType: ReportTemplate) => {
@@ -54,7 +51,7 @@ const Reports: React.FC = () => {
   const renderActiveReport = () => {
     const LoadingFallback = () => (
       <div className="report-loading">
-        <div className="loading-spinner"></div>
+        <div className="loading-spinner" />
         <p>Loading report...</p>
       </div>
     );
@@ -66,82 +63,73 @@ const Reports: React.FC = () => {
             <LazyReportsDashboard onSelectReport={handleSelectReport} />
           </Suspense>
         );
-      
+
       case 'portfolio-summary':
       case 'financial-performance':
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <LazyPortfolioPerformanceReport 
-              reportingService={reportingService} 
+            <LazyPortfolioPerformanceReport
+              reportingService={reportingService}
               filters={filters}
               detailed={activeReport === 'financial-performance'}
             />
           </Suspense>
         );
-      
+
       case 'collection-analytics':
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <LazyCollectionAnalyticsReport 
-              reportingService={reportingService} 
-              filters={filters}
-            />
+            <LazyCollectionAnalyticsReport reportingService={reportingService} filters={filters} />
           </Suspense>
         );
-      
+
       case 'market-analysis':
       case 'investment-insights':
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <LazyMarketAnalysisReport 
-              reportingService={reportingService} 
+            <LazyMarketAnalysisReport
+              reportingService={reportingService}
               filters={filters}
               detailed={activeReport === 'investment-insights'}
             />
           </Suspense>
         );
-      
+
       case 'tax-summary':
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <LazyTaxReport 
-              reportingService={reportingService} 
-              filters={filters}
-            />
+            <LazyTaxReport reportingService={reportingService} filters={filters} />
           </Suspense>
         );
-      
+
       case 'insurance-appraisal':
         return (
           <Suspense fallback={<LoadingFallback />}>
-            <LazyInsuranceReport 
-              reportingService={reportingService} 
-              filters={filters}
-            />
+            <LazyInsuranceReport reportingService={reportingService} filters={filters} />
           </Suspense>
         );
-      
+
       case 'detailed-inventory':
         return (
           <Suspense fallback={<LoadingFallback />}>
             <LazyInventoryReport />
           </Suspense>
         );
-      
+
       case 'comparison-analysis':
         return (
           <Suspense fallback={<LoadingFallback />}>
             <LazyComparisonReport />
           </Suspense>
         );
-      
+
       case 'executive-dashboard':
         return (
           <Suspense fallback={<LoadingFallback />}>
             <LazyExecutiveDashboard />
           </Suspense>
         );
-      
+
       default:
         return <div>Report not found</div>;
     }
@@ -150,7 +138,7 @@ const Reports: React.FC = () => {
   if (state.loading) {
     return (
       <div className="reports-loading">
-        <div className="loading-spinner"></div>
+        <div className="loading-spinner" />
         <p>Loading report data...</p>
       </div>
     );
@@ -160,16 +148,16 @@ const Reports: React.FC = () => {
     return (
       <AnimatedWrapper animation="fadeInUp" duration={0.6}>
         <div className="reports-empty card-glass">
-          <motion.div 
+          <motion.div
             className="empty-icon"
-            animate={{ 
+            animate={{
               scale: [1, 1.1, 1],
-              rotate: [0, 5, -5, 0]
+              rotate: [0, 5, -5, 0],
             }}
-            transition={{ 
+            transition={{
               duration: 2,
               repeat: Infinity,
-              repeatType: "reverse"
+              repeatType: 'reverse',
             }}
           >
             📊
@@ -189,11 +177,11 @@ const Reports: React.FC = () => {
             <h1 className="text-gradient">📊 Advanced Reports & Analytics</h1>
             <p>Comprehensive insights into your sports card portfolio</p>
           </div>
-          
+
           <div className="reports-actions">
             {activeReport !== 'dashboard' && (
               <>
-                <motion.button 
+                <motion.button
                   className={`filter-toggle ${showFilters ? 'active' : ''}`}
                   onClick={() => setShowFilters(!showFilters)}
                   whileHover={{ scale: 1.05 }}
@@ -201,9 +189,9 @@ const Reports: React.FC = () => {
                 >
                   🔍 Filters
                 </motion.button>
-                
+
                 <Suspense fallback={null}>
-                  <LazyReportExport 
+                  <LazyReportExport
                     reportingService={reportingService}
                     activeReport={activeReport as ReportTemplate}
                     filters={filters}
@@ -224,11 +212,7 @@ const Reports: React.FC = () => {
             transition={{ duration: 0.3 }}
           >
             <Suspense fallback={null}>
-              <LazyReportFilters 
-                filters={filters}
-                onFiltersChange={setFilters}
-                cards={state.cards}
-              />
+              <LazyReportFilters filters={filters} onFiltersChange={setFilters} cards={state.cards} />
             </Suspense>
           </motion.div>
         )}

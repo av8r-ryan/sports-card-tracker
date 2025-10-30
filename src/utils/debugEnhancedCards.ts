@@ -2,14 +2,14 @@
 
 export const debugEnhancedCards = () => {
   console.log('=== Enhanced Cards Debug ===');
-  
+
   // Get all localStorage keys
   const keys = Object.keys(localStorage);
-  const enhancedKeys = keys.filter(key => key.startsWith('enhanced_card_'));
-  
+  const enhancedKeys = keys.filter((key) => key.startsWith('enhanced_card_'));
+
   console.log(`Found ${enhancedKeys.length} enhanced cards in localStorage`);
-  
-  enhancedKeys.forEach(key => {
+
+  enhancedKeys.forEach((key) => {
     console.log(`\nKey: ${key}`);
     const data = localStorage.getItem(key);
     if (data) {
@@ -21,19 +21,19 @@ export const debugEnhancedCards = () => {
       }
     }
   });
-  
+
   console.log('=== End Debug ===');
 };
 
 // Clear all enhanced card data (use with caution!)
 export const clearEnhancedCards = () => {
   const keys = Object.keys(localStorage);
-  const enhancedKeys = keys.filter(key => key.startsWith('enhanced_card_'));
-  
-  enhancedKeys.forEach(key => {
+  const enhancedKeys = keys.filter((key) => key.startsWith('enhanced_card_'));
+
+  enhancedKeys.forEach((key) => {
     localStorage.removeItem(key);
   });
-  
+
   console.log(`Cleared ${enhancedKeys.length} enhanced cards from localStorage`);
 };
 
@@ -41,7 +41,7 @@ export const clearEnhancedCards = () => {
 export const getEnhancedCardById = (cardId: string) => {
   const key = `enhanced_card_${cardId}`;
   const data = localStorage.getItem(key);
-  
+
   if (data) {
     try {
       return JSON.parse(data);
@@ -50,7 +50,7 @@ export const getEnhancedCardById = (cardId: string) => {
       return null;
     }
   }
-  
+
   return null;
 };
 

@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { useTouchGestures, useSwipe, useMobileViewport, triggerHapticFeedback } from '../../utils/touchUtils';
+import React, { useRef, useEffect, useState } from 'react';
+
 import { useResponsive, useMobileOptimization } from '../../utils/responsiveUtils';
+import { useTouchGestures, useSwipe, useMobileViewport, triggerHapticFeedback } from '../../utils/touchUtils';
 import './MobileOptimized.css';
 
 interface MobileOptimizedProps {
@@ -27,17 +28,17 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
   enableHapticFeedback = true,
   enableTouchFeedback = true,
   swipeThreshold = 50,
-  pullToRefreshThreshold = 80
+  pullToRefreshThreshold = 80,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { isMobile, isTablet } = useResponsive();
   const { shouldReduceAnimations } = useMobileOptimization();
   const viewport = useMobileViewport();
-  
+
   const [isPulling, setIsPulling] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   const y = useMotionValue(0);
   const opacity = useTransform(y, [0, pullToRefreshThreshold], [0.5, 1]);
   const scale = useTransform(y, [0, pullToRefreshThreshold], [0.8, 1]);
@@ -57,21 +58,21 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
   };
 
   const gestureHandlers = useTouchGestures(handleGesture, {
-    preventDefault: false
+    preventDefault: false,
   });
 
   const swipeHandlers = useSwipe(handleSwipe, {
     threshold: swipeThreshold,
-    preventDefault: false
+    preventDefault: false,
   });
 
   // Pull to refresh handlers
   const handleDrag = (event: any, info: PanInfo) => {
     if (!enablePullToRefresh) return;
-    
+
     const currentY = info.offset.y;
     setPullDistance(Math.max(0, currentY));
-    
+
     if (currentY > 0) {
       setIsPulling(true);
       y.set(currentY);
@@ -83,15 +84,15 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
 
   const handleDragEnd = (event: any, info: PanInfo) => {
     if (!enablePullToRefresh) return;
-    
+
     if (info.offset.y > pullToRefreshThreshold) {
       setIsRefreshing(true);
       onPullToRefresh?.();
-      
+
       if (enableHapticFeedback) {
         triggerHapticFeedback('heavy');
       }
-      
+
       // Reset after refresh
       setTimeout(() => {
         setIsRefreshing(false);
@@ -109,7 +110,7 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
   // Touch feedback effect
   useEffect(() => {
     if (!enableTouchFeedback || !containerRef.current) return;
-    
+
     const cleanup = addTouchFeedback(containerRef.current);
     return cleanup;
   }, [enableTouchFeedback]);
@@ -118,13 +119,13 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
   useEffect(() => {
     if (containerRef.current) {
       const container = containerRef.current;
-      
+
       // Adjust for mobile viewport
       if (isMobile) {
         container.style.minHeight = `${viewport.height}px`;
         container.style.touchAction = 'pan-y';
       }
-      
+
       // Adjust for tablet
       if (isTablet) {
         container.style.touchAction = 'pan-x pan-y';
@@ -134,7 +135,7 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
 
   const combinedHandlers = {
     ...gestureHandlers,
-    ...(enableSwipe ? swipeHandlers : {})
+    ...(enableSwipe ? swipeHandlers : {}),
   } as any;
 
   return (
@@ -144,7 +145,7 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
       style={{
         y: enablePullToRefresh ? y : undefined,
         opacity: enablePullToRefresh ? opacity : undefined,
-        scale: enablePullToRefresh ? scale : undefined
+        scale: enablePullToRefresh ? scale : undefined,
       }}
       drag={enablePullToRefresh ? 'y' : false}
       dragConstraints={{ top: 0, bottom: 0 }}
@@ -160,27 +161,19 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
           className="pull-to-refresh-indicator"
           style={{
             opacity: isPulling ? 1 : 0,
-            scale: isPulling ? 1 : 0.8
+            scale: isPulling ? 1 : 0.8,
           }}
         >
-          <div className="refresh-icon">
-            {isRefreshing ? '🔄' : '⬇️'}
-          </div>
-          <div className="refresh-text">
-            {isRefreshing ? 'Refreshing...' : 'Pull to refresh'}
-          </div>
+          <div className="refresh-icon">{isRefreshing ? '🔄' : '⬇️'}</div>
+          <div className="refresh-text">{isRefreshing ? 'Refreshing...' : 'Pull to refresh'}</div>
         </motion.div>
       )}
-      
+
       {/* Content */}
-      <div className="mobile-content">
-        {children}
-      </div>
-      
+      <div className="mobile-content">{children}</div>
+
       {/* Touch feedback overlay */}
-      {enableTouchFeedback && (
-        <div className="touch-feedback-overlay" />
-      )}
+      {enableTouchFeedback && <div className="touch-feedback-overlay" />}
     </motion.div>
   );
 };
@@ -203,18 +196,18 @@ export const MobileButton: React.FC<MobileButtonProps> = ({
   size = 'medium',
   disabled = false,
   enableHapticFeedback = true,
-  className = ''
+  className = '',
 }) => {
   const { isMobile } = useResponsive();
   const { shouldReduceAnimations } = useMobileOptimization();
 
   const handleClick = () => {
     if (disabled) return;
-    
+
     if (enableHapticFeedback && isMobile) {
       triggerHapticFeedback('light');
     }
-    
+
     onClick?.();
   };
 
@@ -250,7 +243,7 @@ export const MobileCard: React.FC<MobileCardProps> = ({
   enableSwipe = false,
   onSwipeLeft,
   onSwipeRight,
-  className = ''
+  className = '',
 }) => {
   const { isMobile } = useResponsive();
   const { shouldReduceAnimations } = useMobileOptimization();
@@ -259,16 +252,16 @@ export const MobileCard: React.FC<MobileCardProps> = ({
 
   const handleDrag = (event: any, info: PanInfo) => {
     if (!enableSwipe) return;
-    
+
     setIsDragging(true);
     setDragX(info.offset.x);
   };
 
   const handleDragEnd = (event: any, info: PanInfo) => {
     if (!enableSwipe) return;
-    
+
     setIsDragging(false);
-    
+
     if (Math.abs(info.offset.x) > 100) {
       if (info.offset.x > 0) {
         onSwipeRight?.();
@@ -276,7 +269,7 @@ export const MobileCard: React.FC<MobileCardProps> = ({
         onSwipeLeft?.();
       }
     }
-    
+
     setDragX(0);
   };
 
@@ -293,7 +286,7 @@ export const MobileCard: React.FC<MobileCardProps> = ({
       onDragEnd={handleDragEnd}
       style={{
         x: enableSwipe ? dragX : 0,
-        scale: isDragging ? 0.98 : 1
+        scale: isDragging ? 0.98 : 1,
       }}
       whileHover={shouldReduceAnimations ? {} : { y: -2 }}
       transition={{ duration: 0.2 }}
@@ -319,7 +312,7 @@ export const MobileList: React.FC<MobileListProps> = ({
   onLoadMore,
   hasMore = false,
   loading = false,
-  className = ''
+  className = '',
 }) => {
   const { isMobile } = useResponsive();
   const listRef = useRef<HTMLDivElement>(null);
@@ -331,7 +324,7 @@ export const MobileList: React.FC<MobileListProps> = ({
       if (!listRef.current || !hasMore || loading) return;
 
       const { scrollTop, scrollHeight, clientHeight } = listRef.current;
-      
+
       if (scrollTop + clientHeight >= scrollHeight - 100) {
         onLoadMore?.();
       }
@@ -351,15 +344,13 @@ export const MobileList: React.FC<MobileListProps> = ({
       className={`mobile-list ${className}`}
       style={{
         overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       {children}
-      
+
       {enableInfiniteScroll && hasMore && (
-        <div className="mobile-list-loading">
-          {loading ? 'Loading...' : 'Pull up for more'}
-        </div>
+        <div className="mobile-list-loading">{loading ? 'Loading...' : 'Pull up for more'}</div>
       )}
     </div>
   );
@@ -372,7 +363,7 @@ const addTouchFeedback = (element: HTMLElement) => {
     const size = Math.max(rect.width, rect.height);
     const x = e.touches[0].clientX - rect.left - size / 2;
     const y = e.touches[0].clientY - rect.top - size / 2;
-    
+
     const ripple = document.createElement('div');
     ripple.style.cssText = `
       position: absolute;
@@ -387,18 +378,18 @@ const addTouchFeedback = (element: HTMLElement) => {
       pointer-events: none;
       z-index: 1000;
     `;
-    
+
     element.style.position = 'relative';
     element.style.overflow = 'hidden';
     element.appendChild(ripple);
-    
+
     setTimeout(() => {
       ripple.remove();
     }, 600);
   };
 
   element.addEventListener('touchstart', addRipple);
-  
+
   return () => {
     element.removeEventListener('touchstart', addRipple);
   };

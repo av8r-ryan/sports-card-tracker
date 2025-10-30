@@ -25,22 +25,22 @@ interface CardInput {
 class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     logDebug('ApiService', `Making request to ${url}`, { method: options.method || 'GET' });
-    
+
     // Get auth token from localStorage
     const token = localStorage.getItem('token');
-    
-    logDebug('ApiService', `Token status for ${url}`, { 
-      hasToken: !!token, 
+
+    logDebug('ApiService', `Token status for ${url}`, {
+      hasToken: !!token,
       tokenLength: token?.length || 0,
-      tokenPreview: token ? `${token.substring(0, 20)}...` : 'none'
+      tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
     });
-    
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
@@ -48,7 +48,7 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
         const errorMessage = errorData.error || `HTTP ${response.status}: ${response.statusText}`;
@@ -70,7 +70,7 @@ class ApiService {
         logError('ApiService', `Network error for ${url}`, networkError);
         throw networkError;
       }
-      
+
       logError('ApiService', `Request failed for ${url}`, error as Error);
       throw error;
     }
@@ -80,16 +80,16 @@ class ApiService {
     try {
       logInfo('ApiService', 'Fetching all cards');
       const cards = await this.request<Card[]>('/cards');
-      
+
       // Convert date strings back to Date objects
-      const processedCards = cards.map(card => ({
+      const processedCards = cards.map((card) => ({
         ...card,
         purchaseDate: new Date(card.purchaseDate),
         sellDate: card.sellDate ? new Date(card.sellDate) : undefined,
         createdAt: new Date(card.createdAt),
-        updatedAt: new Date(card.updatedAt)
+        updatedAt: new Date(card.updatedAt),
       }));
-      
+
       logInfo('ApiService', `Fetched ${processedCards.length} cards`);
       return processedCards;
     } catch (error) {
@@ -102,14 +102,14 @@ class ApiService {
     try {
       logInfo('ApiService', `Fetching card ${id}`);
       const card = await this.request<Card>(`/cards/${id}`);
-      
+
       // Convert date strings back to Date objects
       return {
         ...card,
         purchaseDate: new Date(card.purchaseDate),
         sellDate: card.sellDate ? new Date(card.sellDate) : undefined,
         createdAt: new Date(card.createdAt),
-        updatedAt: new Date(card.updatedAt)
+        updatedAt: new Date(card.updatedAt),
       };
     } catch (error) {
       logError('ApiService', `Failed to fetch card ${id}`, error as Error);
@@ -120,7 +120,7 @@ class ApiService {
   public async createCard(cardData: Card): Promise<Card> {
     try {
       logInfo('ApiService', 'Creating new card', { player: cardData.player });
-      
+
       const cardInput: CardInput = {
         player: cardData.player,
         team: cardData.team,
@@ -137,7 +137,7 @@ class ApiService {
         sellDate: cardData.sellDate?.toISOString(),
         currentValue: cardData.currentValue,
         images: cardData.images,
-        notes: cardData.notes
+        notes: cardData.notes,
       };
 
       const card = await this.request<Card>('/cards', {
@@ -151,7 +151,7 @@ class ApiService {
         purchaseDate: new Date(card.purchaseDate),
         sellDate: card.sellDate ? new Date(card.sellDate) : undefined,
         createdAt: new Date(card.createdAt),
-        updatedAt: new Date(card.updatedAt)
+        updatedAt: new Date(card.updatedAt),
       };
     } catch (error) {
       logError('ApiService', 'Failed to create card', error as Error, cardData);
@@ -162,7 +162,7 @@ class ApiService {
   public async updateCard(cardData: Card): Promise<Card> {
     try {
       logInfo('ApiService', `Updating card ${cardData.id}`, { player: cardData.player });
-      
+
       const cardInput: CardInput = {
         player: cardData.player,
         team: cardData.team,
@@ -179,7 +179,7 @@ class ApiService {
         sellDate: cardData.sellDate?.toISOString(),
         currentValue: cardData.currentValue,
         images: cardData.images,
-        notes: cardData.notes
+        notes: cardData.notes,
       };
 
       const card = await this.request<Card>(`/cards/${cardData.id}`, {
@@ -193,7 +193,7 @@ class ApiService {
         purchaseDate: new Date(card.purchaseDate),
         sellDate: card.sellDate ? new Date(card.sellDate) : undefined,
         createdAt: new Date(card.createdAt),
-        updatedAt: new Date(card.updatedAt)
+        updatedAt: new Date(card.updatedAt),
       };
     } catch (error) {
       logError('ApiService', `Failed to update card ${cardData.id}`, error as Error, cardData);
@@ -228,13 +228,13 @@ class ApiService {
     logInfo('ApiService', 'Attempting login', { email });
     const response = await this.request<{ user: User; token: string }>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
-    
+
     // Store token in localStorage
     localStorage.setItem('token', response.token);
     logInfo('ApiService', 'Login successful, token stored', { userId: response.user.id });
-    
+
     return response;
   }
 
@@ -242,13 +242,13 @@ class ApiService {
     logInfo('ApiService', 'Attempting registration', { username, email });
     const response = await this.request<{ user: User; token: string }>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ username, email, password })
+      body: JSON.stringify({ username, email, password }),
     });
-    
+
     // Store token in localStorage
     localStorage.setItem('token', response.token);
     logInfo('ApiService', 'Registration successful, token stored', { userId: response.user.id });
-    
+
     return response;
   }
 }

@@ -1,11 +1,14 @@
+import { motion } from 'framer-motion';
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import { accessibilityManager } from '../../utils/accessibility';
+
 import AccessibilityTester from './AccessibilityTester';
-import KeyboardNavigation from './KeyboardNavigation';
-import ScreenReaderSupport from './ScreenReaderSupport';
 import HighContrastMode from './HighContrastMode';
+import KeyboardNavigation from './KeyboardNavigation';
 import ReducedMotionMode from './ReducedMotionMode';
-import { accessibilityManager, accessibilityUtils } from '../../utils/accessibility';
+import ScreenReaderSupport from './ScreenReaderSupport';
+
 import './AccessibilityPage.css';
 
 const AccessibilityPage: React.FC = () => {
@@ -28,8 +31,8 @@ const AccessibilityPage: React.FC = () => {
         'Arrow key navigation for menus and grids',
         'Keyboard shortcuts for common actions',
         'Focus indicators and focus trapping',
-        'Skip links for main content'
-      ]
+        'Skip links for main content',
+      ],
     },
     {
       title: 'Screen Reader Support',
@@ -40,8 +43,8 @@ const AccessibilityPage: React.FC = () => {
         'ARIA labels and descriptions',
         'Live regions for dynamic content',
         'Proper heading hierarchy',
-        'Alternative text for images'
-      ]
+        'Alternative text for images',
+      ],
     },
     {
       title: 'High Contrast Mode',
@@ -52,8 +55,8 @@ const AccessibilityPage: React.FC = () => {
         'Manual toggle for high contrast',
         'Enhanced color contrast ratios',
         'Clear visual boundaries',
-        'Readable text and backgrounds'
-      ]
+        'Readable text and backgrounds',
+      ],
     },
     {
       title: 'Reduced Motion',
@@ -64,8 +67,8 @@ const AccessibilityPage: React.FC = () => {
         'Maintains functionality without motion',
         'Respects prefers-reduced-motion',
         'Smooth transitions when enabled',
-        'Accessible motion alternatives'
-      ]
+        'Accessible motion alternatives',
+      ],
     },
     {
       title: 'Focus Management',
@@ -76,8 +79,8 @@ const AccessibilityPage: React.FC = () => {
         'Focus restoration after actions',
         'Visible focus indicators',
         'Logical tab order',
-        'Focus history tracking'
-      ]
+        'Focus history tracking',
+      ],
     },
     {
       title: 'Color Accessibility',
@@ -88,9 +91,9 @@ const AccessibilityPage: React.FC = () => {
         'Color-blind friendly palettes',
         'High contrast alternatives',
         'Pattern and texture alternatives',
-        'Consistent color meaning'
-      ]
-    }
+        'Consistent color meaning',
+      ],
+    },
   ];
 
   const keyboardShortcuts = [
@@ -103,7 +106,7 @@ const AccessibilityPage: React.FC = () => {
     { key: 'Escape', description: 'Close dialogs and menus' },
     { key: 'Space', description: 'Activate buttons and checkboxes' },
     { key: 'Arrow Keys', description: 'Navigate menus and grids' },
-    { key: 'Home/End', description: 'Jump to first/last item' }
+    { key: 'Home/End', description: 'Jump to first/last item' },
   ];
 
   const accessibilityGuidelines = [
@@ -113,36 +116,21 @@ const AccessibilityPage: React.FC = () => {
         'Provide text alternatives for images',
         'Use sufficient color contrast',
         'Make content adaptable',
-        'Distinguishable information'
-      ]
+        'Distinguishable information',
+      ],
     },
     {
       category: 'Operable',
-      items: [
-        'Keyboard accessible',
-        'No seizure-inducing content',
-        'Navigable content',
-        'Input assistance'
-      ]
+      items: ['Keyboard accessible', 'No seizure-inducing content', 'Navigable content', 'Input assistance'],
     },
     {
       category: 'Understandable',
-      items: [
-        'Readable text',
-        'Predictable functionality',
-        'Input assistance',
-        'Error identification'
-      ]
+      items: ['Readable text', 'Predictable functionality', 'Input assistance', 'Error identification'],
     },
     {
       category: 'Robust',
-      items: [
-        'Compatible with assistive technologies',
-        'Future-proof content',
-        'Valid markup',
-        'Semantic structure'
-      ]
-    }
+      items: ['Compatible with assistive technologies', 'Future-proof content', 'Valid markup', 'Semantic structure'],
+    },
   ];
 
   return (
@@ -183,7 +171,12 @@ const AccessibilityPage: React.FC = () => {
                   </button>
                   <button
                     className="show-shortcuts-btn"
-                    onClick={() => accessibilityManager.announce('Keyboard shortcuts available. Press Ctrl + / to view them.', 'polite')}
+                    onClick={() =>
+                      accessibilityManager.announce(
+                        'Keyboard shortcuts available. Press Ctrl + / to view them.',
+                        'polite'
+                      )
+                    }
                     aria-label="Show keyboard shortcuts"
                   >
                     Show Shortcuts
@@ -282,8 +275,8 @@ const AccessibilityPage: React.FC = () => {
                   <h2>Accessibility Testing</h2>
                   <div className="testing-content">
                     <p>
-                      We regularly test our application for accessibility compliance using automated tools
-                      and manual testing with assistive technologies.
+                      We regularly test our application for accessibility compliance using automated tools and manual
+                      testing with assistive technologies.
                     </p>
                     <div className="testing-tools">
                       <div className="tool-item">
@@ -309,10 +302,7 @@ const AccessibilityPage: React.FC = () => {
                 </motion.section>
               </div>
 
-              <AccessibilityTester
-                isOpen={showTester}
-                onClose={() => setShowTester(false)}
-              />
+              <AccessibilityTester isOpen={showTester} onClose={() => setShowTester(false)} />
             </div>
           </ReducedMotionMode>
         </HighContrastMode>

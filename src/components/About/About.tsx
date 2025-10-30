@@ -1,9 +1,8 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
-import CollapsibleMenu from '../UI/CollapsibleMenu';
-import Carousel, { CarouselItem } from '../Carousel/Carousel';
-import Modal from '../Modal/Modal';
+import { CarouselItem } from '../Carousel/Carousel';
 import './About.css';
 
 interface TeamMember {
@@ -49,196 +48,217 @@ const About: React.FC = () => {
   const [currentValueIndex, setCurrentValueIndex] = useState(0);
 
   // Team data
-  const teamMembers: TeamMember[] = useMemo(() => [
-    {
-      id: '1',
-      name: 'Patrick Guntharp',
-      role: 'Founder & Card Collector',
-      bio: 'A passionate 12-year-old card collector who founded CardFlex™ to revolutionize how collectors track and manage their sports card collections. Patrick brings fresh perspective and genuine love for the hobby.',
-      avatar: '👦',
-      skills: ['Card Collecting', 'Innovation', 'Leadership', 'Vision'],
-      social: {
-        linkedin: 'https://linkedin.com/in/patrickguntharp',
-        twitter: 'https://twitter.com/patrickguntharp'
-      }
-    },
-    {
-      id: '2',
-      name: 'Tony Guntharp',
-      role: 'Father & All-Around Bad-Ass Ninja',
-      bio: 'The technical mastermind and supportive father behind CardFlex™. Tony brings decades of experience in technology and business, ensuring the platform is robust, secure, and user-friendly.',
-      avatar: '🥷',
-      skills: ['Technology', 'Business Strategy', 'Mentorship', 'Problem Solving'],
-      social: {
-        linkedin: 'https://linkedin.com/in/tonyguntharp',
-        twitter: 'https://twitter.com/tonyguntharp'
-      }
-    },
-    {
-      id: '3',
-      name: 'Tuxedo the Mascot',
-      role: 'Official Mascot & Good Boy',
-      bio: 'Our beloved dog mascot who brings joy, loyalty, and endless enthusiasm to the CardFlex™ team. Tuxedo represents the fun and community spirit of card collecting.',
-      avatar: '🐕',
-      skills: ['Morale Boosting', 'Team Spirit', 'Loyalty', 'Cuteness'],
-      social: {
-        twitter: 'https://twitter.com/tuxedomascot'
-      }
-    }
-  ], []);
+  const teamMembers: TeamMember[] = useMemo(
+    () => [
+      {
+        id: '1',
+        name: 'Patrick Guntharp',
+        role: 'Founder & Card Collector',
+        bio: 'A passionate 12-year-old card collector who founded CardFlex™ to revolutionize how collectors track and manage their sports card collections. Patrick brings fresh perspective and genuine love for the hobby.',
+        avatar: '👦',
+        skills: ['Card Collecting', 'Innovation', 'Leadership', 'Vision'],
+        social: {
+          linkedin: 'https://linkedin.com/in/patrickguntharp',
+          twitter: 'https://twitter.com/patrickguntharp',
+        },
+      },
+      {
+        id: '2',
+        name: 'Tony Guntharp',
+        role: 'Father & All-Around Bad-Ass Ninja',
+        bio: 'The technical mastermind and supportive father behind CardFlex™. Tony brings decades of experience in technology and business, ensuring the platform is robust, secure, and user-friendly.',
+        avatar: '🥷',
+        skills: ['Technology', 'Business Strategy', 'Mentorship', 'Problem Solving'],
+        social: {
+          linkedin: 'https://linkedin.com/in/tonyguntharp',
+          twitter: 'https://twitter.com/tonyguntharp',
+        },
+      },
+      {
+        id: '3',
+        name: 'Tuxedo the Mascot',
+        role: 'Official Mascot & Good Boy',
+        bio: 'Our beloved dog mascot who brings joy, loyalty, and endless enthusiasm to the CardFlex™ team. Tuxedo represents the fun and community spirit of card collecting.',
+        avatar: '🐕',
+        skills: ['Morale Boosting', 'Team Spirit', 'Loyalty', 'Cuteness'],
+        social: {
+          twitter: 'https://twitter.com/tuxedomascot',
+        },
+      },
+    ],
+    []
+  );
 
-  const technologies: Technology[] = useMemo(() => [
-    {
-      id: '1',
-      name: 'React',
-      category: 'Frontend',
-      description: 'Modern UI library for building interactive user interfaces',
-      icon: '⚛️',
-      proficiency: 95,
-      color: '#61dafb'
-    },
-    {
-      id: '2',
-      name: 'TypeScript',
-      category: 'Frontend',
-      description: 'Type-safe JavaScript for better development experience',
-      icon: '🔷',
-      proficiency: 90,
-      color: '#3178c6'
-    },
-    {
-      id: '3',
-      name: 'Node.js',
-      category: 'Backend',
-      description: 'JavaScript runtime for server-side development',
-      icon: '🟢',
-      proficiency: 85,
-      color: '#339933'
-    },
-    {
-      id: '4',
-      name: 'PostgreSQL',
-      category: 'Database',
-      description: 'Advanced open-source relational database',
-      icon: '🐘',
-      proficiency: 80,
-      color: '#336791'
-    },
-    {
-      id: '5',
-      name: 'AWS',
-      category: 'DevOps',
-      description: 'Cloud computing platform for scalable applications',
-      icon: '☁️',
-      proficiency: 75,
-      color: '#ff9900'
-    },
-    {
-      id: '6',
-      name: 'Figma',
-      category: 'Design',
-      description: 'Collaborative design tool for UI/UX',
-      icon: '🎨',
-      proficiency: 90,
-      color: '#f24e1e'
-    }
-  ], []);
+  const technologies: Technology[] = useMemo(
+    () => [
+      {
+        id: '1',
+        name: 'React',
+        category: 'Frontend',
+        description: 'Modern UI library for building interactive user interfaces',
+        icon: '⚛️',
+        proficiency: 95,
+        color: '#61dafb',
+      },
+      {
+        id: '2',
+        name: 'TypeScript',
+        category: 'Frontend',
+        description: 'Type-safe JavaScript for better development experience',
+        icon: '🔷',
+        proficiency: 90,
+        color: '#3178c6',
+      },
+      {
+        id: '3',
+        name: 'Node.js',
+        category: 'Backend',
+        description: 'JavaScript runtime for server-side development',
+        icon: '🟢',
+        proficiency: 85,
+        color: '#339933',
+      },
+      {
+        id: '4',
+        name: 'PostgreSQL',
+        category: 'Database',
+        description: 'Advanced open-source relational database',
+        icon: '🐘',
+        proficiency: 80,
+        color: '#336791',
+      },
+      {
+        id: '5',
+        name: 'AWS',
+        category: 'DevOps',
+        description: 'Cloud computing platform for scalable applications',
+        icon: '☁️',
+        proficiency: 75,
+        color: '#ff9900',
+      },
+      {
+        id: '6',
+        name: 'Figma',
+        category: 'Design',
+        description: 'Collaborative design tool for UI/UX',
+        icon: '🎨',
+        proficiency: 90,
+        color: '#f24e1e',
+      },
+    ],
+    []
+  );
 
-  const timelineEvents: TimelineEvent[] = useMemo(() => [
-    {
-      id: '0',
-      year: '2012',
-      title: 'Founder is Born 👶',
-      description: 'The journey begins! Setup for success from day one.',
-      type: 'milestone',
-      icon: '⭐'
-    },
-    {
-      id: '1',
-      year: '2024',
-      title: 'Sports Card Tracker Launch',
-      description: 'Launched the first version of our comprehensive sports card tracking platform',
-      type: 'launch',
-      icon: '🚀'
-    },
-    {
-      id: '2',
-      year: '2024',
-      title: 'AI Integration',
-      description: 'Integrated AI-powered pricing suggestions and market analysis',
-      type: 'achievement',
-      icon: '🤖'
-    },
-    {
-      id: '3',
-      year: '2024',
-      title: 'eBay Partnership',
-      description: 'Established partnership with eBay for seamless listing integration',
-      type: 'partnership',
-      icon: '🤝'
-    },
-    {
-      id: '4',
-      year: '2024',
-      title: '7+ Users',
-      description: 'Reached milestone of 7+ active users on the platform',
-      type: 'milestone',
-      icon: '👥'
-    },
-    {
-      id: '5',
-      year: '2026',
-      title: 'Mobile App Release - Coming Soon 🎉',
-      description: 'Slated for 2026 launch - Mobile applications for iOS and Android in development',
-      type: 'launch',
-      icon: '📱'
-    }
-  ], []);
+  const timelineEvents: TimelineEvent[] = useMemo(
+    () => [
+      {
+        id: '0',
+        year: '2012',
+        title: 'Founder is Born 👶',
+        description: 'The journey begins! Setup for success from day one.',
+        type: 'milestone',
+        icon: '⭐',
+      },
+      {
+        id: '1',
+        year: '2024',
+        title: 'Sports Card Tracker Launch',
+        description: 'Launched the first version of our comprehensive sports card tracking platform',
+        type: 'launch',
+        icon: '🚀',
+      },
+      {
+        id: '2',
+        year: '2024',
+        title: 'AI Integration',
+        description: 'Integrated AI-powered pricing suggestions and market analysis',
+        type: 'achievement',
+        icon: '🤖',
+      },
+      {
+        id: '3',
+        year: '2024',
+        title: 'eBay Partnership',
+        description: 'Established partnership with eBay for seamless listing integration',
+        type: 'partnership',
+        icon: '🤝',
+      },
+      {
+        id: '4',
+        year: '2024',
+        title: '7+ Users',
+        description: 'Reached milestone of 7+ active users on the platform',
+        type: 'milestone',
+        icon: '👥',
+      },
+      {
+        id: '5',
+        year: '2026',
+        title: 'Mobile App Release - Coming Soon 🎉',
+        description: 'Slated for 2026 launch - Mobile applications for iOS and Android in development',
+        type: 'launch',
+        icon: '📱',
+      },
+    ],
+    []
+  );
 
   // Company Values with detailed content for modal
-  const companyValues = useMemo(() => [
-    {
-      id: '1',
-      title: 'Innovation',
-      description: 'Constantly pushing boundaries with cutting-edge technology',
-      icon: '💡',
-      detailedContent: 'We believe in continuous innovation and staying ahead of the curve. Our team is dedicated to implementing the latest technologies including AI-powered pricing, advanced analytics, and intuitive user interfaces. We constantly explore new ways to enhance the collecting experience through automation, smart recommendations, and data-driven insights.',
-      keyPoints: ['AI-Powered Insights', 'Cutting-Edge Technology', 'Continuous Improvement', 'Future-Forward Thinking']
-    },
-    {
-      id: '2',
-      title: 'Community',
-      description: 'Building a passionate community of collectors',
-      icon: '🤝',
-      detailedContent: 'Our community is at the heart of everything we do. We foster connections between collectors, provide platforms for sharing knowledge, and create opportunities for collaboration. From beginners to seasoned professionals, every collector has a voice in our growing community.',
-      keyPoints: ['Collector Network', 'Knowledge Sharing', 'Support & Resources', 'Collaborative Platform']
-    },
-    {
-      id: '3',
-      title: 'Transparency',
-      description: 'Open and honest about our processes and data',
-      icon: '🔍',
-      detailedContent: 'We maintain complete transparency in our valuation methods, data sources, and pricing algorithms. Users can trust that our analytics are based on real market data, and we clearly communicate how we calculate values, trends, and recommendations. Your data security and privacy are our top priorities.',
-      keyPoints: ['Clear Pricing Methods', 'Open Data Sources', 'Honest Communication', 'Privacy Protection']
-    },
-    {
-      id: '4',
-      title: 'Excellence',
-      description: 'Committed to delivering the best possible experience',
-      icon: '⭐',
-      detailedContent: 'Excellence is our standard. From our user interface design to customer support, we strive for perfection in every detail. We continuously refine our platform based on user feedback, ensuring that every feature adds genuine value to your collecting journey.',
-      keyPoints: ['Quality First', 'User-Centric Design', 'Exceptional Support', 'Attention to Detail']
-    }
-  ], []);
+  const companyValues = useMemo(
+    () => [
+      {
+        id: '1',
+        title: 'Innovation',
+        description: 'Constantly pushing boundaries with cutting-edge technology',
+        icon: '💡',
+        detailedContent:
+          'We believe in continuous innovation and staying ahead of the curve. Our team is dedicated to implementing the latest technologies including AI-powered pricing, advanced analytics, and intuitive user interfaces. We constantly explore new ways to enhance the collecting experience through automation, smart recommendations, and data-driven insights.',
+        keyPoints: [
+          'AI-Powered Insights',
+          'Cutting-Edge Technology',
+          'Continuous Improvement',
+          'Future-Forward Thinking',
+        ],
+      },
+      {
+        id: '2',
+        title: 'Community',
+        description: 'Building a passionate community of collectors',
+        icon: '🤝',
+        detailedContent:
+          'Our community is at the heart of everything we do. We foster connections between collectors, provide platforms for sharing knowledge, and create opportunities for collaboration. From beginners to seasoned professionals, every collector has a voice in our growing community.',
+        keyPoints: ['Collector Network', 'Knowledge Sharing', 'Support & Resources', 'Collaborative Platform'],
+      },
+      {
+        id: '3',
+        title: 'Transparency',
+        description: 'Open and honest about our processes and data',
+        icon: '🔍',
+        detailedContent:
+          'We maintain complete transparency in our valuation methods, data sources, and pricing algorithms. Users can trust that our analytics are based on real market data, and we clearly communicate how we calculate values, trends, and recommendations. Your data security and privacy are our top priorities.',
+        keyPoints: ['Clear Pricing Methods', 'Open Data Sources', 'Honest Communication', 'Privacy Protection'],
+      },
+      {
+        id: '4',
+        title: 'Excellence',
+        description: 'Committed to delivering the best possible experience',
+        icon: '⭐',
+        detailedContent:
+          'Excellence is our standard. From our user interface design to customer support, we strive for perfection in every detail. We continuously refine our platform based on user feedback, ensuring that every feature adds genuine value to your collecting journey.',
+        keyPoints: ['Quality First', 'User-Centric Design', 'Exceptional Support', 'Attention to Detail'],
+      },
+    ],
+    []
+  );
 
   // Convert values to carousel items
   const valuesCarouselItems: CarouselItem[] = useMemo(() => {
-    return companyValues.map(value => ({
+    return companyValues.map((value) => ({
       id: value.id,
       title: value.title,
       description: value.description,
       icon: value.icon,
-      category: 'Company Value'
+      category: 'Company Value',
     }));
   }, [companyValues]);
 
@@ -262,15 +282,18 @@ const About: React.FC = () => {
     setCurrentTimelineIndex((prev) => (prev - 1 + timelineEvents.length) % timelineEvents.length);
   }, [timelineEvents.length]);
 
-  const handleValueClick = useCallback((item: CarouselItem) => {
-    const value = companyValues.find(v => v.id === item.id);
-    if (value) {
-      setSelectedValue(value);
-      const index = companyValues.findIndex(v => v.id === item.id);
-      setCurrentValueIndex(index);
-      setIsValueModalOpen(true);
-    }
-  }, [companyValues]);
+  const handleValueClick = useCallback(
+    (item: CarouselItem) => {
+      const value = companyValues.find((v) => v.id === item.id);
+      if (value) {
+        setSelectedValue(value);
+        const index = companyValues.findIndex((v) => v.id === item.id);
+        setCurrentValueIndex(index);
+        setIsValueModalOpen(true);
+      }
+    },
+    [companyValues]
+  );
 
   const handleValueModalClose = useCallback(() => {
     setIsValueModalOpen(false);
@@ -303,7 +326,7 @@ const About: React.FC = () => {
       Backend: '#10b981',
       Database: '#f59e0b',
       DevOps: '#ef4444',
-      Design: '#8b5cf6'
+      Design: '#8b5cf6',
     };
     return colors[category as keyof typeof colors] || '#6b7280';
   };
@@ -325,8 +348,8 @@ const About: React.FC = () => {
               About <span className="gradient-text">CardFlex™</span>
             </h1>
             <p className="hero-subtitle">
-              We're building the future of sports card collecting with cutting-edge technology, 
-              AI-powered insights, and a passionate community of collectors.
+              We're building the future of sports card collecting with cutting-edge technology, AI-powered insights, and
+              a passionate community of collectors.
             </p>
           </div>
         </div>
@@ -339,7 +362,7 @@ const About: React.FC = () => {
             {[
               { id: 'overview', label: 'Overview', icon: '🏠' },
               { id: 'team', label: 'Our Team', icon: '👥' },
-              { id: 'timeline', label: 'Timeline', icon: '📅' }
+              { id: 'timeline', label: 'Timeline', icon: '📅' },
             ].map((tab) => (
               <motion.button
                 key={tab.id}
@@ -372,8 +395,8 @@ const About: React.FC = () => {
                 <div className="overview-section">
                   <h2 className="section-title">Our Mission</h2>
                   <p className="section-description">
-                    To revolutionize sports card collecting by providing collectors with powerful tools, 
-                    AI-driven insights, and a seamless experience that makes managing and valuing collections effortless.
+                    To revolutionize sports card collecting by providing collectors with powerful tools, AI-driven
+                    insights, and a seamless experience that makes managing and valuing collections effortless.
                   </p>
                 </div>
               </AnimatedWrapper>
@@ -389,33 +412,57 @@ const About: React.FC = () => {
                           title: 'Innovation',
                           description: 'Constantly pushing boundaries with cutting-edge technology',
                           icon: '💡',
-                          details: 'We leverage the latest in AI, machine learning, and web technologies to create tools that were previously impossible. Our platform uses advanced algorithms for card valuation, automated data entry, and predictive analytics to give collectors unprecedented insights into their collections.',
-                          examples: ['AI-powered card recognition', 'Real-time market analysis', 'Predictive value modeling', 'Automated condition assessment']
+                          details:
+                            'We leverage the latest in AI, machine learning, and web technologies to create tools that were previously impossible. Our platform uses advanced algorithms for card valuation, automated data entry, and predictive analytics to give collectors unprecedented insights into their collections.',
+                          examples: [
+                            'AI-powered card recognition',
+                            'Real-time market analysis',
+                            'Predictive value modeling',
+                            'Automated condition assessment',
+                          ],
                         },
                         {
                           id: 'community',
                           title: 'Community',
                           description: 'Building a passionate community of collectors',
                           icon: '🤝',
-                          details: 'We believe that collecting is more than just a hobby - it\'s a community. Our platform fosters connections between collectors, facilitates knowledge sharing, and creates opportunities for collaboration and growth within the sports card community.',
-                          examples: ['Collector forums and discussions', 'Knowledge sharing platform', 'Collaborative collection building', 'Community events and meetups']
+                          details:
+                            "We believe that collecting is more than just a hobby - it's a community. Our platform fosters connections between collectors, facilitates knowledge sharing, and creates opportunities for collaboration and growth within the sports card community.",
+                          examples: [
+                            'Collector forums and discussions',
+                            'Knowledge sharing platform',
+                            'Collaborative collection building',
+                            'Community events and meetups',
+                          ],
                         },
                         {
                           id: 'transparency',
                           title: 'Transparency',
                           description: 'Open and honest about our processes and data',
                           icon: '🔍',
-                          details: 'We believe in complete transparency in how we operate, how we calculate values, and how we handle your data. Every algorithm is explainable, every data source is cited, and every decision is made with your best interests in mind.',
-                          examples: ['Open-source algorithms', 'Transparent data sources', 'Clear pricing models', 'Regular platform updates']
+                          details:
+                            'We believe in complete transparency in how we operate, how we calculate values, and how we handle your data. Every algorithm is explainable, every data source is cited, and every decision is made with your best interests in mind.',
+                          examples: [
+                            'Open-source algorithms',
+                            'Transparent data sources',
+                            'Clear pricing models',
+                            'Regular platform updates',
+                          ],
                         },
                         {
                           id: 'excellence',
                           title: 'Excellence',
                           description: 'Committed to delivering the best possible experience',
                           icon: '⭐',
-                          details: 'We strive for excellence in every aspect of our platform - from user interface design to data accuracy, from customer support to feature development. We\'re never satisfied with "good enough" and continuously push ourselves to deliver exceptional value.',
-                          examples: ['Intuitive user experience', '99.9% uptime guarantee', '24/7 customer support', 'Continuous feature improvements']
-                        }
+                          details:
+                            'We strive for excellence in every aspect of our platform - from user interface design to data accuracy, from customer support to feature development. We\'re never satisfied with "good enough" and continuously push ourselves to deliver exceptional value.',
+                          examples: [
+                            'Intuitive user experience',
+                            '99.9% uptime guarantee',
+                            '24/7 customer support',
+                            'Continuous feature improvements',
+                          ],
+                        },
                       ].map((value, index) => (
                         <motion.div
                           key={value.id}
@@ -456,8 +503,8 @@ const About: React.FC = () => {
                 <div className="team-section">
                   <h2 className="section-title">Meet Our Team</h2>
                   <p className="section-description">
-                    A passionate group of developers, designers, and data scientists working together 
-                    to build the future of sports card collecting.
+                    A passionate group of developers, designers, and data scientists working together to build the
+                    future of sports card collecting.
                   </p>
                 </div>
               </AnimatedWrapper>
@@ -480,22 +527,39 @@ const About: React.FC = () => {
                       <p className="member-bio">{member.bio}</p>
                       <div className="member-skills">
                         {member.skills.map((skill) => (
-                          <span key={skill} className="skill-tag">{skill}</span>
+                          <span key={skill} className="skill-tag">
+                            {skill}
+                          </span>
                         ))}
                       </div>
                       <div className="member-social">
                         {member.social.linkedin && (
-                          <a href={member.social.linkedin} className="social-link" target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={member.social.linkedin}
+                            className="social-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             💼
                           </a>
                         )}
                         {member.social.twitter && (
-                          <a href={member.social.twitter} className="social-link" target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={member.social.twitter}
+                            className="social-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             🐦
                           </a>
                         )}
                         {member.social.github && (
-                          <a href={member.social.github} className="social-link" target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={member.social.github}
+                            className="social-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             🐙
                           </a>
                         )}
@@ -553,7 +617,7 @@ const About: React.FC = () => {
                     >
                       Next →
                     </motion.button>
-          </div>
+                  </div>
 
                   <div className="timeline-content">
                     <motion.div
@@ -564,24 +628,16 @@ const About: React.FC = () => {
                       exit={{ opacity: 0, x: -50 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <div className="event-icon">
-                        {timelineEvents[currentTimelineIndex]?.icon}
-                      </div>
-                      <div className="event-year">
-                        {timelineEvents[currentTimelineIndex]?.year}
-                      </div>
-                      <h3 className="event-title">
-                        {timelineEvents[currentTimelineIndex]?.title}
-                      </h3>
-                      <p className="event-description">
-                        {timelineEvents[currentTimelineIndex]?.description}
-                      </p>
+                      <div className="event-icon">{timelineEvents[currentTimelineIndex]?.icon}</div>
+                      <div className="event-year">{timelineEvents[currentTimelineIndex]?.year}</div>
+                      <h3 className="event-title">{timelineEvents[currentTimelineIndex]?.title}</h3>
+                      <p className="event-description">{timelineEvents[currentTimelineIndex]?.description}</p>
                       <div className={`event-type ${timelineEvents[currentTimelineIndex]?.type}`}>
                         {timelineEvents[currentTimelineIndex]?.type}
                       </div>
                     </motion.div>
                   </div>
-          </div>
+                </div>
               </AnimatedWrapper>
             </motion.div>
           )}
@@ -605,10 +661,7 @@ const About: React.FC = () => {
               exit={{ scale: 0.8, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                className="modal-close"
-                onClick={() => setSelectedMember(null)}
-              >
+              <button className="modal-close" onClick={() => setSelectedMember(null)}>
                 ×
               </button>
               <div className="modal-content">
@@ -620,7 +673,9 @@ const About: React.FC = () => {
                   <h4>Skills</h4>
                   <div className="skills-list">
                     {selectedMember.skills.map((skill) => (
-                      <span key={skill} className="skill-tag">{skill}</span>
+                      <span key={skill} className="skill-tag">
+                        {skill}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -628,17 +683,32 @@ const About: React.FC = () => {
                   <h4>Connect</h4>
                   <div className="social-links">
                     {selectedMember.social.linkedin && (
-                      <a href={selectedMember.social.linkedin} className="social-link" target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={selectedMember.social.linkedin}
+                        className="social-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         LinkedIn
                       </a>
                     )}
                     {selectedMember.social.twitter && (
-                      <a href={selectedMember.social.twitter} className="social-link" target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={selectedMember.social.twitter}
+                        className="social-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         Twitter
                       </a>
                     )}
                     {selectedMember.social.github && (
-                      <a href={selectedMember.social.github} className="social-link" target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={selectedMember.social.github}
+                        className="social-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         GitHub
                       </a>
                     )}
@@ -667,11 +737,7 @@ const About: React.FC = () => {
               exit={{ scale: 0.8, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                className="modal-close-btn"
-                onClick={() => setIsValueModalOpen(false)}
-                aria-label="Close modal"
-              >
+              <button className="modal-close-btn" onClick={() => setIsValueModalOpen(false)} aria-label="Close modal">
                 ✕
               </button>
               <div className="value-modal-content">

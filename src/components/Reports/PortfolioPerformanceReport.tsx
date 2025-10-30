@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import React, { useMemo } from 'react';
 import {
   LineChart,
@@ -12,11 +13,11 @@ import {
   Cell,
   BarChart,
   Bar,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
+
 import { ReportingService } from '../../services/reportingService';
 import { ReportFilter } from '../../types/reports';
-import { format } from 'date-fns';
 
 interface Props {
   reportingService: ReportingService;
@@ -24,18 +25,14 @@ interface Props {
   detailed?: boolean;
 }
 
-const PortfolioPerformanceReport: React.FC<Props> = ({ 
-  reportingService, 
-  filters, 
-  detailed = false 
-}) => {
-  const portfolioData = useMemo(() => 
-    reportingService.generatePortfolioPerformance(filters), 
+const PortfolioPerformanceReport: React.FC<Props> = ({ reportingService, filters, detailed = false }) => {
+  const portfolioData = useMemo(
+    () => reportingService.generatePortfolioPerformance(filters),
     [reportingService, filters]
   );
 
-  const metrics = useMemo(() => 
-    reportingService.calculateMetrics(reportingService.filterCards(filters)), 
+  const metrics = useMemo(
+    () => reportingService.calculateMetrics(reportingService.filterCards(filters)),
     [reportingService, filters]
   );
 
@@ -44,7 +41,7 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   };
 
@@ -55,19 +52,19 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
   const COLORS = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#fd7e14'];
 
   // Prepare chart data
-  const monthlyChartData = portfolioData.monthlyReturns.map(item => ({
-    month: format(new Date(item.month + '-01'), 'MMM yyyy'),
+  const monthlyChartData = portfolioData.monthlyReturns.map((item) => ({
+    month: format(new Date(`${item.month}-01`), 'MMM yyyy'),
     value: item.value,
     cost: item.cost,
     return: item.return,
-    percentage: item.percentage
+    percentage: item.percentage,
   }));
 
-  const categoryChartData = portfolioData.categoryPerformance.map(item => ({
+  const categoryChartData = portfolioData.categoryPerformance.map((item) => ({
     name: item.category,
     value: item.totalValue,
     return: item.return,
-    percentage: item.percentage
+    percentage: item.percentage,
   }));
 
   return (
@@ -95,9 +92,7 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
           <div className="metric-content">
             <h3>Total Return</h3>
             <div className="metric-value">{formatCurrency(portfolioData.totalReturn)}</div>
-            <div className="metric-subtitle">
-              Annualized: {formatPercent(portfolioData.annualizedReturn)}
-            </div>
+            <div className="metric-subtitle">Annualized: {formatPercent(portfolioData.annualizedReturn)}</div>
           </div>
         </div>
 
@@ -106,9 +101,7 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
           <div className="metric-content">
             <h3>Cost Basis</h3>
             <div className="metric-value">{formatCurrency(portfolioData.totalCost)}</div>
-            <div className="metric-subtitle">
-              Avg per card: {formatCurrency(metrics.averageCost)}
-            </div>
+            <div className="metric-subtitle">Avg per card: {formatCurrency(metrics.averageCost)}</div>
           </div>
         </div>
 
@@ -117,9 +110,7 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
           <div className="metric-content">
             <h3>Total Cards</h3>
             <div className="metric-value">{metrics.totalCards.toLocaleString()}</div>
-            <div className="metric-subtitle">
-              Avg value: {formatCurrency(metrics.averageValue)}
-            </div>
+            <div className="metric-subtitle">Avg value: {formatCurrency(metrics.averageValue)}</div>
           </div>
         </div>
       </div>
@@ -133,27 +124,15 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis tickFormatter={formatCurrency} />
-              <Tooltip 
+              <Tooltip
                 formatter={(value: number, name: string) => [
                   name === 'percentage' ? formatPercent(value) : formatCurrency(value),
-                  name
+                  name,
                 ]}
               />
               <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#007bff" 
-                strokeWidth={3}
-                name="Portfolio Value"
-              />
-              <Line 
-                type="monotone" 
-                dataKey="cost" 
-                stroke="#6c757d" 
-                strokeWidth={2}
-                name="Cost Basis"
-              />
+              <Line type="monotone" dataKey="value" stroke="#007bff" strokeWidth={3} name="Portfolio Value" />
+              <Line type="monotone" dataKey="cost" stroke="#6c757d" strokeWidth={2} name="Cost Basis" />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -187,28 +166,26 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
         <div className="section-header">
           <h3>💹 Gains & Losses Breakdown</h3>
         </div>
-        
+
         <div className="gains-grid">
           <div className="gains-card unrealized">
             <h4>Unrealized Gains</h4>
             <div className="gains-value">{formatCurrency(portfolioData.unrealizedGains)}</div>
             <div className="gains-subtitle">Current holdings</div>
           </div>
-          
+
           <div className="gains-card realized">
             <h4>Realized Gains</h4>
             <div className="gains-value">{formatCurrency(portfolioData.realizedGains)}</div>
             <div className="gains-subtitle">{metrics.cardsSold} cards sold</div>
           </div>
-          
+
           <div className="gains-card total">
             <h4>Total P&L</h4>
             <div className={`gains-value ${portfolioData.totalReturn >= 0 ? 'positive' : 'negative'}`}>
               {formatCurrency(portfolioData.totalReturn)}
             </div>
-            <div className="gains-subtitle">
-              {formatPercent(metrics.roi)} return
-            </div>
+            <div className="gains-subtitle">{formatPercent(metrics.roi)} return</div>
           </div>
         </div>
       </div>
@@ -221,10 +198,10 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis tickFormatter={formatCurrency} />
-            <Tooltip 
+            <Tooltip
               formatter={(value: number, name: string) => [
                 name === 'percentage' ? formatPercent(value) : formatCurrency(value),
-                name
+                name,
               ]}
             />
             <Legend />
@@ -244,10 +221,8 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
                 <div className="performers-list">
                   {portfolioData.bestPerformers.slice(0, 5).map((card, index) => {
                     const gain = (card.currentValue || 0) - (card.purchasePrice || 0);
-                    const percentage = card.purchasePrice > 0 
-                      ? ((gain / card.purchasePrice) * 100)
-                      : 0;
-                    
+                    const percentage = card.purchasePrice > 0 ? (gain / card.purchasePrice) * 100 : 0;
+
                     return (
                       <div key={card.id} className="performer-item">
                         <div className="performer-rank">#{index + 1}</div>
@@ -272,10 +247,8 @@ const PortfolioPerformanceReport: React.FC<Props> = ({
                 <div className="performers-list">
                   {portfolioData.worstPerformers.slice(0, 5).map((card, index) => {
                     const gain = (card.currentValue || 0) - (card.purchasePrice || 0);
-                    const percentage = card.purchasePrice > 0 
-                      ? ((gain / card.purchasePrice) * 100)
-                      : 0;
-                    
+                    const percentage = card.purchasePrice > 0 ? (gain / card.purchasePrice) * 100 : 0;
+
                     return (
                       <div key={card.id} className="performer-item">
                         <div className="performer-rank">#{index + 1}</div>

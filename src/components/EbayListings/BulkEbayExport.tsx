@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+
 import { Card } from '../../types';
-import { generateEbayFileExchange, generateSimpleListings } from '../../utils/ebayExport';
+import { generateEbayFileExchange } from '../../utils/ebayExport';
 import './BulkEbayExport.css';
 
 interface EbayListing {
@@ -36,116 +37,116 @@ const BulkEbayExport: React.FC<Props> = ({ cards, onClose }) => {
 
   const generateEbayTitle = (card: Card): string => {
     const parts = [];
-    
+
     // Year and brand
     parts.push(`${card.year} ${card.brand}`);
-    
+
     // Player name
     parts.push(card.player);
-    
+
     // Card number
     parts.push(`#${card.cardNumber}`);
-    
+
     // Parallel/variation
     if (card.parallel) {
       parts.push(card.parallel);
     }
-    
+
     // Rookie indicator
     if (card.notes?.toLowerCase().includes('rookie')) {
       parts.push('RC ROOKIE');
     }
-    
+
     // Grading info
     if (card.gradingCompany) {
       parts.push(`${card.gradingCompany} ${card.condition}`);
     }
-    
+
     // Category
     parts.push(card.category);
-    
+
     // Limit to 80 characters (eBay limit)
     let title = parts.join(' ');
     if (title.length > 80) {
-      title = title.substring(0, 77) + '...';
+      title = `${title.substring(0, 77)}...`;
     }
-    
+
     return title;
   };
 
   const generateDescription = (card: Card): string => {
     const lines = [];
-    
+
     lines.push(`${card.year} ${card.brand} ${card.player} #${card.cardNumber}`);
-    
+
     if (card.parallel) {
       lines.push(`Parallel/Variation: ${card.parallel}`);
     }
-    
+
     lines.push('');
     lines.push(`Condition: ${card.condition}`);
-    
+
     if (card.gradingCompany) {
       lines.push(`Professionally graded by ${card.gradingCompany}`);
       lines.push(`Grade: ${card.condition}`);
     }
-    
+
     lines.push('');
     lines.push(`Sport: ${card.category}`);
     lines.push(`Team: ${card.team}`);
-    
+
     if (card.notes) {
       lines.push('');
       lines.push('Additional Information:');
       lines.push(card.notes);
     }
-    
+
     lines.push('');
     lines.push('SHIPPING & HANDLING:');
     lines.push('- Card will be shipped in protective sleeve and toploader');
     lines.push('- Bubble mailer with tracking included');
     lines.push('- Ships within 1 business day of payment');
-    
+
     lines.push('');
     lines.push('CONDITION:');
     lines.push('- Please see photos for exact condition');
     lines.push('- All cards are authentic');
     lines.push('- Smoke-free environment');
-    
+
     lines.push('');
     lines.push('RETURNS:');
     lines.push('- 30-day return policy');
     lines.push('- Buyer pays return shipping');
-    
+
     return lines.join('\n');
   };
 
   const determineEbayCategory = (card: Card): string => {
     const categoryMap: Record<string, string> = {
-      'Baseball': '261328', // Baseball Cards
-      'Basketball': '261329', // Basketball Cards
-      'Football': '261330', // Football Cards
-      'Hockey': '261331', // Hockey Cards
-      'Soccer': '261333', // Soccer Cards
-      'Pokemon': '183454', // Pokémon Individual Cards
-      'Other': '261324' // Other Sports Trading Cards
+      Baseball: '261328', // Baseball Cards
+      Basketball: '261329', // Basketball Cards
+      Football: '261330', // Football Cards
+      Hockey: '261331', // Hockey Cards
+      Soccer: '261333', // Soccer Cards
+      Pokemon: '183454', // Pokémon Individual Cards
+      Other: '261324', // Other Sports Trading Cards
     };
-    
+
     return categoryMap[card.category] || categoryMap['Other'];
   };
 
   const createListings = (): EbayListing[] => {
     let filteredCards = cards;
-    
+
     if (!includeUnsold) {
-      filteredCards = filteredCards.filter(card => card.sellDate);
+      filteredCards = filteredCards.filter((card) => card.sellDate);
     }
-    
+
     if (!includeSold) {
-      filteredCards = filteredCards.filter(card => !card.sellDate);
+      filteredCards = filteredCards.filter((card) => !card.sellDate);
     }
-    
-    return filteredCards.map(card => ({
+
+    return filteredCards.map((card) => ({
       card,
       title: generateEbayTitle(card),
       description: generateDescription(card),
@@ -157,7 +158,7 @@ const BulkEbayExport: React.FC<Props> = ({ cards, onClose }) => {
       duration: duration,
       shippingCost: shippingCost,
       returnPolicy: '30 Day Returns',
-      paymentMethods: ['PayPal', 'Credit Card']
+      paymentMethods: ['PayPal', 'Credit Card'],
     }));
   };
 
@@ -177,10 +178,10 @@ const BulkEbayExport: React.FC<Props> = ({ cards, onClose }) => {
       'Card ID',
       'Player',
       'Year',
-      'Brand'
+      'Brand',
     ];
-    
-    const rows = listings.map(listing => [
+
+    const rows = listings.map((listing) => [
       `"${listing.title}"`,
       `"${listing.description.replace(/"/g, '""').replace(/\n/g, ' ')}"`,
       listing.startingPrice.toFixed(2),
@@ -195,11 +196,11 @@ const BulkEbayExport: React.FC<Props> = ({ cards, onClose }) => {
       listing.card.id,
       listing.card.player,
       listing.card.year,
-      listing.card.brand
+      listing.card.brand,
     ]);
-    
-    const csv = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
-    
+
+    const csv = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -213,17 +214,17 @@ const BulkEbayExport: React.FC<Props> = ({ cards, onClose }) => {
 
   const exportAsEbayFE = (listings: EbayListing[]) => {
     const fileContent = generateEbayFileExchange(
-      listings.map(l => l.card),
+      listings.map((l) => l.card),
       {
         priceMultiplier,
         shippingCost,
         duration,
         location,
         paypalEmail: paypalEmail || 'yourpaypal@email.com',
-        dispatchTime: 1
+        dispatchTime: 1,
       }
     );
-    
+
     const blob = new Blob([fileContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -236,8 +237,9 @@ const BulkEbayExport: React.FC<Props> = ({ cards, onClose }) => {
   };
 
   const exportAsTxt = (listings: EbayListing[]) => {
-    const content = listings.map((listing, index) => {
-      return `
+    const content = listings
+      .map((listing, index) => {
+        return `
 ========================================
 LISTING ${index + 1} of ${listings.length}
 ========================================
@@ -255,8 +257,9 @@ ${listing.description}
 
 ========================================
 `;
-    }).join('\n');
-    
+      })
+      .join('\n');
+
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -270,12 +273,12 @@ ${listing.description}
 
   const handleExport = () => {
     const listings = createListings();
-    
+
     if (listings.length === 0) {
       alert('No cards match the selected criteria');
       return;
     }
-    
+
     if (exportFormat === 'csv') {
       exportAsCSV(listings);
     } else if (exportFormat === 'txt') {
@@ -283,7 +286,7 @@ ${listing.description}
     } else if (exportFormat === 'ebay') {
       exportAsEbayFE(listings);
     }
-    
+
     alert(`Successfully exported ${listings.length} eBay listings!`);
   };
 
@@ -296,26 +299,20 @@ ${listing.description}
       <div className="bulk-export-content">
         <div className="bulk-export-header">
           <h2>Bulk eBay Listing Export</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="close-btn" onClick={onClose}>
+            ×
+          </button>
         </div>
 
         <div className="export-options">
           <div className="option-group">
             <h3>Cards to Include</h3>
             <label>
-              <input
-                type="checkbox"
-                checked={includeUnsold}
-                onChange={(e) => setIncludeUnsold(e.target.checked)}
-              />
+              <input type="checkbox" checked={includeUnsold} onChange={(e) => setIncludeUnsold(e.target.checked)} />
               Unsold Cards
             </label>
             <label>
-              <input
-                type="checkbox"
-                checked={includeSold}
-                onChange={(e) => setIncludeSold(e.target.checked)}
-              />
+              <input type="checkbox" checked={includeSold} onChange={(e) => setIncludeSold(e.target.checked)} />
               Sold Cards (for reference)
             </label>
           </div>
@@ -334,7 +331,7 @@ ${listing.description}
               />
               <span className="hint">{(priceMultiplier * 100).toFixed(0)}% of current value</span>
             </label>
-            
+
             <label>
               Shipping Cost
               <input
@@ -359,7 +356,7 @@ ${listing.description}
                 <option value="30">30 days (Buy It Now)</option>
               </select>
             </label>
-            
+
             <label>
               Export Format
               <select value={exportFormat} onChange={(e) => setExportFormat(e.target.value as 'csv' | 'txt' | 'ebay')}>
@@ -368,7 +365,7 @@ ${listing.description}
                 <option value="ebay">eBay File Exchange</option>
               </select>
             </label>
-            
+
             {exportFormat === 'ebay' && (
               <>
                 <label>
@@ -380,7 +377,7 @@ ${listing.description}
                     placeholder="e.g., New York, NY"
                   />
                 </label>
-                
+
                 <label>
                   PayPal Email
                   <input
@@ -411,13 +408,18 @@ ${listing.description}
               <span className="value">${avgPrice.toFixed(2)}</span>
             </div>
           </div>
-          
+
           {previewListings.length > 0 && (
             <div className="preview-sample">
               <h4>Sample Listing:</h4>
               <div className="sample-listing">
-                <p><strong>Title:</strong> {previewListings[0].title}</p>
-                <p><strong>Price:</strong> ${previewListings[0].startingPrice.toFixed(2)} / BIN: ${previewListings[0].buyItNowPrice.toFixed(2)}</p>
+                <p>
+                  <strong>Title:</strong> {previewListings[0].title}
+                </p>
+                <p>
+                  <strong>Price:</strong> ${previewListings[0].startingPrice.toFixed(2)} / BIN: $
+                  {previewListings[0].buyItNowPrice.toFixed(2)}
+                </p>
               </div>
             </div>
           )}

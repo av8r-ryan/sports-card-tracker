@@ -1,11 +1,12 @@
+import { motion, AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { useCards } from '../../context/DexieCardContext';
 import { Card, CardFormData, CONDITIONS, CATEGORIES, GRADING_COMPANIES } from '../../types';
-import ImageUpload from '../ImageUpload/ImageUpload';
-import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+import AnimatedWrapper from '../Animation/AnimatedWrapper';
+import ImageUpload from '../ImageUpload/ImageUpload';
 import './CardForm.css';
 
 interface CardFormProps {
@@ -13,7 +14,6 @@ interface CardFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
-
 
 const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
   const { addCard, updateCard } = useCards();
@@ -23,42 +23,45 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Partial<CardFormData>>({});
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  
+
   const steps = [
     { id: 1, title: 'Basic Info', description: 'Player and team information' },
     { id: 2, title: 'Card Details', description: 'Year, brand, and card specifics' },
     { id: 3, title: 'Condition & Value', description: 'Grading and pricing information' },
-    { id: 4, title: 'Images & Notes', description: 'Photos and additional details' }
+    { id: 4, title: 'Images & Notes', description: 'Photos and additional details' },
   ];
-  
+
   logDebug('CardForm', 'Component initialized', { isEditing, cardId: card?.id, currentStep });
 
   // Step navigation functions
   const nextStep = useCallback(() => {
     if (currentStep < steps.length) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
       logDebug('CardForm', 'Moving to next step', { from: currentStep, to: currentStep + 1 });
     }
   }, [currentStep, steps.length]);
 
   const prevStep = useCallback(() => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
       logDebug('CardForm', 'Moving to previous step', { from: currentStep, to: currentStep - 1 });
     }
   }, [currentStep]);
 
-  const goToStep = useCallback((step: number) => {
-    if (step >= 1 && step <= steps.length) {
-      setCurrentStep(step);
-      logDebug('CardForm', 'Jumping to step', { to: step });
-    }
-  }, [steps.length]);
+  const goToStep = useCallback(
+    (step: number) => {
+      if (step >= 1 && step <= steps.length) {
+        setCurrentStep(step);
+        logDebug('CardForm', 'Jumping to step', { to: step });
+      }
+    },
+    [steps.length]
+  );
 
   // Real-time validation
   const validateStep = useCallback((step: number, data: any) => {
     const errors: Record<string, string> = {};
-    
+
     switch (step) {
       case 1:
         if (!data.player?.trim()) errors.player = 'Player name is required';
@@ -79,7 +82,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
         }
         break;
     }
-    
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   }, []);
@@ -90,7 +93,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
     formState: { isSubmitting },
     reset,
     watch,
-    setValue
+    setValue,
   } = useForm<CardFormData>({
     defaultValues: {
       player: '',
@@ -108,8 +111,8 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
       sellDate: '',
       currentValue: 0,
       notes: '',
-      collectionId: ''
-    }
+      collectionId: '',
+    },
   });
 
   const sellPrice = watch('sellPrice');
@@ -129,49 +132,72 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
     loadCollections();
   }, []);
 
-  const resetForm = useCallback((cardData?: Card) => {
-    logDebug('CardForm', 'resetForm called', { hasCardData: !!cardData, cardId: cardData?.id });
-    
-    if (cardData) {
-      try {
-        // Safely handle date conversion
-        const purchaseDate = cardData.purchaseDate instanceof Date 
-          ? cardData.purchaseDate.toISOString().split('T')[0]
-          : new Date(cardData.purchaseDate).toISOString().split('T')[0];
-          
-        const sellDate = cardData.sellDate 
-          ? (cardData.sellDate instanceof Date 
-              ? cardData.sellDate.toISOString().split('T')[0]
-              : new Date(cardData.sellDate).toISOString().split('T')[0])
-          : '';
-        
-        logDebug('CardForm', 'Date conversion successful', { purchaseDate, sellDate });
+  const resetForm = useCallback(
+    (cardData?: Card) => {
+      logDebug('CardForm', 'resetForm called', { hasCardData: !!cardData, cardId: cardData?.id });
 
-        const formData = {
-          player: cardData.player || '',
-          team: cardData.team || '',
-          year: cardData.year || new Date().getFullYear(),
-          brand: cardData.brand || '',
-          category: cardData.category || '',
-          cardNumber: cardData.cardNumber || '',
-          parallel: cardData.parallel || '',
-          condition: cardData.condition || CONDITIONS[0],
-          gradingCompany: cardData.gradingCompany || '',
-          purchasePrice: cardData.purchasePrice || 0,
-          purchaseDate: purchaseDate,
-          sellPrice: cardData.sellPrice || undefined,
-          sellDate: sellDate,
-          currentValue: cardData.currentValue || 0,
-          notes: cardData.notes || '',
-          collectionId: cardData.collectionId || ''
-        };
-        
-        reset(formData);
-        setImages(cardData.images || []);
-        logInfo('CardForm', 'Form reset with card data', formData);
-      } catch (error) {
-        logError('CardForm', 'Error processing card data', error as Error, cardData);
-        // Fallback to default values if there's an error
+      if (cardData) {
+        try {
+          // Safely handle date conversion
+          const purchaseDate =
+            cardData.purchaseDate instanceof Date
+              ? cardData.purchaseDate.toISOString().split('T')[0]
+              : new Date(cardData.purchaseDate).toISOString().split('T')[0];
+
+          const sellDate = cardData.sellDate
+            ? cardData.sellDate instanceof Date
+              ? cardData.sellDate.toISOString().split('T')[0]
+              : new Date(cardData.sellDate).toISOString().split('T')[0]
+            : '';
+
+          logDebug('CardForm', 'Date conversion successful', { purchaseDate, sellDate });
+
+          const formData = {
+            player: cardData.player || '',
+            team: cardData.team || '',
+            year: cardData.year || new Date().getFullYear(),
+            brand: cardData.brand || '',
+            category: cardData.category || '',
+            cardNumber: cardData.cardNumber || '',
+            parallel: cardData.parallel || '',
+            condition: cardData.condition || CONDITIONS[0],
+            gradingCompany: cardData.gradingCompany || '',
+            purchasePrice: cardData.purchasePrice || 0,
+            purchaseDate: purchaseDate,
+            sellPrice: cardData.sellPrice || undefined,
+            sellDate: sellDate,
+            currentValue: cardData.currentValue || 0,
+            notes: cardData.notes || '',
+            collectionId: cardData.collectionId || '',
+          };
+
+          reset(formData);
+          setImages(cardData.images || []);
+          logInfo('CardForm', 'Form reset with card data', formData);
+        } catch (error) {
+          logError('CardForm', 'Error processing card data', error as Error, cardData);
+          // Fallback to default values if there's an error
+          reset({
+            player: '',
+            team: '',
+            year: new Date().getFullYear(),
+            brand: '',
+            category: '',
+            cardNumber: '',
+            parallel: '',
+            condition: CONDITIONS[0],
+            gradingCompany: '',
+            purchasePrice: 0,
+            purchaseDate: new Date().toISOString().split('T')[0],
+            sellPrice: undefined,
+            sellDate: '',
+            currentValue: 0,
+            notes: '',
+            collectionId: '',
+          });
+          setImages([]);
+        }
+      } else {
         reset({
           player: '',
           team: '',
@@ -188,32 +214,13 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
           sellDate: '',
           currentValue: 0,
           notes: '',
-          collectionId: ''
+          collectionId: '',
         });
         setImages([]);
       }
-    } else {
-      reset({
-        player: '',
-        team: '',
-        year: new Date().getFullYear(),
-        brand: '',
-        category: '',
-        cardNumber: '',
-        parallel: '',
-        condition: CONDITIONS[0],
-        gradingCompany: '',
-        purchasePrice: 0,
-        purchaseDate: new Date().toISOString().split('T')[0],
-        sellPrice: undefined,
-        sellDate: '',
-        currentValue: 0,
-        notes: '',
-        collectionId: ''
-      });
-      setImages([]);
-    }
-  }, [reset]);
+    },
+    [reset]
+  );
 
   useEffect(() => {
     resetForm(card);
@@ -229,7 +236,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
 
   const onSubmit = async (data: CardFormData) => {
     logInfo('CardForm', 'Form submitted', data);
-    
+
     try {
       // Validate required fields
       if (!data.player || !data.team || !data.brand || !data.category || !data.cardNumber) {
@@ -239,7 +246,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
         if (!data.brand) missingFields.push('brand');
         if (!data.category) missingFields.push('category');
         if (!data.cardNumber) missingFields.push('cardNumber');
-        
+
         logWarn('CardForm', 'Required fields missing', { missingFields });
         throw new Error(`Required fields are missing: ${missingFields.join(', ')}`);
       }
@@ -249,7 +256,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
       const purchasePrice = Number(data.purchasePrice);
       const currentValue = Number(data.currentValue);
       const sellPrice = data.sellPrice ? Number(data.sellPrice) : undefined;
-      
+
       if (isNaN(year) || isNaN(purchasePrice) || isNaN(currentValue)) {
         logWarn('CardForm', 'Invalid numeric values', { year, purchasePrice, currentValue });
         throw new Error('Invalid numeric values provided');
@@ -257,7 +264,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
 
       const purchaseDate = new Date(data.purchaseDate);
       const sellDate = data.sellDate ? new Date(data.sellDate) : undefined;
-      
+
       if (isNaN(purchaseDate.getTime())) {
         logWarn('CardForm', 'Invalid purchase date', { purchaseDate: data.purchaseDate });
         throw new Error('Invalid purchase date');
@@ -267,7 +274,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
         logWarn('CardForm', 'Invalid sell date', { sellDate: data.sellDate });
         throw new Error('Invalid sell date');
       }
-      
+
       const cardData: Card = {
         id: card?.id || `card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         userId: card?.userId || '', // Will be set by the database
@@ -289,11 +296,11 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
         images: Array.isArray(images) ? images : [],
         notes: data.notes?.trim() || '',
         createdAt: card?.createdAt || new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       logDebug('CardForm', 'Card data prepared', cardData);
-      
+
       if (isEditing && card) {
         logInfo('CardForm', 'Updating existing card', { id: cardData.id });
         await updateCard(cardData);
@@ -303,7 +310,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
       }
 
       logInfo('CardForm', 'Card operation successful', { isEditing, id: cardData.id });
-      
+
       if (onSuccess) {
         onSuccess();
       }
@@ -320,10 +327,9 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
           <div className="form-header">
             <h2 className="text-gradient">{isEditing ? 'Edit Card' : 'Add New Card'}</h2>
             <p>
-              {isEditing 
+              {isEditing
                 ? 'Update the details of your sports card below'
-                : 'Enter the details of your sports card to add it to your collection'
-              }
+                : 'Enter the details of your sports card to add it to your collection'}
             </p>
           </div>
         </AnimatedWrapper>
@@ -339,9 +345,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="step-number">
-                  {currentStep > step.id ? '✓' : step.id}
-                </div>
+                <div className="step-number">{currentStep > step.id ? '✓' : step.id}</div>
                 <div className="step-content">
                   <h4>{step.title}</h4>
                   <p>{step.description}</p>
@@ -350,7 +354,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
             ))}
           </div>
         </AnimatedWrapper>
-        
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <AnimatePresence mode="wait">
             {/* Step 1: Basic Info */}
@@ -378,9 +382,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                         validateStep(1, { ...watch(), player: e.target.value });
                       }}
                     />
-                    {validationErrors.player && (
-                      <span className="error-message">{validationErrors.player}</span>
-                    )}
+                    {validationErrors.player && <span className="error-message">{validationErrors.player}</span>}
                   </div>
 
                   <div className="form-group">
@@ -396,9 +398,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                         validateStep(1, { ...watch(), team: e.target.value });
                       }}
                     />
-                    {validationErrors.team && (
-                      <span className="error-message">{validationErrors.team}</span>
-                    )}
+                    {validationErrors.team && <span className="error-message">{validationErrors.team}</span>}
                   </div>
                 </div>
               </motion.div>
@@ -429,9 +429,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                         validateStep(2, { ...watch(), year: parseInt(e.target.value) });
                       }}
                     />
-                    {validationErrors.year && (
-                      <span className="error-message">{validationErrors.year}</span>
-                    )}
+                    {validationErrors.year && <span className="error-message">{validationErrors.year}</span>}
                   </div>
 
                   <div className="form-group">
@@ -447,19 +445,14 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                         validateStep(2, { ...watch(), brand: e.target.value });
                       }}
                     />
-                    {validationErrors.brand && (
-                      <span className="error-message">{validationErrors.brand}</span>
-                    )}
+                    {validationErrors.brand && <span className="error-message">{validationErrors.brand}</span>}
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="category">Category *</label>
-                    <select
-                      id="category"
-                      {...register('category', { required: true })}
-                    >
+                    <select id="category" {...register('category', { required: true })}>
                       <option value="">Select a category</option>
-                      {CATEGORIES.map(category => (
+                      {CATEGORIES.map((category) => (
                         <option key={category} value={category}>
                           {category}
                         </option>
@@ -504,11 +497,8 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                 <div className="form-grid">
                   <div className="form-group">
                     <label htmlFor="condition">Condition</label>
-                    <select
-                      id="condition"
-                      {...register('condition')}
-                    >
-                      {CONDITIONS.map(condition => (
+                    <select id="condition" {...register('condition')}>
+                      {CONDITIONS.map((condition) => (
                         <option key={condition} value={condition}>
                           {condition}
                         </option>
@@ -518,12 +508,9 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
 
                   <div className="form-group">
                     <label htmlFor="gradingCompany">Grading Company</label>
-                    <select
-                      id="gradingCompany"
-                      {...register('gradingCompany')}
-                    >
+                    <select id="gradingCompany" {...register('gradingCompany')}>
                       <option value="">Select grading company</option>
-                      {GRADING_COMPANIES.map(company => (
+                      {GRADING_COMPANIES.map((company) => (
                         <option key={company} value={company}>
                           {company}
                         </option>
@@ -581,11 +568,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
 
                   <div className="form-group">
                     <label htmlFor="purchaseDate">Purchase Date</label>
-                    <input
-                      id="purchaseDate"
-                      type="date"
-                      {...register('purchaseDate')}
-                    />
+                    <input id="purchaseDate" type="date" {...register('purchaseDate')} />
                   </div>
 
                   <div className="form-group">
@@ -601,12 +584,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
 
                   <div className="form-group">
                     <label htmlFor="sellDate">Sell Date</label>
-                    <input
-                      id="sellDate"
-                      type="date"
-                      {...register('sellDate')}
-                      disabled={!sellPrice}
-                    />
+                    <input id="sellDate" type="date" {...register('sellDate')} disabled={!sellPrice} />
                   </div>
                 </div>
               </motion.div>
@@ -626,12 +604,9 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                 <div className="form-grid">
                   <div className="form-group full-width">
                     <label htmlFor="collectionId">Collection</label>
-                    <select
-                      id="collectionId"
-                      {...register('collectionId')}
-                    >
+                    <select id="collectionId" {...register('collectionId')}>
                       <option value="">Select a collection</option>
-                      {collections.map(collection => (
+                      {collections.map((collection) => (
                         <option key={collection.id} value={collection.id}>
                           {collection.name}
                         </option>
@@ -641,11 +616,7 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
 
                   <div className="form-group full-width">
                     <label>Card Images</label>
-                    <ImageUpload
-                      images={images}
-                      onImagesChange={setImages}
-                      maxImages={5}
-                    />
+                    <ImageUpload images={images} onImagesChange={setImages} maxImages={5} />
                   </div>
 
                   <div className="form-group full-width">
@@ -660,11 +631,10 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                 </div>
               </motion.div>
             )}
-
           </AnimatePresence>
 
           {/* Step Navigation */}
-          <motion.div 
+          <motion.div
             className="step-navigation"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -682,9 +652,9 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                   ← Previous
                 </motion.button>
               )}
-              
-              <div className="step-spacer"></div>
-              
+
+              <div className="step-spacer" />
+
               {currentStep < steps.length ? (
                 <motion.button
                   type="button"
@@ -704,18 +674,13 @@ const CardForm: React.FC<CardFormProps> = ({ card, onSuccess, onCancel }) => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {isSubmitting ? 'Saving...' : (isEditing ? 'Update Card' : 'Add Card')}
+                  {isSubmitting ? 'Saving...' : isEditing ? 'Update Card' : 'Add Card'}
                 </motion.button>
               )}
             </div>
-            
+
             <div className="step-actions">
-              <button
-                type="button"
-                onClick={onCancel}
-                className="cancel-btn"
-                disabled={isSubmitting}
-              >
+              <button type="button" onClick={onCancel} className="cancel-btn" disabled={isSubmitting}>
                 Cancel
               </button>
             </div>

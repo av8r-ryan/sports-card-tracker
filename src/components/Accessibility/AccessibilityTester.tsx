@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { accessibilityManager, accessibilityUtils } from '../../utils/accessibility';
+import React, { useState, useEffect } from 'react';
+
+import { accessibilityManager } from '../../utils/accessibility';
 import './AccessibilityTester.css';
 
 interface AccessibilityTesterProps {
@@ -21,10 +22,10 @@ const AccessibilityTester: React.FC<AccessibilityTesterProps> = ({ isOpen, onClo
 
   const runAccessibilityScan = async () => {
     setIsScanning(true);
-    
+
     // Simulate scanning delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const scanReport = accessibilityManager.validateAccessibility();
     setReport(scanReport);
     setIsScanning(false);
@@ -32,13 +33,13 @@ const AccessibilityTester: React.FC<AccessibilityTesterProps> = ({ isOpen, onClo
 
   const handleIssueClick = (issue: any) => {
     setSelectedIssue(issue);
-    
+
     // Scroll to element
     if (issue.element) {
       issue.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       issue.element.style.outline = '2px solid #ff6b6b';
       issue.element.style.outlineOffset = '2px';
-      
+
       // Remove outline after 3 seconds
       setTimeout(() => {
         issue.element.style.outline = '';
@@ -55,10 +56,14 @@ const AccessibilityTester: React.FC<AccessibilityTesterProps> = ({ isOpen, onClo
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'error': return '#f44336';
-      case 'warning': return '#ff9800';
-      case 'info': return '#2196f3';
-      default: return '#666';
+      case 'error':
+        return '#f44336';
+      case 'warning':
+        return '#ff9800';
+      case 'info':
+        return '#2196f3';
+      default:
+        return '#666';
     }
   };
 
@@ -82,11 +87,7 @@ const AccessibilityTester: React.FC<AccessibilityTesterProps> = ({ isOpen, onClo
         >
           <div className="tester-header">
             <h2>Accessibility Tester</h2>
-            <button
-              className="close-btn"
-              onClick={onClose}
-              aria-label="Close accessibility tester"
-            >
+            <button className="close-btn" onClick={onClose} aria-label="Close accessibility tester">
               ×
             </button>
           </div>
@@ -94,17 +95,17 @@ const AccessibilityTester: React.FC<AccessibilityTesterProps> = ({ isOpen, onClo
           <div className="tester-content">
             {isScanning ? (
               <div className="scanning-state">
-                <div className="scanning-spinner"></div>
+                <div className="scanning-spinner" />
                 <p>Scanning page for accessibility issues...</p>
               </div>
             ) : report ? (
               <>
                 <div className="score-section">
                   <div className="score-circle">
-                    <div 
+                    <div
                       className="score-fill"
-                      style={{ 
-                        background: `conic-gradient(${getScoreColor(report.score)} 0deg ${report.score * 3.6}deg, #e0e0e0 0deg)`
+                      style={{
+                        background: `conic-gradient(${getScoreColor(report.score)} 0deg ${report.score * 3.6}deg, #e0e0e0 0deg)`,
                       }}
                     >
                       <span className="score-value">{report.score}</span>
@@ -118,7 +119,7 @@ const AccessibilityTester: React.FC<AccessibilityTesterProps> = ({ isOpen, onClo
 
                 <div className="issues-section">
                   <h3>Issues Found ({report.issues.length})</h3>
-                  
+
                   {report.issues.length === 0 ? (
                     <div className="no-issues">
                       <div className="success-icon">✅</div>
@@ -137,10 +138,10 @@ const AccessibilityTester: React.FC<AccessibilityTesterProps> = ({ isOpen, onClo
                         >
                           <div className="issue-header">
                             <div className="issue-severity">
-                              <div 
+                              <div
                                 className="severity-dot"
                                 style={{ backgroundColor: getSeverityColor(issue.severity) }}
-                              ></div>
+                              />
                               <span className="severity-text">{issue.severity.toUpperCase()}</span>
                             </div>
                             <span className="issue-type">{issue.type.replace('-', ' ')}</span>
@@ -170,11 +171,7 @@ const AccessibilityTester: React.FC<AccessibilityTesterProps> = ({ isOpen, onClo
           </div>
 
           <div className="tester-actions">
-            <button
-              className="rescan-btn"
-              onClick={runAccessibilityScan}
-              disabled={isScanning}
-            >
+            <button className="rescan-btn" onClick={runAccessibilityScan} disabled={isScanning}>
               {isScanning ? 'Scanning...' : 'Rescan Page'}
             </button>
             <button

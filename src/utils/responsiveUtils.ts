@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 // Breakpoint definitions
 export const breakpoints = {
@@ -7,7 +7,7 @@ export const breakpoints = {
   md: 768,
   lg: 1024,
   xl: 1280,
-  '2xl': 1536
+  '2xl': 1536,
 } as const;
 
 export type Breakpoint = keyof typeof breakpoints;
@@ -23,7 +23,7 @@ export const getDeviceType = (width: number): 'mobile' | 'tablet' | 'desktop' =>
 export const useResponsive = () => {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
   });
 
   const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
@@ -32,7 +32,7 @@ export const useResponsive = () => {
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
       setWindowSize({ width, height });
       setDeviceType(getDeviceType(width));
     };
@@ -73,7 +73,7 @@ export const useResponsive = () => {
     isDesktop,
     isBreakpoint,
     isBreakpointDown,
-    isBreakpointBetween
+    isBreakpointBetween,
   };
 };
 
@@ -100,13 +100,7 @@ export const useMediaQuery = (query: string): boolean => {
 };
 
 // Responsive values hook
-export const useResponsiveValue = <T>(
-  values: {
-    mobile?: T;
-    tablet?: T;
-    desktop?: T;
-  }
-): T | undefined => {
+export const useResponsiveValue = <T>(values: { mobile?: T; tablet?: T; desktop?: T }): T | undefined => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
 
   if (isMobile && values.mobile !== undefined) return values.mobile;
@@ -118,10 +112,7 @@ export const useResponsiveValue = <T>(
 };
 
 // Container queries hook (when supported)
-export const useContainerQuery = (
-  element: HTMLElement | null,
-  query: string
-): boolean => {
+export const useContainerQuery = (element: HTMLElement | null, query: string): boolean => {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {
@@ -130,7 +121,7 @@ export const useContainerQuery = (
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
-        
+
         // Simple container query implementation
         if (query.includes('min-width:')) {
           const minWidth = parseInt(query.match(/min-width:\s*(\d+)px/)?.[1] || '0');
@@ -153,74 +144,59 @@ export const useContainerQuery = (
 };
 
 // Touch-friendly sizing utilities
-export const getTouchTargetSize = (baseSize: number = 44): number => {
+export const getTouchTargetSize = (baseSize = 44): number => {
   const { isMobile } = useResponsive();
   return isMobile ? Math.max(baseSize, 44) : baseSize;
 };
 
 // Spacing utilities for different screen sizes
-export const getResponsiveSpacing = (
-  mobile: number,
-  tablet?: number,
-  desktop?: number
-): number => {
+export const getResponsiveSpacing = (mobile: number, tablet?: number, desktop?: number): number => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
-  
+
   if (isMobile) return mobile;
   if (isTablet && tablet !== undefined) return tablet;
   if (isDesktop && desktop !== undefined) return desktop;
-  
+
   return mobile;
 };
 
 // Grid utilities
-export const getResponsiveGridColumns = (
-  mobile: number,
-  tablet?: number,
-  desktop?: number
-): number => {
+export const getResponsiveGridColumns = (mobile: number, tablet?: number, desktop?: number): number => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
-  
+
   if (isMobile) return mobile;
   if (isTablet && tablet !== undefined) return tablet;
   if (isDesktop && desktop !== undefined) return desktop;
-  
+
   return mobile;
 };
 
 // Font size utilities
-export const getResponsiveFontSize = (
-  mobile: number,
-  tablet?: number,
-  desktop?: number
-): number => {
+export const getResponsiveFontSize = (mobile: number, tablet?: number, desktop?: number): number => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
-  
+
   if (isMobile) return mobile;
   if (isTablet && tablet !== undefined) return tablet;
   if (isDesktop && desktop !== undefined) return desktop;
-  
+
   return mobile;
 };
 
 // Image sizing utilities
-export const getResponsiveImageSize = (
-  containerWidth: number,
-  aspectRatio: number = 1
-): { width: number; height: number } => {
+export const getResponsiveImageSize = (containerWidth: number, aspectRatio = 1): { width: number; height: number } => {
   const { isMobile, isTablet } = useResponsive();
-  
+
   let maxWidth = containerWidth;
-  
+
   if (isMobile) {
     maxWidth = Math.min(containerWidth, 400);
   } else if (isTablet) {
     maxWidth = Math.min(containerWidth, 600);
   }
-  
+
   return {
     width: maxWidth,
-    height: maxWidth / aspectRatio
+    height: maxWidth / aspectRatio,
   };
 };
 
@@ -231,11 +207,9 @@ export const getScrollBehavior = (): 'smooth' | 'auto' => {
 };
 
 // Animation duration utilities
-export const getResponsiveAnimationDuration = (
-  baseDuration: number
-): number => {
+export const getResponsiveAnimationDuration = (baseDuration: number): number => {
   const { isMobile } = useResponsive();
-  
+
   // Reduce animation duration on mobile for better performance
   return isMobile ? baseDuration * 0.7 : baseDuration;
 };
@@ -246,9 +220,9 @@ export const getMobileZIndex = (level: 'base' | 'overlay' | 'modal' | 'tooltip')
     base: 1,
     overlay: 1000,
     modal: 2000,
-    tooltip: 3000
+    tooltip: 3000,
   };
-  
+
   return zIndexes[level];
 };
 
@@ -264,24 +238,24 @@ export const getSafeAreaPadding = (): {
   }
 
   const computedStyle = getComputedStyle(document.documentElement);
-  
+
   return {
     top: parseInt(computedStyle.getPropertyValue('--safe-area-inset-top') || '0'),
     right: parseInt(computedStyle.getPropertyValue('--safe-area-inset-right') || '0'),
     bottom: parseInt(computedStyle.getPropertyValue('--safe-area-inset-bottom') || '0'),
-    left: parseInt(computedStyle.getPropertyValue('--safe-area-inset-left') || '0')
+    left: parseInt(computedStyle.getPropertyValue('--safe-area-inset-left') || '0'),
   };
 };
 
 // Viewport height utilities for mobile browsers
 export const getViewportHeight = (): number => {
   if (typeof window === 'undefined') return 0;
-  
+
   // Use visual viewport API if available (better for mobile)
   if ('visualViewport' in window && window.visualViewport) {
     return window.visualViewport.height;
   }
-  
+
   return window.innerHeight;
 };
 
@@ -293,9 +267,7 @@ export const useOrientation = () => {
 
   useEffect(() => {
     const handleOrientationChange = () => {
-      setOrientation(
-        window.innerHeight > window.innerWidth ? 'portrait' : 'landscape'
-      );
+      setOrientation(window.innerHeight > window.innerWidth ? 'portrait' : 'landscape');
     };
 
     window.addEventListener('orientationchange', handleOrientationChange);
@@ -310,7 +282,7 @@ export const useOrientation = () => {
   return {
     orientation,
     isPortrait: orientation === 'portrait',
-    isLandscape: orientation === 'landscape'
+    isLandscape: orientation === 'landscape',
   };
 };
 
@@ -323,7 +295,7 @@ export const useMobileOptimization = () => {
     if (!isMobile) return;
 
     // Detect low-end devices
-    const isLowEnd = 
+    const isLowEnd =
       navigator.hardwareConcurrency < 4 ||
       /Android.*Chrome\/[0-5]\.|iPhone.*Version\/[0-9]\.|iPad.*Version\/[0-9]\./.test(navigator.userAgent);
 
@@ -335,7 +307,7 @@ export const useMobileOptimization = () => {
     isLowEndDevice,
     shouldReduceAnimations: isMobile && isLowEndDevice,
     shouldUseSimpleTransitions: isMobile && isLowEndDevice,
-    maxConcurrentAnimations: isMobile && isLowEndDevice ? 2 : 10
+    maxConcurrentAnimations: isMobile && isLowEndDevice ? 2 : 10,
   };
 };
 
@@ -346,24 +318,27 @@ export const createResponsiveStyles = (styles: {
   desktop?: React.CSSProperties;
 }): React.CSSProperties => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
-  
+
   if (isMobile && styles.mobile) return styles.mobile;
   if (isTablet && styles.tablet) return styles.tablet;
   if (isDesktop && styles.desktop) return styles.desktop;
-  
+
   return styles.mobile || styles.tablet || styles.desktop || {};
 };
 
 // Responsive class name utilities
-export const getResponsiveClassName = (baseClass: string, modifiers: {
-  mobile?: string;
-  tablet?: string;
-  desktop?: string;
-}): string => {
+export const getResponsiveClassName = (
+  baseClass: string,
+  modifiers: {
+    mobile?: string;
+    tablet?: string;
+    desktop?: string;
+  }
+): string => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
-  
+
   let className = baseClass;
-  
+
   if (isMobile && modifiers.mobile) {
     className += ` ${modifiers.mobile}`;
   } else if (isTablet && modifiers.tablet) {
@@ -371,6 +346,6 @@ export const getResponsiveClassName = (baseClass: string, modifiers: {
   } else if (isDesktop && modifiers.desktop) {
     className += ` ${modifiers.desktop}`;
   }
-  
+
   return className;
 };

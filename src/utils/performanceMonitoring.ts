@@ -2,21 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
-import type { Metric } from 'web-vitals';
 
 interface PerformanceMetrics {
   // Core Web Vitals
   cls: number | null;
   fid: number | null;
   lcp: number | null;
-  
+
   // Additional metrics
   fcp: number | null;
   ttfb: number | null;
-  
+
   // Custom metrics
   customMetrics: Record<string, number>;
-  
+
   // Timestamps
   timestamp: number;
   userAgent: string;
@@ -54,7 +53,7 @@ class PerformanceMonitor {
       enableConnectionInfo: true,
       reportInterval: 30000, // 30 seconds
       batchSize: 10,
-      ...config
+      ...config,
     };
 
     this.metrics = {
@@ -66,7 +65,7 @@ class PerformanceMonitor {
       customMetrics: {},
       timestamp: Date.now(),
       userAgent: navigator.userAgent,
-      connectionType: this.getConnectionType()
+      connectionType: this.getConnectionType(),
     };
 
     this.customMetrics = new Map();
@@ -172,7 +171,7 @@ class PerformanceMonitor {
       entries.forEach((entry) => {
         const resource = entry as PerformanceResourceTiming;
         const loadTime = resource.responseEnd - resource.requestStart;
-        
+
         // Track slow resources
         if (loadTime > 1000) {
           this.customMetrics.set(`slow-resource-${resource.name}`, loadTime);
@@ -187,9 +186,12 @@ class PerformanceMonitor {
 
   private setupNavigationTiming(): void {
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    
+
     if (navigation) {
-      this.customMetrics.set('dom-content-loaded', navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart);
+      this.customMetrics.set(
+        'dom-content-loaded',
+        navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart
+      );
       this.customMetrics.set('load-complete', navigation.loadEventEnd - navigation.loadEventStart);
       this.customMetrics.set('dom-interactive', navigation.domInteractive - navigation.startTime);
     }
@@ -224,7 +226,7 @@ class PerformanceMonitor {
         const observer = new PerformanceObserver((list) => {
           callback(list.getEntries());
         });
-        
+
         observer.observe({ entryTypes: [type] });
         this.observers.push(observer);
       } catch (error) {
@@ -236,7 +238,14 @@ class PerformanceMonitor {
   private getResourceType(url: string): string {
     if (url.includes('.js')) return 'script';
     if (url.includes('.css')) return 'style';
-    if (url.includes('.png') || url.includes('.jpg') || url.includes('.jpeg') || url.includes('.gif') || url.includes('.svg')) return 'image';
+    if (
+      url.includes('.png') ||
+      url.includes('.jpg') ||
+      url.includes('.jpeg') ||
+      url.includes('.gif') ||
+      url.includes('.svg')
+    )
+      return 'image';
     if (url.includes('.woff') || url.includes('.woff2') || url.includes('.ttf') || url.includes('.otf')) return 'font';
     return 'other';
   }
@@ -265,7 +274,7 @@ class PerformanceMonitor {
   measureComponent(componentName: string, renderFunction: () => void): void {
     const startMark = `${componentName}-start`;
     const endMark = `${componentName}-end`;
-    
+
     this.mark(startMark);
     renderFunction();
     this.mark(endMark);
@@ -275,7 +284,7 @@ class PerformanceMonitor {
   measureAsync<T>(name: string, asyncFunction: () => Promise<T>): Promise<T> {
     const startMark = `${name}-start`;
     const endMark = `${name}-end`;
-    
+
     this.mark(startMark);
     return asyncFunction().finally(() => {
       this.mark(endMark);
@@ -287,16 +296,16 @@ class PerformanceMonitor {
     return {
       ...this.metrics,
       customMetrics: Object.fromEntries(this.customMetrics),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
   private reportMetric(name: string, value: number, rating?: 'good' | 'needs-improvement' | 'poor'): void {
     console.log(`Performance metric: ${name} = ${value} (${rating || 'unknown'})`);
-    
+
     // Store in custom metrics
     this.customMetrics.set(name, value);
-    
+
     // Add rating if available
     if (rating) {
       this.customMetrics.set(`${name}-rating`, this.ratingToNumber(rating));
@@ -305,22 +314,26 @@ class PerformanceMonitor {
 
   private ratingToNumber(rating: 'good' | 'needs-improvement' | 'poor'): number {
     switch (rating) {
-      case 'good': return 1;
-      case 'needs-improvement': return 2;
-      case 'poor': return 3;
-      default: return 0;
+      case 'good':
+        return 1;
+      case 'needs-improvement':
+        return 2;
+      case 'poor':
+        return 3;
+      default:
+        return 0;
     }
   }
 
   private async reportMetrics(): Promise<void> {
     if (this.isReporting) return;
-    
+
     this.isReporting = true;
-    
+
     try {
       const metrics = this.getMetrics();
       this.reportQueue.push(metrics);
-      
+
       if (this.reportQueue.length >= this.config.batchSize) {
         await this.flushReportQueue();
       }
@@ -333,20 +346,20 @@ class PerformanceMonitor {
 
   private async flushReportQueue(): Promise<void> {
     if (this.reportQueue.length === 0) return;
-    
+
     const metrics = [...this.reportQueue];
     this.reportQueue = [];
-    
+
     // In a real application, you would send this to your analytics service
     console.log('Reporting performance metrics:', metrics);
-    
+
     // Example: Send to analytics service
     // await this.sendToAnalytics(metrics);
   }
 
   // Clean up observers
   cleanup(): void {
-    this.observers.forEach(observer => observer.disconnect());
+    this.observers.forEach((observer) => observer.disconnect());
     this.observers = [];
   }
 }
@@ -396,7 +409,7 @@ export const usePerformanceMonitoring = () => {
     mark,
     measure,
     measureComponent,
-    measureAsync
+    measureAsync,
   };
 };
 

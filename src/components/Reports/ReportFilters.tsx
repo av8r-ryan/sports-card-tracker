@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ReportFilter } from '../../types/reports';
+
 import { Card, CATEGORIES, CONDITIONS } from '../../types';
+import { ReportFilter } from '../../types/reports';
 
 interface Props {
   filters: ReportFilter;
@@ -12,8 +13,8 @@ const ReportFilters: React.FC<Props> = ({ filters, onFiltersChange, cards }) => 
   const [localFilters, setLocalFilters] = useState<ReportFilter>(filters);
 
   // Get unique values from cards
-  const uniqueTeams = Array.from(new Set(cards.map(card => card.team))).sort();
-  const uniqueYears = Array.from(new Set(cards.map(card => card.year))).sort((a, b) => b - a);
+  const uniqueTeams = Array.from(new Set(cards.map((card) => card.team))).sort();
+  const uniqueYears = Array.from(new Set(cards.map((card) => card.year))).sort((a, b) => b - a);
 
   const handleFilterChange = (key: keyof ReportFilter, value: any) => {
     const newFilters = { ...localFilters, [key]: value };
@@ -25,7 +26,7 @@ const ReportFilters: React.FC<Props> = ({ filters, onFiltersChange, cards }) => 
     const dateRange = localFilters.dateRange || { start: new Date(), end: new Date() };
     const newDateRange = {
       ...dateRange,
-      [type]: new Date(value)
+      [type]: new Date(value),
     };
     handleFilterChange('dateRange', newDateRange);
   };
@@ -34,16 +35,14 @@ const ReportFilters: React.FC<Props> = ({ filters, onFiltersChange, cards }) => 
     const valueRange = localFilters.valueRange || { min: 0, max: 10000 };
     const newValueRange = {
       ...valueRange,
-      [type]: parseFloat(value) || 0
+      [type]: parseFloat(value) || 0,
     };
     handleFilterChange('valueRange', newValueRange);
   };
 
   const handleMultiSelectChange = (key: keyof ReportFilter, value: string | number, checked: boolean) => {
     const currentValues = (localFilters[key] as (string | number)[]) || [];
-    const newValues = checked
-      ? [...currentValues, value]
-      : currentValues.filter(v => v !== value);
+    const newValues = checked ? [...currentValues, value] : currentValues.filter((v) => v !== value);
     handleFilterChange(key, newValues.length > 0 ? newValues : undefined);
   };
 
@@ -69,15 +68,13 @@ const ReportFilters: React.FC<Props> = ({ filters, onFiltersChange, cards }) => 
           <div className="date-range">
             <input
               type="date"
-              value={localFilters.dateRange?.start ? 
-                localFilters.dateRange.start.toISOString().split('T')[0] : ''}
+              value={localFilters.dateRange?.start ? localFilters.dateRange.start.toISOString().split('T')[0] : ''}
               onChange={(e) => handleDateRangeChange('start', e.target.value)}
               placeholder="Start Date"
             />
             <input
               type="date"
-              value={localFilters.dateRange?.end ? 
-                localFilters.dateRange.end.toISOString().split('T')[0] : ''}
+              value={localFilters.dateRange?.end ? localFilters.dateRange.end.toISOString().split('T')[0] : ''}
               onChange={(e) => handleDateRangeChange('end', e.target.value)}
               placeholder="End Date"
             />
@@ -109,7 +106,7 @@ const ReportFilters: React.FC<Props> = ({ filters, onFiltersChange, cards }) => 
         <div className="filter-group">
           <label>Categories</label>
           <div className="checkbox-group">
-            {CATEGORIES.map(category => (
+            {CATEGORIES.map((category) => (
               <label key={category} className="checkbox-item">
                 <input
                   type="checkbox"
@@ -126,7 +123,7 @@ const ReportFilters: React.FC<Props> = ({ filters, onFiltersChange, cards }) => 
         <div className="filter-group">
           <label>Conditions</label>
           <div className="checkbox-group">
-            {CONDITIONS.slice(0, 8).map(condition => (
+            {CONDITIONS.slice(0, 8).map((condition) => (
               <label key={condition} className="checkbox-item">
                 <input
                   type="checkbox"
@@ -143,7 +140,7 @@ const ReportFilters: React.FC<Props> = ({ filters, onFiltersChange, cards }) => 
         <div className="filter-group">
           <label>Teams</label>
           <div className="checkbox-group limited">
-            {uniqueTeams.slice(0, 10).map(team => (
+            {uniqueTeams.slice(0, 10).map((team) => (
               <label key={team} className="checkbox-item">
                 <input
                   type="checkbox"
@@ -160,7 +157,7 @@ const ReportFilters: React.FC<Props> = ({ filters, onFiltersChange, cards }) => 
         <div className="filter-group">
           <label>Years</label>
           <div className="checkbox-group limited">
-            {uniqueYears.slice(0, 10).map(year => (
+            {uniqueYears.slice(0, 10).map((year) => (
               <label key={year} className="checkbox-item">
                 <input
                   type="checkbox"

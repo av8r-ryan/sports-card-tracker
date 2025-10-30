@@ -18,7 +18,7 @@ class Logger {
   private constructor() {
     // Restore logs from sessionStorage on initialization
     this.restoreLogs();
-    
+
     // Save logs periodically
     if (typeof window !== 'undefined') {
       window.addEventListener('beforeunload', () => this.saveLogs());
@@ -59,7 +59,7 @@ class Logger {
       component,
       message,
       data,
-      error
+      error,
     };
 
     // Add to internal log buffer
@@ -73,18 +73,18 @@ class Logger {
       debug: 'color: #888',
       info: 'color: #2196F3',
       warn: 'color: #FF9800',
-      error: 'color: #F44336; font-weight: bold'
+      error: 'color: #F44336; font-weight: bold',
     };
 
     const prefix = `[${entry.timestamp}] [${component}]`;
-    
+
     if (this.isDevelopment || level === 'error' || level === 'warn') {
       console.log(`%c${prefix} ${message}`, styles[level]);
-      
+
       if (data) {
         console.log('Data:', data);
       }
-      
+
       if (error) {
         console.error('Error:', error);
         console.error('Stack:', error.stack);
@@ -113,11 +113,11 @@ class Logger {
   }
 
   getLogsByComponent(component: string): LogEntry[] {
-    return this.logs.filter(log => log.component === component);
+    return this.logs.filter((log) => log.component === component);
   }
 
   getLogsByLevel(level: LogLevel): LogEntry[] {
-    return this.logs.filter(log => log.level === level);
+    return this.logs.filter((log) => log.level === level);
   }
 
   clearLogs() {
@@ -133,16 +133,13 @@ class Logger {
 export const logger = Logger.getInstance();
 
 // Export convenience functions
-export const logDebug = (component: string, message: string, data?: any) => 
-  logger.debug(component, message, data);
+export const logDebug = (component: string, message: string, data?: any) => logger.debug(component, message, data);
 
-export const logInfo = (component: string, message: string, data?: any) => 
-  logger.info(component, message, data);
+export const logInfo = (component: string, message: string, data?: any) => logger.info(component, message, data);
 
-export const logWarn = (component: string, message: string, data?: any) => 
-  logger.warn(component, message, data);
+export const logWarn = (component: string, message: string, data?: any) => logger.warn(component, message, data);
 
-export const logError = (component: string, message: string, error?: Error, data?: any) => 
+export const logError = (component: string, message: string, error?: Error, data?: any) =>
   logger.error(component, message, error, data);
 
 // Add global error handler
@@ -151,13 +148,13 @@ if (typeof window !== 'undefined') {
     logger.error('Global', `Unhandled error: ${event.message}`, event.error, {
       filename: event.filename,
       lineno: event.lineno,
-      colno: event.colno
+      colno: event.colno,
     });
   });
 
   window.addEventListener('unhandledrejection', (event) => {
     logger.error('Global', `Unhandled promise rejection: ${event.reason}`, undefined, {
-      reason: event.reason
+      reason: event.reason,
     });
   });
 }

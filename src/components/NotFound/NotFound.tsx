@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+
 import { useAuth } from '../../context/AuthContext';
 import { useCards } from '../../context/DexieCardContext';
 import { logError } from '../../utils/logger';
@@ -27,25 +28,31 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
   }, []);
 
   // Search functionality
-  const searchCards = useCallback((query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
+  const searchCards = useCallback(
+    (query: string) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        return;
+      }
 
-    setIsSearching(true);
-    const results = cardState.cards.filter(card => 
-      card.player?.toLowerCase().includes(query.toLowerCase()) ||
-      card.team?.toLowerCase().includes(query.toLowerCase()) ||
-      card.brand?.toLowerCase().includes(query.toLowerCase()) ||
-      card.year?.toString().includes(query)
-    ).slice(0, 5);
-    
-    setTimeout(() => {
-      setSearchResults(results);
-      setIsSearching(false);
-    }, 500);
-  }, [cardState.cards]);
+      setIsSearching(true);
+      const results = cardState.cards
+        .filter(
+          (card) =>
+            card.player?.toLowerCase().includes(query.toLowerCase()) ||
+            card.team?.toLowerCase().includes(query.toLowerCase()) ||
+            card.brand?.toLowerCase().includes(query.toLowerCase()) ||
+            card.year?.toString().includes(query)
+        )
+        .slice(0, 5);
+
+      setTimeout(() => {
+        setSearchResults(results);
+        setIsSearching(false);
+      }, 500);
+    },
+    [cardState.cards]
+  );
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -55,26 +62,32 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
   }, [searchQuery, searchCards]);
 
   // Fun interactive game
-  const floatingCards = useMemo(() => [
-    { id: '1', emoji: '🃏', points: 10 },
-    { id: '2', emoji: '⚾', points: 5 },
-    { id: '3', emoji: '🏀', points: 8 },
-    { id: '4', emoji: '🏈', points: 7 },
-    { id: '5', emoji: '⚽', points: 6 },
-    { id: '6', emoji: '🏒', points: 9 }
-  ], []);
+  const floatingCards = useMemo(
+    () => [
+      { id: '1', emoji: '🃏', points: 10 },
+      { id: '2', emoji: '⚾', points: 5 },
+      { id: '3', emoji: '🏀', points: 8 },
+      { id: '4', emoji: '🏈', points: 7 },
+      { id: '5', emoji: '⚽', points: 6 },
+      { id: '6', emoji: '🏒', points: 9 },
+    ],
+    []
+  );
 
-  const handleCardClick = useCallback((cardId: string, points: number) => {
-    if (clickedCards.has(cardId)) return;
-    
-    setClickedCards(prev => new Set([...prev, cardId]));
-    setGameScore(prev => prev + points);
-    setGameActive(true);
-    
-    setTimeout(() => {
-      setGameActive(false);
-    }, 1000);
-  }, [clickedCards]);
+  const handleCardClick = useCallback(
+    (cardId: string, points: number) => {
+      if (clickedCards.has(cardId)) return;
+
+      setClickedCards((prev) => new Set([...prev, cardId]));
+      setGameScore((prev) => prev + points);
+      setGameActive(true);
+
+      setTimeout(() => {
+        setGameActive(false);
+      }, 1000);
+    },
+    [clickedCards]
+  );
 
   const resetGame = useCallback(() => {
     setGameScore(0);
@@ -139,25 +152,25 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
           </motion.div>
         ))}
       </div>
-      
+
       <div className="not-found-content">
         <AnimatedWrapper animation="fadeInDown" duration={0.8}>
           <div className="error-code">
-            <motion.span 
+            <motion.span
               className="error-number"
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
               4
             </motion.span>
-            <motion.span 
+            <motion.span
               className="error-card"
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
             >
               🃏
             </motion.span>
-            <motion.span 
+            <motion.span
               className="error-number"
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 2, repeat: Infinity, delay: 1 }}
@@ -170,8 +183,7 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
         <AnimatedWrapper animation="fadeInUp" duration={0.8} delay={0.2}>
           <h1 className="not-found-title">Card Not Found</h1>
           <p className="not-found-subtitle">
-            Looks like this page got traded away! The card you're looking for 
-            doesn't exist in our collection.
+            Looks like this page got traded away! The card you're looking for doesn't exist in our collection.
           </p>
         </AnimatedWrapper>
 
@@ -208,11 +220,11 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
                       />
                       {isSearching && (
                         <div className="search-spinner">
-                          <div className="spinner"></div>
+                          <div className="spinner" />
                         </div>
                       )}
                     </div>
-                    
+
                     <AnimatePresence>
                       {searchResults.length > 0 && (
                         <motion.div
@@ -228,12 +240,14 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
                               initial={{ opacity: 0, x: -20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: index * 0.1 }}
-                              onClick={() => window.location.href = `/#inventory?card=${card.id}`}
+                              onClick={() => (window.location.href = `/#inventory?card=${card.id}`)}
                             >
                               <span className="result-icon">🃏</span>
                               <div className="result-info">
                                 <div className="result-title">{card.player}</div>
-                                <div className="result-subtitle">{card.team} • {card.year}</div>
+                                <div className="result-subtitle">
+                                  {card.team} • {card.year}
+                                </div>
                               </div>
                             </motion.div>
                           ))}
@@ -263,7 +277,7 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
 
         <AnimatedWrapper animation="fadeInUp" duration={0.8} delay={0.6}>
           <div className="not-found-actions">
-            <motion.button 
+            <motion.button
               className="not-found-btn primary"
               onClick={handleGoHome}
               whileHover={{ scale: 1.05 }}
@@ -272,8 +286,8 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
               <span className="btn-icon">🏠</span>
               Go Home
             </motion.button>
-            
-            <motion.button 
+
+            <motion.button
               className="not-found-btn secondary"
               onClick={handleGoBack}
               whileHover={{ scale: 1.05 }}
@@ -295,12 +309,12 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
                 { icon: '📈', label: 'Reports', href: '/#reports' },
                 { icon: '🏆', label: 'eBay Listings', href: '/#ebay' },
                 { icon: '📚', label: 'Collections', href: '/#collections' },
-                ...(authState.user?.role === 'admin' ? [{ icon: '⚙️', label: 'Admin Panel', href: '/#admin' }] : [])
+                ...(authState.user?.role === 'admin' ? [{ icon: '⚙️', label: 'Admin Panel', href: '/#admin' }] : []),
               ].map((suggestion, index) => (
                 <motion.div
                   key={suggestion.label}
                   className="suggestion-card"
-                  onClick={() => window.location.href = suggestion.href}
+                  onClick={() => (window.location.href = suggestion.href)}
                   whileHover={{ scale: 1.05, y: -5 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -340,7 +354,7 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
         <AnimatedWrapper animation="fadeInUp" duration={0.8} delay={1.2}>
           <div className="not-found-help">
             <p>
-              Still can't find what you're looking for? 
+              Still can't find what you're looking for?
               <a href="mailto:support@collectorsplaybook.com" className="help-link">
                 Contact Support
               </a>

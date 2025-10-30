@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
 import './CollapsibleMenu.css';
 
 interface CollapsibleMenuProps {
@@ -23,7 +23,7 @@ const CollapsibleMenu: React.FC<CollapsibleMenuProps> = ({
   onToggle,
   className = '',
   variant = 'default',
-  size = 'md'
+  size = 'md',
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(defaultOpen);
   const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
@@ -42,17 +42,17 @@ const CollapsibleMenu: React.FC<CollapsibleMenuProps> = ({
       opacity: 0,
       transition: {
         duration: 0.3,
-        ease: 'easeInOut' as const
-      }
+        ease: 'easeInOut' as const,
+      },
     },
     open: {
       height: 'auto',
       opacity: 1,
       transition: {
         duration: 0.3,
-        ease: 'easeInOut' as const
-      }
-    }
+        ease: 'easeInOut' as const,
+      },
+    },
   };
 
   const iconVariants = {
@@ -60,29 +60,29 @@ const CollapsibleMenu: React.FC<CollapsibleMenuProps> = ({
       rotate: 0,
       transition: {
         duration: 0.2,
-        ease: 'easeInOut' as const
-      }
+        ease: 'easeInOut' as const,
+      },
     },
     open: {
       rotate: 90,
       transition: {
         duration: 0.2,
-        ease: 'easeInOut' as const
-      }
-    }
+        ease: 'easeInOut' as const,
+      },
+    },
   };
 
   const sizeClasses = {
     sm: 'collapsible-menu-sm',
     md: 'collapsible-menu-md',
-    lg: 'collapsible-menu-lg'
+    lg: 'collapsible-menu-lg',
   };
 
   const variantClasses = {
     default: 'collapsible-menu-default',
     glass: 'collapsible-menu-glass',
     gradient: 'collapsible-menu-gradient',
-    minimal: 'collapsible-menu-minimal'
+    minimal: 'collapsible-menu-minimal',
   };
 
   return (
@@ -98,11 +98,7 @@ const CollapsibleMenu: React.FC<CollapsibleMenuProps> = ({
           {icon && <span className="collapsible-menu-icon">{icon}</span>}
           <span className="collapsible-menu-text">{title}</span>
         </div>
-        <motion.div
-          className="collapsible-menu-chevron"
-          variants={iconVariants}
-          animate={isOpen ? 'open' : 'closed'}
-        >
+        <motion.div className="collapsible-menu-chevron" variants={iconVariants} animate={isOpen ? 'open' : 'closed'}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
@@ -118,9 +114,7 @@ const CollapsibleMenu: React.FC<CollapsibleMenuProps> = ({
             animate="open"
             exit="closed"
           >
-            <div className="collapsible-menu-inner">
-              {children}
-            </div>
+            <div className="collapsible-menu-inner">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import { useCards } from '../../context/DexieCardContext';
 import { cardDatabase } from '../../db/simpleDatabase';
 import './CardDebug.css';
@@ -29,7 +30,7 @@ const CardDebug: React.FC = () => {
   return (
     <div className="card-debug">
       <h3>Card Debug Information</h3>
-      
+
       <div className="debug-section">
         <h4>Context State</h4>
         <p>Cards in context: {state.cards.length}</p>

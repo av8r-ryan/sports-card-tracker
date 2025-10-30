@@ -1,4 +1,5 @@
 import Dexie, { Table } from 'dexie';
+
 import { Collection } from '../types/collection';
 
 class CollectionsDatabase extends Dexie {
@@ -6,10 +7,10 @@ class CollectionsDatabase extends Dexie {
 
   constructor() {
     super('CollectionsDatabase');
-    
+
     // Define schema
     this.version(1).stores({
-      collections: 'id, userId, name, isDefault, [userId+name], [userId+isDefault], createdAt'
+      collections: 'id, userId, name, isDefault, [userId+name], [userId+isDefault], createdAt',
     });
   }
 }
@@ -20,7 +21,7 @@ const db = new CollectionsDatabase();
 function getCurrentUserId(): string {
   // First check the 'user' localStorage item
   const userStr = localStorage.getItem('user');
-  
+
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
@@ -30,10 +31,10 @@ function getCurrentUserId(): string {
       console.error('[collectionsDB getCurrentUserId] Error parsing user:', e);
     }
   }
-  
+
   // Fall back to auth-state
   const authDataStr = localStorage.getItem('auth-state');
-  
+
   if (authDataStr) {
     try {
       const authData = JSON.parse(authDataStr);
@@ -44,7 +45,7 @@ function getCurrentUserId(): string {
       return 'anonymous';
     }
   }
-  
+
   return 'anonymous';
 }
 
@@ -53,19 +54,19 @@ export const collectionsDatabase = {
   async initializeUserCollections(userId: string): Promise<void> {
     try {
       console.log('[CollectionsDB] Initializing collections for user:', userId);
-      
+
       // Check if user already has a default collection
       const existingDefault = await db.collections
         .where('userId')
         .equals(userId)
-        .and(collection => collection.isDefault === true)
+        .and((collection) => collection.isDefault === true)
         .first();
 
       console.log('[CollectionsDB] Existing default collection:', existingDefault);
 
       if (!existingDefault) {
         console.log('[CollectionsDB] Creating default collection...');
-        
+
         // Create default collection
         const defaultCollection: Collection = {
           id: `collection-default-${userId}`,
@@ -78,9 +79,9 @@ export const collectionsDatabase = {
           visibility: 'private',
           tags: [],
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
-        
+
         await db.collections.add(defaultCollection);
         console.log('[CollectionsDB] Default collection created successfully');
       } else {
@@ -97,11 +98,8 @@ export const collectionsDatabase = {
   async getUserCollections(): Promise<Collection[]> {
     try {
       const userId = getCurrentUserId();
-      const collections = await db.collections
-        .where('userId')
-        .equals(userId)
-        .toArray();
-      
+      const collections = await db.collections.where('userId').equals(userId).toArray();
+
       // Sort by default first, then by name
       return collections.sort((a, b) => {
         if (a.isDefault && !b.isDefault) return -1;
@@ -133,28 +131,29 @@ export const collectionsDatabase = {
     try {
       const userId = getCurrentUserId();
       console.log('[getDefaultCollection] Getting default collection for userId:', userId);
-      
+
       const defaultCollection = await db.collections
         .where('userId')
         .equals(userId)
-        .and(collection => collection.isDefault === true)
+        .and((collection) => collection.isDefault === true)
         .first();
-      
+
       console.log('[getDefaultCollection] Found default collection:', defaultCollection);
-      
+
       if (!defaultCollection) {
         console.log('[getDefaultCollection] No default collection found, initializing...');
         // Initialize if not found
         await this.initializeUserCollections(userId);
-        const newDefault = await db.collections
-          .where('userId')
-          .equals(userId)
-          .and(collection => collection.isDefault === true)
-          .first() || null;
+        const newDefault =
+          (await db.collections
+            .where('userId')
+            .equals(userId)
+            .and((collection) => collection.isDefault === true)
+            .first()) || null;
         console.log('[getDefaultCollection] Created new default collection:', newDefault);
         return newDefault;
       }
-      
+
       return defaultCollection;
     } catch (error) {
       console.error('[getDefaultCollection] Error getting default collection:', error);
@@ -163,17 +162,19 @@ export const collectionsDatabase = {
   },
 
   // Create new collection
-  async createCollection(collectionData: Omit<Collection, 'id' | 'userId' | 'createdAt' | 'updatedAt'>): Promise<Collection> {
+  async createCollection(
+    collectionData: Omit<Collection, 'id' | 'userId' | 'createdAt' | 'updatedAt'>
+  ): Promise<Collection> {
     try {
       const userId = getCurrentUserId();
-      
+
       // Check if name already exists for this user
       const existing = await db.collections
         .where('userId')
         .equals(userId)
-        .and(collection => collection.name === collectionData.name)
+        .and((collection) => collection.name === collectionData.name)
         .first();
-      
+
       if (existing) {
         throw new Error('Collection with this name already exists');
       }
@@ -184,7 +185,7 @@ export const collectionsDatabase = {
         userId,
         isDefault: false, // New collections are never default
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       await db.collections.add(newCollection);
@@ -196,7 +197,10 @@ export const collectionsDatabase = {
   },
 
   // Update collection
-  async updateCollection(id: string, updates: Partial<Omit<Collection, 'id' | 'userId' | 'createdAt'>>): Promise<Collection | null> {
+  async updateCollection(
+    id: string,
+    updates: Partial<Omit<Collection, 'id' | 'userId' | 'createdAt'>>
+  ): Promise<Collection | null> {
     try {
       const collection = await this.getCollectionById(id);
       if (!collection) {
@@ -213,9 +217,9 @@ export const collectionsDatabase = {
         const existing = await db.collections
           .where('userId')
           .equals(collection.userId)
-          .and(col => col.name === updates.name)
+          .and((col) => col.name === updates.name)
           .first();
-        
+
         if (existing) {
           throw new Error('Collection with this name already exists');
         }
@@ -224,7 +228,7 @@ export const collectionsDatabase = {
       const updatedCollection = {
         ...collection,
         ...updates,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       await db.collections.put(updatedCollection);
@@ -250,7 +254,7 @@ export const collectionsDatabase = {
       // Check if collection has cards
       const { cardDatabase } = await import('./simpleDatabase');
       const cards = await cardDatabase.getAllCards(id);
-      
+
       if (cards.length > 0) {
         throw new Error(`Cannot delete collection with ${cards.length} cards. Move or delete cards first.`);
       }
@@ -273,17 +277,17 @@ export const collectionsDatabase = {
     try {
       const { cardDatabase } = await import('./simpleDatabase');
       const cards = await cardDatabase.getAllCards();
-      const collectionCards = cards.filter(card => card.collectionId === collectionId);
+      const collectionCards = cards.filter((card) => card.collectionId === collectionId);
 
       const stats = {
         cardCount: collectionCards.length,
         totalValue: collectionCards.reduce((sum, card) => sum + card.currentValue, 0),
         totalCost: collectionCards.reduce((sum, card) => sum + card.purchasePrice, 0),
-        categoryBreakdown: {} as { [category: string]: number }
+        categoryBreakdown: {} as { [category: string]: number },
       };
 
       // Calculate category breakdown
-      collectionCards.forEach(card => {
+      collectionCards.forEach((card) => {
         stats.categoryBreakdown[card.category] = (stats.categoryBreakdown[card.category] || 0) + 1;
       });
 
@@ -294,7 +298,7 @@ export const collectionsDatabase = {
         cardCount: 0,
         totalValue: 0,
         totalCost: 0,
-        categoryBreakdown: {}
+        categoryBreakdown: {},
       };
     }
   },
@@ -315,7 +319,7 @@ export const collectionsDatabase = {
         const currentDefault = await db.collections
           .where('userId')
           .equals(userId)
-          .and(col => col.isDefault === true)
+          .and((col) => col.isDefault === true)
           .first();
 
         if (currentDefault && currentDefault.id !== collectionId) {
@@ -346,10 +350,7 @@ export const collectionsDatabase = {
       const userId = collection.userId;
 
       // Check if there are other collections
-      const allCollections = await db.collections
-        .where('userId')
-        .equals(userId)
-        .toArray();
+      const allCollections = await db.collections.where('userId').equals(userId).toArray();
 
       if (allCollections.length <= 1) {
         throw new Error('Cannot unset default when only one collection exists');
@@ -361,7 +362,7 @@ export const collectionsDatabase = {
         await db.collections.update(collectionId, { isDefault: false });
 
         // Set the first other collection as default
-        const otherCollection = allCollections.find(c => c.id !== collectionId);
+        const otherCollection = allCollections.find((c) => c.id !== collectionId);
         if (otherCollection) {
           await db.collections.update(otherCollection.id, { isDefault: true });
         }
@@ -377,7 +378,7 @@ export const collectionsDatabase = {
     try {
       console.log('[moveCardsToCollection] Moving cards:', cardIds, 'to collection:', targetCollectionId);
       const { cardDatabase } = await import('./simpleDatabase');
-      
+
       // Verify target collection exists and belongs to user
       const targetCollection = await this.getCollectionById(targetCollectionId);
       if (!targetCollection) {
@@ -387,27 +388,26 @@ export const collectionsDatabase = {
 
       // Update each card
       for (const cardId of cardIds) {
-        const card = await cardDatabase.getAllCards().then(cards => 
-          cards.find(c => c.id === cardId)
-        );
-        
+        const card = await cardDatabase.getAllCards().then((cards) => cards.find((c) => c.id === cardId));
+
         console.log('[moveCardsToCollection] Found card:', card?.id, 'current collectionId:', card?.collectionId);
-        
+
         if (card && card.userId === getCurrentUserId()) {
           console.log('[moveCardsToCollection] Updating card', cardId, 'to collection', targetCollectionId);
           const updatedCard = {
             ...card,
-            collectionId: targetCollectionId
+            collectionId: targetCollectionId,
           };
           console.log('[moveCardsToCollection] Card object to update:', updatedCard);
           await cardDatabase.updateCard(updatedCard);
           console.log('[moveCardsToCollection] Card updated successfully');
-          
+
           // Verify the update
-          const verifyCard = await cardDatabase.getAllCards().then(cards => 
-            cards.find(c => c.id === cardId)
+          const verifyCard = await cardDatabase.getAllCards().then((cards) => cards.find((c) => c.id === cardId));
+          console.log(
+            '[moveCardsToCollection] Verification - card collectionId after update:',
+            verifyCard?.collectionId
           );
-          console.log('[moveCardsToCollection] Verification - card collectionId after update:', verifyCard?.collectionId);
         } else {
           console.log('[moveCardsToCollection] Card not found or user mismatch for cardId:', cardId);
         }
@@ -416,7 +416,7 @@ export const collectionsDatabase = {
       console.error('Error moving cards:', error);
       throw error;
     }
-  }
+  },
 };
 
 // Export the db instance for direct access if needed

@@ -10,89 +10,89 @@ export const cardSchema: RxJsonSchema<any> = {
   properties: {
     id: {
       type: 'string',
-      maxLength: 100
+      maxLength: 100,
     },
     player: {
       type: 'string',
-      maxLength: 200
+      maxLength: 200,
     },
     team: {
       type: 'string',
-      maxLength: 100
+      maxLength: 100,
     },
     year: {
       type: 'number',
       minimum: 1900,
-      maximum: 2100
+      maximum: 2100,
     },
     brand: {
       type: 'string',
-      maxLength: 100
+      maxLength: 100,
     },
     category: {
       type: 'string',
-      maxLength: 50
+      maxLength: 50,
     },
     cardNumber: {
       type: 'string',
-      maxLength: 50
+      maxLength: 50,
     },
     parallel: {
       type: ['string', 'null'],
-      maxLength: 100
+      maxLength: 100,
     },
     condition: {
       type: 'string',
-      maxLength: 50
+      maxLength: 50,
     },
     gradingCompany: {
       type: ['string', 'null'],
-      maxLength: 50
+      maxLength: 50,
     },
     purchasePrice: {
       type: 'number',
-      minimum: 0
+      minimum: 0,
     },
     purchaseDate: {
       type: 'string',
-      format: 'date-time'
+      format: 'date-time',
     },
     sellPrice: {
       type: ['number', 'null'],
-      minimum: 0
+      minimum: 0,
     },
     sellDate: {
       type: ['string', 'null'],
-      format: 'date-time'
+      format: 'date-time',
     },
     currentValue: {
       type: 'number',
-      minimum: 0
+      minimum: 0,
     },
     images: {
       type: 'array',
       items: {
-        type: 'string'
+        type: 'string',
       },
-      default: []
+      default: [],
     },
     notes: {
       type: 'string',
-      default: ''
+      default: '',
     },
     createdAt: {
       type: 'string',
-      format: 'date-time'
+      format: 'date-time',
     },
     updatedAt: {
       type: 'string',
-      format: 'date-time'
-    }
+      format: 'date-time',
+    },
   },
   required: [
     'id',
     'player',
-    'team', 
+    'team',
     'year',
     'brand',
     'category',
@@ -102,7 +102,7 @@ export const cardSchema: RxJsonSchema<any> = {
     'purchaseDate',
     'currentValue',
     'createdAt',
-    'updatedAt'
+    'updatedAt',
   ],
   indexes: [
     'player',
@@ -110,8 +110,8 @@ export const cardSchema: RxJsonSchema<any> = {
     'category',
     'createdAt',
     ['year', 'player'], // Compound index for common queries
-    'currentValue'
-  ]
+    'currentValue',
+  ],
 };
 
 export type CardDocType = {
@@ -138,6 +138,6 @@ export type CardDocType = {
 
 export const collections = {
   cards: {
-    schema: cardSchema
-  }
+    schema: cardSchema,
+  },
 };

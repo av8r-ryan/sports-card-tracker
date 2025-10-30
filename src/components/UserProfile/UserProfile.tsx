@@ -1,5 +1,6 @@
+import { motion } from 'framer-motion';
 import React, { useState, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { useAuth } from '../../context/AuthContext';
 import { useCards } from '../../context/DexieCardContext';
 import { userService } from '../../services/userService';
@@ -23,16 +24,14 @@ const UserProfile: React.FC = () => {
     confirmPassword: '',
   });
 
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(
-    authState.user?.profilePhoto || null
-  );
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(authState.user?.profilePhoto || null);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
 
   // Achievement system
   const achievements = useMemo(() => {
     const totalCards = cardState.cards.length;
     const totalValue = cardState.cards.reduce((sum, card) => sum + (card.currentValue || 0), 0);
-    const soldCards = cardState.cards.filter(card => card.sellDate).length;
+    const soldCards = cardState.cards.filter((card) => card.sellDate).length;
     const profit = cardState.cards.reduce((sum, card) => {
       if (card.sellDate && card.sellPrice) {
         return sum + (card.sellPrice - (card.purchasePrice || 0));
@@ -48,7 +47,7 @@ const UserProfile: React.FC = () => {
         icon: '🎯',
         unlocked: totalCards >= 1,
         progress: Math.min(totalCards, 1),
-        maxProgress: 1
+        maxProgress: 1,
       },
       {
         id: 'card-collector',
@@ -57,7 +56,7 @@ const UserProfile: React.FC = () => {
         icon: '📚',
         unlocked: totalCards >= 10,
         progress: Math.min(totalCards, 10),
-        maxProgress: 10
+        maxProgress: 10,
       },
       {
         id: 'serious-collector',
@@ -66,7 +65,7 @@ const UserProfile: React.FC = () => {
         icon: '🏆',
         unlocked: totalCards >= 50,
         progress: Math.min(totalCards, 50),
-        maxProgress: 50
+        maxProgress: 50,
       },
       {
         id: 'high-roller',
@@ -75,7 +74,7 @@ const UserProfile: React.FC = () => {
         icon: '💰',
         unlocked: totalValue >= 10000,
         progress: Math.min(totalValue, 10000),
-        maxProgress: 10000
+        maxProgress: 10000,
       },
       {
         id: 'trader',
@@ -84,7 +83,7 @@ const UserProfile: React.FC = () => {
         icon: '💼',
         unlocked: soldCards >= 1,
         progress: Math.min(soldCards, 1),
-        maxProgress: 1
+        maxProgress: 1,
       },
       {
         id: 'profitable-trader',
@@ -93,45 +92,45 @@ const UserProfile: React.FC = () => {
         icon: '📈',
         unlocked: profit >= 1000,
         progress: Math.min(profit, 1000),
-        maxProgress: 1000
-      }
+        maxProgress: 1000,
+      },
     ];
   }, [cardState.cards]);
 
   // Activity timeline
   const activityTimeline = useMemo(() => {
-    const activities: Array<{id: string; title: string; description: string; icon: string; timestamp: Date}> = [];
+    const activities: Array<{ id: string; title: string; description: string; icon: string; timestamp: Date }> = [];
     const now = new Date();
 
     // Recent card additions
     const recentCards = cardState.cards
-      .filter(card => card.createdAt)
+      .filter((card) => card.createdAt)
       .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
       .slice(0, 5);
 
-    recentCards.forEach(card => {
+    recentCards.forEach((card) => {
       activities.push({
         id: `card-${card.id}`,
         title: 'Card Added',
         description: `Added ${card.year} ${card.brand} ${card.player}`,
         timestamp: new Date(card.createdAt!),
-        icon: '➕'
+        icon: '➕',
       });
     });
 
     // Recent sales
     const recentSales = cardState.cards
-      .filter(card => card.sellDate)
+      .filter((card) => card.sellDate)
       .sort((a, b) => new Date(b.sellDate!).getTime() - new Date(a.sellDate!).getTime())
       .slice(0, 3);
 
-    recentSales.forEach(card => {
+    recentSales.forEach((card) => {
       activities.push({
         id: `sale-${card.id}`,
         title: 'Card Sold',
         description: `Sold ${card.year} ${card.brand} ${card.player} for $${card.sellPrice}`,
         timestamp: new Date(card.sellDate!),
-        icon: '💰'
+        icon: '💰',
       });
     });
 
@@ -141,11 +140,11 @@ const UserProfile: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    
+
     // Clear messages when user starts typing
     if (error) setError(null);
     if (success) setSuccess(null);
@@ -212,14 +211,11 @@ const UserProfile: React.FC = () => {
 
       // Verify current password if changing password
       if (formData.newPassword) {
-        const authenticated = userService.authenticateUser(
-          authState.user.email,
-          formData.currentPassword
-        );
+        const authenticated = userService.authenticateUser(authState.user.email, formData.currentPassword);
         if (!authenticated) {
           throw new Error('Current password is incorrect');
         }
-        
+
         // Update password
         userService.resetUserPassword(authState.user.id, formData.newPassword);
       }
@@ -227,7 +223,7 @@ const UserProfile: React.FC = () => {
       // Update user profile
       const updatedUser = userService.updateUser(authState.user.id, {
         email: formData.email,
-        profilePhoto: previewPhoto || profilePhoto
+        profilePhoto: previewPhoto || profilePhoto,
       });
 
       if (!updatedUser) {
@@ -238,10 +234,10 @@ const UserProfile: React.FC = () => {
       const newUserData = {
         ...authState.user,
         email: formData.email,
-        profilePhoto: previewPhoto || profilePhoto
+        profilePhoto: previewPhoto || profilePhoto,
       };
       updateUser(newUserData);
-      
+
       // Update profile photo state
       if (previewPhoto) {
         setProfilePhoto(previewPhoto);
@@ -249,7 +245,7 @@ const UserProfile: React.FC = () => {
       }
 
       // Clear password fields
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         currentPassword: '',
         newPassword: '',
@@ -281,7 +277,7 @@ const UserProfile: React.FC = () => {
     setPreviewPhoto(null);
     setError(null);
     setSuccess(null);
-    
+
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -326,7 +322,7 @@ const UserProfile: React.FC = () => {
                   <span>{authState.user?.username?.charAt(0).toUpperCase()}</span>
                 </div>
               )}
-              
+
               {isEditing && (
                 <div className="photo-controls">
                   <button type="button" onClick={triggerPhotoUpload} className="photo-btn upload">
@@ -340,7 +336,7 @@ const UserProfile: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             <input
               ref={fileInputRef}
               type="file"
@@ -353,7 +349,7 @@ const UserProfile: React.FC = () => {
           <form onSubmit={handleSubmit} className="profile-form">
             <div className="form-section">
               <h3>Account Information</h3>
-              
+
               <div className="form-group">
                 <label htmlFor="username">Username</label>
                 <input
@@ -396,7 +392,7 @@ const UserProfile: React.FC = () => {
               <div className="form-section">
                 <h3>Change Password</h3>
                 <p className="section-help">Leave blank to keep current password</p>
-                
+
                 <div className="form-group">
                   <label htmlFor="currentPassword">Current Password</label>
                   <input
@@ -439,25 +435,18 @@ const UserProfile: React.FC = () => {
                     placeholder="Confirm new password"
                     minLength={6}
                   />
-                  {formData.newPassword && formData.confirmPassword && 
-                   formData.newPassword !== formData.confirmPassword && (
-                    <div className="field-error">Passwords do not match</div>
-                  )}
+                  {formData.newPassword &&
+                    formData.confirmPassword &&
+                    formData.newPassword !== formData.confirmPassword && (
+                      <div className="field-error">Passwords do not match</div>
+                    )}
                 </div>
               </div>
             )}
 
-            {error && (
-              <div className="form-error">
-                {error}
-              </div>
-            )}
+            {error && <div className="form-error">{error}</div>}
 
-            {success && (
-              <div className="form-success">
-                {success}
-              </div>
-            )}
+            {success && <div className="form-success">{success}</div>}
 
             <div className="form-actions">
               {!isEditing ? (
@@ -472,7 +461,7 @@ const UserProfile: React.FC = () => {
                   <button type="submit" className="btn-primary" disabled={loading}>
                     {loading ? (
                       <div className="loading-inline">
-                        <div className="spinner-small"></div>
+                        <div className="spinner-small" />
                         Saving...
                       </div>
                     ) : (
@@ -524,18 +513,16 @@ const UserProfile: React.FC = () => {
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
                 >
-                  <div className="achievement-icon">
-                    {achievement.icon}
-                  </div>
+                  <div className="achievement-icon">{achievement.icon}</div>
                   <div className="achievement-content">
                     <h3>{achievement.title}</h3>
                     <p>{achievement.description}</p>
                     <div className="achievement-progress">
                       <div className="progress-bar">
-                        <div 
+                        <div
                           className="progress-fill"
-                          style={{ 
-                            width: `${(achievement.progress / achievement.maxProgress) * 100}%` 
+                          style={{
+                            width: `${(achievement.progress / achievement.maxProgress) * 100}%`,
                           }}
                         />
                       </div>
@@ -564,9 +551,7 @@ const UserProfile: React.FC = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                   >
-                    <div className="activity-icon">
-                      {activity.icon}
-                    </div>
+                    <div className="activity-icon">{activity.icon}</div>
                     <div className="activity-content">
                       <h4>{activity.title}</h4>
                       <p>{activity.description}</p>
@@ -589,7 +574,7 @@ const UserProfile: React.FC = () => {
         <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.6}>
           <div className="settings-section card-glass">
             <h2 className="section-title">Settings</h2>
-            
+
             <CollapsibleMenu title="Account Settings" icon="👤" defaultOpen={true}>
               <div className="settings-content">
                 <div className="setting-item">

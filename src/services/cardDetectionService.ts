@@ -2,63 +2,100 @@
 // In production, this would integrate with services like Google Vision API, AWS Textract, or custom ML models
 
 import { ExtractedCardData, DetectionConfidence, CardFeatures } from '../types/detection';
-import { textExtractionService } from './textExtractionService';
-import { playerDatabase } from './playerDatabase';
+
 import { manufacturerDatabase } from './manufacturerDatabase';
+import { playerDatabase } from './playerDatabase';
 import { realOCRService } from './realOCRService';
+import { textExtractionService } from './textExtractionService';
 
 // Common card patterns and keywords
 const CARD_PATTERNS = {
   rookieIndicators: [
-    'ROOKIE', 'RC', 'FIRST YEAR', 'DRAFT PICK', 'PROSPECT', 'DEBUT',
-    'RATED ROOKIE', 'FUTURE STARS', 'STAR ROOKIE', '1ST BOWMAN'
+    'ROOKIE',
+    'RC',
+    'FIRST YEAR',
+    'DRAFT PICK',
+    'PROSPECT',
+    'DEBUT',
+    'RATED ROOKIE',
+    'FUTURE STARS',
+    'STAR ROOKIE',
+    '1ST BOWMAN',
   ],
   autographIndicators: [
-    'AUTO', 'AUTOGRAPH', 'SIGNED', 'SIGNATURE', 'ON-CARD AUTO',
-    'AUTHENTIC', 'CERTIFIED AUTOGRAPH', 'DUAL AUTO'
+    'AUTO',
+    'AUTOGRAPH',
+    'SIGNED',
+    'SIGNATURE',
+    'ON-CARD AUTO',
+    'AUTHENTIC',
+    'CERTIFIED AUTOGRAPH',
+    'DUAL AUTO',
   ],
   relicIndicators: [
-    'RELIC', 'PATCH', 'JERSEY', 'MEMORABILIA', 'GAME-USED', 
-    'GAME-WORN', 'BAT', 'MATERIAL', 'SWATCH', 'PRIME'
+    'RELIC',
+    'PATCH',
+    'JERSEY',
+    'MEMORABILIA',
+    'GAME-USED',
+    'GAME-WORN',
+    'BAT',
+    'MATERIAL',
+    'SWATCH',
+    'PRIME',
   ],
   parallelIndicators: [
-    'REFRACTOR', 'PRIZM', 'CHROME', 'GOLD', 'SILVER', 'BLACK',
-    'RAINBOW', 'SAPPHIRE', 'ORANGE', 'RED', 'BLUE', 'GREEN',
-    'ATOMIC', 'SHIMMER', 'MOSAIC', 'OPTIC', 'SELECT'
+    'REFRACTOR',
+    'PRIZM',
+    'CHROME',
+    'GOLD',
+    'SILVER',
+    'BLACK',
+    'RAINBOW',
+    'SAPPHIRE',
+    'ORANGE',
+    'RED',
+    'BLUE',
+    'GREEN',
+    'ATOMIC',
+    'SHIMMER',
+    'MOSAIC',
+    'OPTIC',
+    'SELECT',
   ],
   numberedIndicators: [
     /\d+\/\d+/, // Matches patterns like 25/99
     /LIMITED TO \d+/,
     /NUMBERED TO \d+/,
-    /#\d+ OF \d+/
+    /#\d+ OF \d+/,
   ],
   gradeIndicators: {
-    'PSA': /PSA\s*(\d+(?:\.\d+)?)/,
-    'BGS': /BGS\s*(\d+(?:\.\d+)?)/,
-    'SGC': /SGC\s*(\d+(?:\.\d+)?)/,
-    'CGC': /CGC\s*(\d+(?:\.\d+)?)/
-  }
+    PSA: /PSA\s*(\d+(?:\.\d+)?)/,
+    BGS: /BGS\s*(\d+(?:\.\d+)?)/,
+    SGC: /SGC\s*(\d+(?:\.\d+)?)/,
+    CGC: /CGC\s*(\d+(?:\.\d+)?)/,
+  },
 };
 
 // Brand detection patterns
 const BRAND_PATTERNS = {
-  'Topps': ['TOPPS', 'TOPPS CHROME', 'TOPPS UPDATE', 'TOPPS SERIES', 'BOWMAN', 'BOWMAN CHROME'],
-  'Panini': ['PANINI', 'PRIZM', 'MOSAIC', 'SELECT', 'OPTIC', 'DONRUSS', 'NATIONAL TREASURES', 'IMMACULATE'],
+  Topps: ['TOPPS', 'TOPPS CHROME', 'TOPPS UPDATE', 'TOPPS SERIES', 'BOWMAN', 'BOWMAN CHROME'],
+  Panini: ['PANINI', 'PRIZM', 'MOSAIC', 'SELECT', 'OPTIC', 'DONRUSS', 'NATIONAL TREASURES', 'IMMACULATE'],
   'Upper Deck': ['UPPER DECK', 'UD', 'SP AUTHENTIC', 'THE CUP', 'ULTIMATE COLLECTION'],
-  'Leaf': ['LEAF', 'LEAF METAL', 'LEAF TRINITY'],
-  'Fleer': ['FLEER', 'FLEER ULTRA', 'SKYBOX'],
-  'Score': ['SCORE', 'SCORE SELECT'],
-  'Bowman': ['BOWMAN', 'BOWMAN CHROME', 'BOWMAN DRAFT', 'BOWMAN\'S BEST']
+  Leaf: ['LEAF', 'LEAF METAL', 'LEAF TRINITY'],
+  Fleer: ['FLEER', 'FLEER ULTRA', 'SKYBOX'],
+  Score: ['SCORE', 'SCORE SELECT'],
+  Bowman: ['BOWMAN', 'BOWMAN CHROME', 'BOWMAN DRAFT', "BOWMAN'S BEST"],
 };
 
 // Sport detection keywords
 const SPORT_PATTERNS = {
-  'Baseball': ['MLB', 'BASEBALL', 'PITCHER', 'BATTING', 'HOME RUN', 'STOLEN BASE', 'ERA'],
-  'Basketball': ['NBA', 'BASKETBALL', 'REBOUNDS', 'ASSISTS', 'POINTS', 'DUNK', 'THREE-POINTER'],
-  'Football': ['NFL', 'FOOTBALL', 'TOUCHDOWN', 'PASSING', 'RUSHING', 'QUARTERBACK', 'YARDS'],
-  'Hockey': ['NHL', 'HOCKEY', 'GOALS', 'ASSISTS', 'GOALIE', 'STANLEY CUP', 'HAT TRICK'],
-  'Soccer': ['SOCCER', 'FOOTBALL', 'GOALS', 'FIFA', 'WORLD CUP', 'PREMIER LEAGUE', 'LA LIGA'],
-  'Pokemon': ['POKEMON', 'POKÉMON', 'HP', 'ENERGY', 'TRAINER', 'EVOLUTION', 'ATTACK']
+  Baseball: ['MLB', 'BASEBALL', 'PITCHER', 'BATTING', 'HOME RUN', 'STOLEN BASE', 'ERA'],
+  Basketball: ['NBA', 'BASKETBALL', 'REBOUNDS', 'ASSISTS', 'POINTS', 'DUNK', 'THREE-POINTER'],
+  Football: ['NFL', 'FOOTBALL', 'TOUCHDOWN', 'PASSING', 'RUSHING', 'QUARTERBACK', 'YARDS'],
+  Hockey: ['NHL', 'HOCKEY', 'GOALS', 'ASSISTS', 'GOALIE', 'STANLEY CUP', 'HAT TRICK'],
+  Soccer: ['SOCCER', 'FOOTBALL', 'GOALS', 'FIFA', 'WORLD CUP', 'PREMIER LEAGUE', 'LA LIGA'],
+  Pokemon: ['POKEMON', 'POKÉMON', 'HP', 'ENERGY', 'TRAINER', 'EVOLUTION', 'ATTACK'],
 };
 
 // Common player name patterns for better extraction
@@ -68,7 +105,7 @@ const PLAYER_NAME_PATTERNS = [
   // First Middle Last
   /^([A-Z][a-z]+)\s+([A-Z]\.?)\s+([A-Z][a-z]+)$/,
   // Nickname patterns
-  /^([A-Z][a-z]+)\s+"([^"]+)"\s+([A-Z][a-z]+)$/
+  /^([A-Z][a-z]+)\s+"([^"]+)"\s+([A-Z][a-z]+)$/,
 ];
 
 export class CardDetectionService {
@@ -76,13 +113,9 @@ export class CardDetectionService {
    * Main detection function that processes card images
    * In production, this would send images to an AI/OCR service
    */
-  async detectCard(
-    frontImage: string, 
-    backImage?: string | null
-  ): Promise<ExtractedCardData> {
+  async detectCard(frontImage: string, backImage?: string | null): Promise<ExtractedCardData> {
     // Check if we should use real OCR (environment variable or feature flag)
-    const useRealOCR = process.env.REACT_APP_USE_REAL_OCR === 'true' || 
-                       localStorage.getItem('useRealOCR') === 'true';
+    const useRealOCR = process.env.REACT_APP_USE_REAL_OCR === 'true' || localStorage.getItem('useRealOCR') === 'true';
 
     if (useRealOCR) {
       try {
@@ -100,44 +133,39 @@ export class CardDetectionService {
 
     // Extract text from front image
     const frontExtraction = textExtractionService.extractText(frontImage, 'front');
-    
+
     // Extract text from back image if provided
-    const backExtraction = backImage ? 
-      textExtractionService.extractText(backImage, 'back') : null;
+    const backExtraction = backImage ? textExtractionService.extractText(backImage, 'back') : null;
 
     // Combine text regions with confidence weighting
     const combinedText = this.combineExtractedText(frontExtraction, backExtraction);
-    
+
     // Clean the text for better parsing
     const cleanedText = textExtractionService.cleanText(combinedText);
-    
+
     // Extract patterns from text
     const patterns = textExtractionService.extractPatterns(cleanedText);
-    
+
     // Extract structured data with region awareness
     const extractedData = this.extractDataFromRegions(
-      frontExtraction.regions, 
+      frontExtraction.regions,
       backExtraction?.regions,
       cleanedText,
       patterns
     );
-    
+
     // Detect special features
     const features = this.detectSpecialFeatures(cleanedText);
-    
+
     // Calculate confidence based on extraction quality
-    const confidence = this.calculateExtractionConfidence(
-      extractedData, 
-      features, 
-      frontExtraction.regions
-    );
+    const confidence = this.calculateExtractionConfidence(extractedData, features, frontExtraction.regions);
 
     return {
       ...extractedData,
       features,
       confidence,
       rawText: combinedText,
-      extractionErrors: this.validateExtraction(extractedData)
+      extractionErrors: this.validateExtraction(extractedData),
     };
   }
 
@@ -146,22 +174,19 @@ export class CardDetectionService {
    */
   private async simulateProcessing(): Promise<void> {
     const delay = Math.random() * 1500 + 1500; // 1.5-3 seconds
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   /**
    * Combines text from front and back extractions
    */
-  private combineExtractedText(
-    frontExtraction: any, 
-    backExtraction: any | null
-  ): string {
+  private combineExtractedText(frontExtraction: any, backExtraction: any | null): string {
     let combined = frontExtraction.fullText;
-    
+
     if (backExtraction) {
-      combined += '\n\n--- BACK OF CARD ---\n\n' + backExtraction.fullText;
+      combined += `\n\n--- BACK OF CARD ---\n\n${backExtraction.fullText}`;
     }
-    
+
     return combined;
   }
 
@@ -177,9 +202,9 @@ export class CardDetectionService {
     const data: Partial<ExtractedCardData> = {};
 
     // Process front regions by position and confidence
-    const topRegions = frontRegions.filter(r => r.position === 'top');
-    const middleRegions = frontRegions.filter(r => r.position === 'middle');
-    const bottomRegions = frontRegions.filter(r => r.position === 'bottom');
+    const topRegions = frontRegions.filter((r) => r.position === 'top');
+    const middleRegions = frontRegions.filter((r) => r.position === 'middle');
+    const bottomRegions = frontRegions.filter((r) => r.position === 'bottom');
 
     // Extract brand/set from top regions
     for (const region of topRegions) {
@@ -195,9 +220,9 @@ export class CardDetectionService {
 
     // Extract player from middle regions (usually largest text)
     const playerRegion = middleRegions
-      .filter(r => r.fontSize === 'large' && r.isBold)
+      .filter((r) => r.fontSize === 'large' && r.isBold)
       .sort((a, b) => b.confidence - a.confidence)[0];
-    
+
     if (playerRegion) {
       // Try to find player in database
       const playerInfo = playerDatabase.findPlayer(playerRegion.text);
@@ -215,10 +240,8 @@ export class CardDetectionService {
     }
 
     // Extract team from middle regions
-    const teamRegion = middleRegions.find(r => 
-      r.fontSize === 'medium' && !r.isBold && r.text !== data.player
-    );
-    
+    const teamRegion = middleRegions.find((r) => r.fontSize === 'medium' && !r.isBold && r.text !== data.player);
+
     if (teamRegion) {
       // Try to find team in database
       const teamInfo = playerDatabase.findTeam(teamRegion.text);
@@ -234,10 +257,8 @@ export class CardDetectionService {
     }
 
     // Extract card number from bottom regions or patterns
-    const cardNumberRegion = bottomRegions.find(r => 
-      r.text.match(/#?\w+-?\d+/) || r.text.match(/^\d+[A-Z]?$/)
-    );
-    
+    const cardNumberRegion = bottomRegions.find((r) => r.text.match(/#?\w+-?\d+/) || r.text.match(/^\d+[A-Z]?$/));
+
     if (cardNumberRegion) {
       data.cardNumber = this.extractCardNumber(cardNumberRegion.text);
     } else if (patterns.alphanumeric && patterns.alphanumeric.length > 0) {
@@ -264,12 +285,10 @@ export class CardDetectionService {
     }
 
     // Extract parallel/variation from high-confidence regions
-    const parallelRegion = frontRegions.find(r => 
-      CARD_PATTERNS.parallelIndicators.some(p => 
-        r.text.toUpperCase().includes(p)
-      )
+    const parallelRegion = frontRegions.find((r) =>
+      CARD_PATTERNS.parallelIndicators.some((p) => r.text.toUpperCase().includes(p))
     );
-    
+
     if (parallelRegion) {
       data.parallel = parallelRegion.text;
     }
@@ -283,7 +302,7 @@ export class CardDetectionService {
           data.category = sportFromBrand;
         }
       }
-      
+
       // If still no category, use pattern detection
       if (!data.category) {
         data.category = this.detectCategory(fullText, patterns);
@@ -293,10 +312,10 @@ export class CardDetectionService {
     // Validate manufacturer-sport-year combination
     if (data.brand && data.category && data.year) {
       const year = parseInt(data.year);
-      const manufacturer = data.brand.split(' ').find(part => 
-        manufacturerDatabase.validateManufacturer(part, data.category!, year)
-      );
-      
+      const manufacturer = data.brand
+        .split(' ')
+        .find((part) => manufacturerDatabase.validateManufacturer(part, data.category!, year));
+
       // If manufacturer doesn't match sport/year, try to correct it
       if (!manufacturer) {
         const validManufacturers = manufacturerDatabase.getValidManufacturers(data.category, year);
@@ -304,13 +323,13 @@ export class CardDetectionService {
           // Check if it's a rookie to prefer Bowman for baseball
           const playerInfo = playerDatabase.findPlayer(data.player);
           const isRookie = playerInfo && playerInfo.rookie === data.year;
-          
+
           const { manufacturer: correctMfr, set } = manufacturerDatabase.getRealisticManufacturer(
-            data.category, 
-            year, 
+            data.category,
+            year,
             isRookie || false
           );
-          
+
           // Update brand with correct manufacturer
           data.brand = `${data.year} ${set}`;
         }
@@ -333,7 +352,7 @@ export class CardDetectionService {
    */
   private matchBrand(text: string): { brand: string; setName?: string } | null {
     const upperText = text.toUpperCase();
-    
+
     for (const [brand, keywords] of Object.entries(BRAND_PATTERNS)) {
       for (const keyword of keywords) {
         if (upperText.includes(keyword)) {
@@ -341,7 +360,7 @@ export class CardDetectionService {
         }
       }
     }
-    
+
     return null;
   }
 
@@ -351,17 +370,18 @@ export class CardDetectionService {
   private normalizePlayerName(text: string): string {
     // Remove extra spaces
     text = text.trim().replace(/\s+/g, ' ');
-    
+
     // Handle all caps
     if (text === text.toUpperCase()) {
-      return text.split(' ')
-        .map(word => {
+      return text
+        .split(' ')
+        .map((word) => {
           if (word.length <= 2) return word; // Keep Jr., Sr., etc
           return word.charAt(0) + word.slice(1).toLowerCase();
         })
         .join(' ');
     }
-    
+
     return text;
   }
 
@@ -370,10 +390,11 @@ export class CardDetectionService {
    */
   private extractTeam(text: string): string {
     // Clean up team text
-    return text.trim()
+    return text
+      .trim()
       .replace(/^\W+|\W+$/g, '') // Remove leading/trailing non-word chars
       .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   }
 
@@ -390,7 +411,7 @@ export class CardDetectionService {
    */
   private detectCategory(text: string, patterns: Record<string, string[]>): string {
     const upperText = text.toUpperCase();
-    
+
     // Check for sport-specific keywords
     for (const [sport, keywords] of Object.entries(SPORT_PATTERNS)) {
       let matchCount = 0;
@@ -403,7 +424,7 @@ export class CardDetectionService {
         return sport;
       }
     }
-    
+
     // Check stats patterns
     if (patterns.stats && patterns.stats.length > 0) {
       const statText = patterns.stats.join(' ').toUpperCase();
@@ -417,7 +438,7 @@ export class CardDetectionService {
         return 'Football';
       }
     }
-    
+
     return 'Other';
   }
 
@@ -425,7 +446,7 @@ export class CardDetectionService {
    * Extracts grading information
    */
   private extractGradingInfo(
-    regions: any[], 
+    regions: any[],
     text: string
   ): { company: string; grade: string; certNumber?: string } | null {
     // Look for grading company in high-confidence regions
@@ -436,21 +457,21 @@ export class CardDetectionService {
           if (match) {
             const result: any = {
               company,
-              grade: match[1]
+              grade: match[1],
             };
-            
+
             // Look for cert number
             const certMatch = text.match(/Cert:?\s*(\d{7,})/i);
             if (certMatch) {
               result.certNumber = certMatch[1];
             }
-            
+
             return result;
           }
         }
       }
     }
-    
+
     return null;
   }
 
@@ -476,7 +497,7 @@ export class CardDetectionService {
       category: 5,
       setName: 5,
       parallel: 3,
-      serialNumber: 4
+      serialNumber: 4,
     };
 
     for (const [field, points] of Object.entries(fieldScores)) {
@@ -493,7 +514,7 @@ export class CardDetectionService {
     score += featureCount * 3;
 
     // Bonus for high-confidence regions
-    const highConfidenceRegions = regions.filter(r => r.confidence > 0.9).length;
+    const highConfidenceRegions = regions.filter((r) => r.confidence > 0.9).length;
     score += Math.min(highConfidenceRegions * 2, 10);
 
     // Calculate percentage
@@ -507,7 +528,7 @@ export class CardDetectionService {
 
     // Add warnings for low confidence
     const warnings: string[] = [];
-    if (regions.some(r => r.confidence < 0.7)) {
+    if (regions.some((r) => r.confidence < 0.7)) {
       warnings.push('Some text regions have low confidence');
     }
     if (missingFields.length > 2) {
@@ -519,7 +540,7 @@ export class CardDetectionService {
       level,
       detectedFields,
       missingFields: missingFields.length > 0 ? missingFields : undefined,
-      warnings: warnings.length > 0 ? warnings : undefined
+      warnings: warnings.length > 0 ? warnings : undefined,
     };
   }
 
@@ -639,7 +660,7 @@ export class CardDetectionService {
       GOLD REFRACTOR
       1ST BOWMAN CHROME
       Serial #'d 43/50
-      TOP PROSPECT`
+      TOP PROSPECT`,
     ];
 
     return templates[Math.floor(Math.random() * templates.length)];
@@ -649,8 +670,11 @@ export class CardDetectionService {
    * Extracts structured data from OCR text
    */
   private extractDataFromText(text: string): Partial<ExtractedCardData> {
-    const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
-    
+    const lines = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
     const data: Partial<ExtractedCardData> = {};
 
     // Extract year (4 digits at start of line or in format YYYY-YY)
@@ -661,12 +685,10 @@ export class CardDetectionService {
 
     // Extract brand
     for (const [brand, keywords] of Object.entries(BRAND_PATTERNS)) {
-      if (keywords.some(keyword => text.toUpperCase().includes(keyword))) {
+      if (keywords.some((keyword) => text.toUpperCase().includes(keyword))) {
         data.brand = brand;
         // Look for specific set name
-        const brandLine = lines.find(line => 
-          keywords.some(kw => line.toUpperCase().includes(kw))
-        );
+        const brandLine = lines.find((line) => keywords.some((kw) => line.toUpperCase().includes(kw)));
         if (brandLine) {
           data.setName = brandLine;
         }
@@ -694,7 +716,7 @@ export class CardDetectionService {
 
     // Extract sport/category
     for (const [sport, keywords] of Object.entries(SPORT_PATTERNS)) {
-      if (keywords.some(keyword => text.toUpperCase().includes(keyword))) {
+      if (keywords.some((keyword) => text.toUpperCase().includes(keyword))) {
         data.category = sport;
         break;
       }
@@ -719,7 +741,7 @@ export class CardDetectionService {
       if (gradeMatch) {
         data.gradingCompany = company;
         data.grade = gradeMatch[1];
-        
+
         // Extract cert number
         const certMatch = text.match(/Cert:?\s*(\d+)/i);
         if (certMatch) {
@@ -737,26 +759,14 @@ export class CardDetectionService {
    */
   private detectSpecialFeatures(text: string): CardFeatures {
     const upperText = text.toUpperCase();
-    
+
     return {
-      isRookie: CARD_PATTERNS.rookieIndicators.some(indicator => 
-        upperText.includes(indicator)
-      ),
-      isAutograph: CARD_PATTERNS.autographIndicators.some(indicator => 
-        upperText.includes(indicator)
-      ),
-      isRelic: CARD_PATTERNS.relicIndicators.some(indicator => 
-        upperText.includes(indicator)
-      ),
-      isNumbered: CARD_PATTERNS.numberedIndicators.some(pattern => 
-        pattern.test(text)
-      ),
-      isGraded: Object.values(CARD_PATTERNS.gradeIndicators).some(pattern =>
-        pattern.test(text)
-      ),
-      isParallel: CARD_PATTERNS.parallelIndicators.some(indicator =>
-        upperText.includes(indicator)
-      )
+      isRookie: CARD_PATTERNS.rookieIndicators.some((indicator) => upperText.includes(indicator)),
+      isAutograph: CARD_PATTERNS.autographIndicators.some((indicator) => upperText.includes(indicator)),
+      isRelic: CARD_PATTERNS.relicIndicators.some((indicator) => upperText.includes(indicator)),
+      isNumbered: CARD_PATTERNS.numberedIndicators.some((pattern) => pattern.test(text)),
+      isGraded: Object.values(CARD_PATTERNS.gradeIndicators).some((pattern) => pattern.test(text)),
+      isParallel: CARD_PATTERNS.parallelIndicators.some((indicator) => upperText.includes(indicator)),
     };
   }
 
@@ -770,23 +780,24 @@ export class CardDetectionService {
       if (line.length < 3 || line.length > 40) continue;
       if (/^\d+$/.test(line)) continue; // Skip pure numbers
       if (line.includes('#')) continue; // Skip card numbers
-      
+
       // Check if it matches common name patterns
       for (const pattern of PLAYER_NAME_PATTERNS) {
         if (pattern.test(line)) {
           return line;
         }
       }
-      
+
       // Check if it's in all caps (common for player names)
       if (line === line.toUpperCase() && line.split(' ').length >= 2) {
         // Convert to proper case
-        return line.split(' ')
-          .map(word => word.charAt(0) + word.slice(1).toLowerCase())
+        return line
+          .split(' ')
+          .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
           .join(' ');
       }
     }
-    
+
     return undefined;
   }
 
@@ -795,17 +806,62 @@ export class CardDetectionService {
    */
   private findTeamName(lines: string[]): string | undefined {
     const commonTeams = [
-      'Angels', 'Astros', 'Athletics', 'Blue Jays', 'Braves', 'Brewers',
-      'Cardinals', 'Cubs', 'Diamondbacks', 'Dodgers', 'Giants', 'Guardians',
-      'Mariners', 'Marlins', 'Mets', 'Nationals', 'Orioles', 'Padres',
-      'Phillies', 'Pirates', 'Rangers', 'Rays', 'Red Sox', 'Reds',
-      'Rockies', 'Royals', 'Tigers', 'Twins', 'White Sox', 'Yankees',
+      'Angels',
+      'Astros',
+      'Athletics',
+      'Blue Jays',
+      'Braves',
+      'Brewers',
+      'Cardinals',
+      'Cubs',
+      'Diamondbacks',
+      'Dodgers',
+      'Giants',
+      'Guardians',
+      'Mariners',
+      'Marlins',
+      'Mets',
+      'Nationals',
+      'Orioles',
+      'Padres',
+      'Phillies',
+      'Pirates',
+      'Rangers',
+      'Rays',
+      'Red Sox',
+      'Reds',
+      'Rockies',
+      'Royals',
+      'Tigers',
+      'Twins',
+      'White Sox',
+      'Yankees',
       // NBA
-      'Lakers', 'Warriors', 'Celtics', 'Heat', 'Bucks', 'Suns',
-      'Mavericks', 'Nuggets', 'Clippers', 'Nets', 'Knicks', 'Bulls',
+      'Lakers',
+      'Warriors',
+      'Celtics',
+      'Heat',
+      'Bucks',
+      'Suns',
+      'Mavericks',
+      'Nuggets',
+      'Clippers',
+      'Nets',
+      'Knicks',
+      'Bulls',
       // NFL
-      'Cowboys', 'Patriots', 'Packers', 'Chiefs', 'Bills', 'Rams',
-      'Chargers', 'Bengals', 'Ravens', 'Steelers', 'Browns', '49ers'
+      'Cowboys',
+      'Patriots',
+      'Packers',
+      'Chiefs',
+      'Bills',
+      'Rams',
+      'Chargers',
+      'Bengals',
+      'Ravens',
+      'Steelers',
+      'Browns',
+      '49ers',
     ];
 
     for (const line of lines) {
@@ -824,7 +880,7 @@ export class CardDetectionService {
    */
   private findParallel(text: string): string | undefined {
     const upperText = text.toUpperCase();
-    
+
     for (const parallel of CARD_PATTERNS.parallelIndicators) {
       if (upperText.includes(parallel)) {
         // Try to find the full parallel name
@@ -837,35 +893,59 @@ export class CardDetectionService {
         return parallel;
       }
     }
-    
+
     return undefined;
   }
 
   /**
    * Calculates confidence score based on extracted data completeness
    */
-  private calculateConfidence(
-    data: Partial<ExtractedCardData>, 
-    features: CardFeatures
-  ): DetectionConfidence {
+  private calculateConfidence(data: Partial<ExtractedCardData>, features: CardFeatures): DetectionConfidence {
     let score = 0;
     let fieldCount = 0;
 
     // Required fields (weighted higher)
-    if (data.player) { score += 20; fieldCount++; }
-    if (data.year) { score += 15; fieldCount++; }
-    if (data.brand) { score += 15; fieldCount++; }
-    
+    if (data.player) {
+      score += 20;
+      fieldCount++;
+    }
+    if (data.year) {
+      score += 15;
+      fieldCount++;
+    }
+    if (data.brand) {
+      score += 15;
+      fieldCount++;
+    }
+
     // Important fields
-    if (data.cardNumber) { score += 10; fieldCount++; }
-    if (data.team) { score += 8; fieldCount++; }
-    if (data.category) { score += 8; fieldCount++; }
-    
+    if (data.cardNumber) {
+      score += 10;
+      fieldCount++;
+    }
+    if (data.team) {
+      score += 8;
+      fieldCount++;
+    }
+    if (data.category) {
+      score += 8;
+      fieldCount++;
+    }
+
     // Additional fields
-    if (data.setName) { score += 5; fieldCount++; }
-    if (data.parallel) { score += 5; fieldCount++; }
-    if (data.serialNumber) { score += 4; fieldCount++; }
-    
+    if (data.setName) {
+      score += 5;
+      fieldCount++;
+    }
+    if (data.parallel) {
+      score += 5;
+      fieldCount++;
+    }
+    if (data.serialNumber) {
+      score += 4;
+      fieldCount++;
+    }
+
     // Special features boost confidence
     if (features.isRookie) score += 3;
     if (features.isAutograph) score += 3;
@@ -886,7 +966,7 @@ export class CardDetectionService {
     return {
       score: percentage,
       level,
-      detectedFields: fieldCount
+      detectedFields: fieldCount,
     };
   }
 }

@@ -1,12 +1,33 @@
 import React, { useState, useMemo } from 'react';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  AreaChart,
+  Area,
+  ComposedChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  ScatterChart,
+  Scatter,
+  ZAxis,
+} from 'recharts';
+
 import { useCards } from '../../context/DexieCardContext';
 import { Card } from '../../types';
-import {
-  LineChart, Line, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis,
-  PolarRadiusAxis, Radar, AreaChart, Area, ComposedChart,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis
-} from 'recharts';
 import './ComparisonReport.css';
 
 interface TimeFrameData {
@@ -61,23 +82,23 @@ const ComparisonReport: React.FC = () => {
     const totalInvestment = state.cards.reduce((sum, card) => sum + card.purchasePrice, 0);
     const currentValue = state.cards.reduce((sum, card) => sum + card.currentValue, 0);
     const totalReturn = ((currentValue - totalInvestment) / totalInvestment) * 100;
-    
+
     // Calculate time-weighted returns
-    const sortedCards = [...state.cards].sort((a, b) => 
-      new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime()
+    const sortedCards = [...state.cards].sort(
+      (a, b) => new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime()
     );
-    
+
     const oldestPurchase = sortedCards[0]?.purchaseDate || new Date();
     const daysHeld = Math.floor((new Date().getTime() - new Date(oldestPurchase).getTime()) / (1000 * 60 * 60 * 24));
     const annualizedReturn = daysHeld > 0 ? (Math.pow(1 + totalReturn / 100, 365 / daysHeld) - 1) * 100 : 0;
-    
+
     // Calculate volatility
     const monthlyReturns = calculateMonthlyReturns(state.cards);
     const volatility = calculateVolatility(monthlyReturns);
-    
+
     // Calculate max drawdown
     const maxDrawdown = calculateMaxDrawdown(state.cards);
-    
+
     return {
       totalInvestment,
       currentValue,
@@ -87,7 +108,7 @@ const ComparisonReport: React.FC = () => {
       maxDrawdown,
       sharpeRatio: volatility > 0 ? (annualizedReturn - 2) / volatility : 0,
       sortino: calculateSortinoRatio(monthlyReturns, annualizedReturn),
-      calmar: maxDrawdown !== 0 ? annualizedReturn / Math.abs(maxDrawdown) : 0
+      calmar: maxDrawdown !== 0 ? annualizedReturn / Math.abs(maxDrawdown) : 0,
     };
   }, [state.cards]);
 
@@ -106,12 +127,12 @@ const ComparisonReport: React.FC = () => {
       { month: 'Sep', sp500: 12.5, nasdaq: 17.5, gold: 5.5, bitcoin: 52.0, realestate: 8.3 },
       { month: 'Oct', sp500: 13.2, nasdaq: 18.8, gold: 5.1, bitcoin: 58.0, realestate: 8.5 },
       { month: 'Nov', sp500: 14.5, nasdaq: 21.2, gold: 4.8, bitcoin: 62.0, realestate: 8.8 },
-      { month: 'Dec', sp500: 15.8, nasdaq: 23.5, gold: 5.2, bitcoin: 68.0, realestate: 9.2 }
+      { month: 'Dec', sp500: 15.8, nasdaq: 23.5, gold: 5.2, bitcoin: 68.0, realestate: 9.2 },
     ];
 
     // Calculate portfolio performance for each month
     const portfolioMonthlyData = calculatePortfolioMonthlyPerformance(state.cards);
-    
+
     return baseData.map((data, index) => ({
       period: data.month,
       portfolio: portfolioMonthlyData[index] || 0,
@@ -119,39 +140,39 @@ const ComparisonReport: React.FC = () => {
       nasdaq: data.nasdaq,
       gold: data.gold,
       bitcoin: data.bitcoin,
-      realestate: data.realestate
+      realestate: data.realestate,
     }));
   }, [state.cards]);
 
   // Category comparison data
   const categoryComparisonData = useMemo((): CategoryComparison[] => {
     const categories = groupByCategory(state.cards);
-    
+
     return Object.entries(categories).map(([category, cards]) => {
       const totalInvested = cards.reduce((sum, card) => sum + card.purchasePrice, 0);
       const currentValue = cards.reduce((sum, card) => sum + card.currentValue, 0);
       const roi = totalInvested > 0 ? ((currentValue - totalInvested) / totalInvested) * 100 : 0;
-      
+
       // Simulated market averages by category
       const marketAverages: Record<string, number> = {
-        'Basketball': 18.5,
-        'Football': 15.2,
-        'Baseball': 12.8,
-        'Hockey': 10.5,
-        'Soccer': 22.0,
-        'Pokemon': 35.0,
-        'Other': 8.0
+        Basketball: 18.5,
+        Football: 15.2,
+        Baseball: 12.8,
+        Hockey: 10.5,
+        Soccer: 22.0,
+        Pokemon: 35.0,
+        Other: 8.0,
       };
-      
+
       const marketAverage = marketAverages[category] || 10;
       const topPerformer = marketAverage * 1.8; // Top performers typically 80% above average
-      
+
       return {
         category,
         myPortfolio: roi,
         marketAverage,
         topPerformer,
-        difference: roi - marketAverage
+        difference: roi - marketAverage,
       };
     });
   }, [state.cards]);
@@ -159,7 +180,7 @@ const ComparisonReport: React.FC = () => {
   // Peer comparison data
   const peerComparisonData = useMemo((): PeerComparison[] => {
     const metrics = portfolioMetrics;
-    
+
     // Simulated peer data - in production, this would come from aggregated user data
     return [
       {
@@ -167,36 +188,36 @@ const ComparisonReport: React.FC = () => {
         yourValue: metrics.totalReturn,
         peerAverage: 22.5,
         topQuartile: 45.0,
-        percentile: calculatePercentile(metrics.totalReturn, 22.5, 45.0)
+        percentile: calculatePercentile(metrics.totalReturn, 22.5, 45.0),
       },
       {
         metric: 'Annual Return',
         yourValue: metrics.annualizedReturn,
         peerAverage: 18.5,
         topQuartile: 35.0,
-        percentile: calculatePercentile(metrics.annualizedReturn, 18.5, 35.0)
+        percentile: calculatePercentile(metrics.annualizedReturn, 18.5, 35.0),
       },
       {
         metric: 'Win Rate',
         yourValue: calculateWinRate(state.cards),
         peerAverage: 65.0,
         topQuartile: 85.0,
-        percentile: calculatePercentile(calculateWinRate(state.cards), 65.0, 85.0)
+        percentile: calculatePercentile(calculateWinRate(state.cards), 65.0, 85.0),
       },
       {
         metric: 'Avg Card Value',
         yourValue: metrics.currentValue / state.cards.length,
         peerAverage: 150,
         topQuartile: 500,
-        percentile: calculatePercentile(metrics.currentValue / state.cards.length, 150, 500)
+        percentile: calculatePercentile(metrics.currentValue / state.cards.length, 150, 500),
       },
       {
         metric: 'Portfolio Size',
         yourValue: state.cards.length,
         peerAverage: 120,
         topQuartile: 300,
-        percentile: calculatePercentile(state.cards.length, 120, 300)
-      }
+        percentile: calculatePercentile(state.cards.length, 120, 300),
+      },
     ];
   }, [state.cards, portfolioMetrics]);
 
@@ -204,29 +225,29 @@ const ComparisonReport: React.FC = () => {
   const assetAllocationData = useMemo((): AssetAllocation[] => {
     const totalValue = portfolioMetrics.currentValue;
     const categories = groupByCategory(state.cards);
-    
+
     // Optimal allocation based on modern portfolio theory
     const optimalAllocations: Record<string, number> = {
-      'Basketball': 25,
-      'Football': 20,
-      'Baseball': 15,
-      'Hockey': 10,
-      'Soccer': 10,
-      'Pokemon': 15,
-      'Other': 5
+      Basketball: 25,
+      Football: 20,
+      Baseball: 15,
+      Hockey: 10,
+      Soccer: 10,
+      Pokemon: 15,
+      Other: 5,
     };
-    
+
     return Object.entries(categories).map(([category, cards]) => {
       const categoryValue = cards.reduce((sum, card) => sum + card.currentValue, 0);
       const percentage = (categoryValue / totalValue) * 100;
       const optimal = optimalAllocations[category] || 10;
-      
+
       return {
         asset: category,
         value: categoryValue,
         percentage,
         optimalPercentage: optimal,
-        difference: percentage - optimal
+        difference: percentage - optimal,
       };
     });
   }, [state.cards, portfolioMetrics]);
@@ -238,26 +259,26 @@ const ComparisonReport: React.FC = () => {
         name: 'Return',
         portfolio: portfolioMetrics.totalReturn,
         benchmark: 15.8, // S&P 500 average
-        alpha: portfolioMetrics.totalReturn - 15.8
+        alpha: portfolioMetrics.totalReturn - 15.8,
       },
       {
         name: 'Volatility',
         portfolio: portfolioMetrics.volatility,
         benchmark: 18.5,
-        alpha: portfolioMetrics.volatility - 18.5
+        alpha: portfolioMetrics.volatility - 18.5,
       },
       {
         name: 'Sharpe',
         portfolio: portfolioMetrics.sharpeRatio,
         benchmark: 0.85,
-        alpha: portfolioMetrics.sharpeRatio - 0.85
+        alpha: portfolioMetrics.sharpeRatio - 0.85,
       },
       {
         name: 'Max DD',
         portfolio: Math.abs(portfolioMetrics.maxDrawdown),
         benchmark: 15.0,
-        alpha: Math.abs(portfolioMetrics.maxDrawdown) - 15.0
-      }
+        alpha: Math.abs(portfolioMetrics.maxDrawdown) - 15.0,
+      },
     ];
   }, [portfolioMetrics]);
 
@@ -266,7 +287,7 @@ const ComparisonReport: React.FC = () => {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -284,11 +305,7 @@ const ComparisonReport: React.FC = () => {
           <p>Compare your portfolio performance against markets, peers, and optimal allocations</p>
         </div>
         <div className="header-controls">
-          <select 
-            value={timeRange} 
-            onChange={(e) => setTimeRange(e.target.value as any)}
-            className="time-selector"
-          >
+          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value as any)} className="time-selector">
             <option value="1M">1 Month</option>
             <option value="3M">3 Months</option>
             <option value="6M">6 Months</option>
@@ -300,28 +317,19 @@ const ComparisonReport: React.FC = () => {
       </div>
 
       <div className="comparison-tabs">
-        <button 
-          className={comparisonMode === 'market' ? 'active' : ''}
-          onClick={() => setComparisonMode('market')}
-        >
+        <button className={comparisonMode === 'market' ? 'active' : ''} onClick={() => setComparisonMode('market')}>
           📈 Market Comparison
         </button>
-        <button 
-          className={comparisonMode === 'peer' ? 'active' : ''}
-          onClick={() => setComparisonMode('peer')}
-        >
+        <button className={comparisonMode === 'peer' ? 'active' : ''} onClick={() => setComparisonMode('peer')}>
           👥 Peer Benchmarking
         </button>
-        <button 
+        <button
           className={comparisonMode === 'historical' ? 'active' : ''}
           onClick={() => setComparisonMode('historical')}
         >
           📅 Historical Analysis
         </button>
-        <button 
-          className={comparisonMode === 'category' ? 'active' : ''}
-          onClick={() => setComparisonMode('category')}
-        >
+        <button className={comparisonMode === 'category' ? 'active' : ''} onClick={() => setComparisonMode('category')}>
           🏷️ Category Analysis
         </button>
       </div>
@@ -355,31 +363,31 @@ const ComparisonReport: React.FC = () => {
           <div className="market-comparison-chart">
             <h3>Performance vs Major Asset Classes</h3>
             <div className="benchmark-selector">
-              <button 
+              <button
                 className={selectedBenchmark === 'all' ? 'active' : ''}
                 onClick={() => setSelectedBenchmark('all')}
               >
                 All Assets
               </button>
-              <button 
+              <button
                 className={selectedBenchmark === 'sp500' ? 'active' : ''}
                 onClick={() => setSelectedBenchmark('sp500')}
               >
                 S&P 500
               </button>
-              <button 
+              <button
                 className={selectedBenchmark === 'nasdaq' ? 'active' : ''}
                 onClick={() => setSelectedBenchmark('nasdaq')}
               >
                 NASDAQ
               </button>
-              <button 
+              <button
                 className={selectedBenchmark === 'gold' ? 'active' : ''}
                 onClick={() => setSelectedBenchmark('gold')}
               >
                 Gold
               </button>
-              <button 
+              <button
                 className={selectedBenchmark === 'bitcoin' ? 'active' : ''}
                 onClick={() => setSelectedBenchmark('bitcoin')}
               >
@@ -395,16 +403,21 @@ const ComparisonReport: React.FC = () => {
                 <Tooltip formatter={(value: any) => `${value.toFixed(2)}%`} />
                 <Legend />
                 <Line type="monotone" dataKey="portfolio" stroke="#8B5CF6" strokeWidth={3} name="Your Portfolio" />
-                {(selectedBenchmark === 'all' || selectedBenchmark === 'sp500') && 
-                  <Line type="monotone" dataKey="sp500" stroke="#3B82F6" strokeWidth={2} name="S&P 500" />}
-                {(selectedBenchmark === 'all' || selectedBenchmark === 'nasdaq') && 
-                  <Line type="monotone" dataKey="nasdaq" stroke="#10B981" strokeWidth={2} name="NASDAQ" />}
-                {(selectedBenchmark === 'all' || selectedBenchmark === 'gold') && 
-                  <Line type="monotone" dataKey="gold" stroke="#F59E0B" strokeWidth={2} name="Gold" />}
-                {(selectedBenchmark === 'all' || selectedBenchmark === 'bitcoin') && 
-                  <Line type="monotone" dataKey="bitcoin" stroke="#EF4444" strokeWidth={2} name="Bitcoin" />}
-                {selectedBenchmark === 'all' && 
-                  <Line type="monotone" dataKey="realestate" stroke="#6366F1" strokeWidth={2} name="Real Estate" />}
+                {(selectedBenchmark === 'all' || selectedBenchmark === 'sp500') && (
+                  <Line type="monotone" dataKey="sp500" stroke="#3B82F6" strokeWidth={2} name="S&P 500" />
+                )}
+                {(selectedBenchmark === 'all' || selectedBenchmark === 'nasdaq') && (
+                  <Line type="monotone" dataKey="nasdaq" stroke="#10B981" strokeWidth={2} name="NASDAQ" />
+                )}
+                {(selectedBenchmark === 'all' || selectedBenchmark === 'gold') && (
+                  <Line type="monotone" dataKey="gold" stroke="#F59E0B" strokeWidth={2} name="Gold" />
+                )}
+                {(selectedBenchmark === 'all' || selectedBenchmark === 'bitcoin') && (
+                  <Line type="monotone" dataKey="bitcoin" stroke="#EF4444" strokeWidth={2} name="Bitcoin" />
+                )}
+                {selectedBenchmark === 'all' && (
+                  <Line type="monotone" dataKey="realestate" stroke="#6366F1" strokeWidth={2} name="Real Estate" />
+                )}
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -446,16 +459,16 @@ const ComparisonReport: React.FC = () => {
         <>
           <div className="peer-comparison-section">
             <h3>How You Stack Up Against Other Collectors</h3>
-            
+
             <div className="percentile-overview">
               <div className="percentile-card">
                 <div className="percentile-visual">
                   <div className="percentile-bar">
-                    <div 
+                    <div
                       className="percentile-fill"
                       style={{ width: `${calculateOverallPercentile(peerComparisonData)}%` }}
                     />
-                    <div 
+                    <div
                       className="percentile-marker"
                       style={{ left: `${calculateOverallPercentile(peerComparisonData)}%` }}
                     />
@@ -480,7 +493,7 @@ const ComparisonReport: React.FC = () => {
                       <div className="metric-bar">
                         <span className="bar-label">You</span>
                         <div className="bar-container">
-                          <div 
+                          <div
                             className="bar-fill your-value"
                             style={{ width: `${(metric.yourValue / metric.topQuartile) * 100}%` }}
                           />
@@ -490,7 +503,7 @@ const ComparisonReport: React.FC = () => {
                       <div className="metric-bar">
                         <span className="bar-label">Peer Avg</span>
                         <div className="bar-container">
-                          <div 
+                          <div
                             className="bar-fill peer-average"
                             style={{ width: `${(metric.peerAverage / metric.topQuartile) * 100}%` }}
                           />
@@ -500,16 +513,15 @@ const ComparisonReport: React.FC = () => {
                       <div className="metric-bar">
                         <span className="bar-label">Top 25%</span>
                         <div className="bar-container">
-                          <div 
-                            className="bar-fill top-quartile"
-                            style={{ width: '100%' }}
-                          />
+                          <div className="bar-fill top-quartile" style={{ width: '100%' }} />
                         </div>
                         <span className="bar-value">{formatMetricValue(metric.metric, metric.topQuartile)}</span>
                       </div>
                     </div>
                     <div className="percentile-indicator">
-                      <span className={`percentile ${metric.percentile >= 75 ? 'excellent' : metric.percentile >= 50 ? 'good' : 'needs-improvement'}`}>
+                      <span
+                        className={`percentile ${metric.percentile >= 75 ? 'excellent' : metric.percentile >= 50 ? 'good' : 'needs-improvement'}`}
+                      >
                         {metric.percentile}th percentile
                       </span>
                     </div>
@@ -541,7 +553,7 @@ const ComparisonReport: React.FC = () => {
         <>
           <div className="historical-analysis">
             <h3>Portfolio Evolution & Historical Performance</h3>
-            
+
             <div className="cumulative-returns-chart">
               <h4>Cumulative Returns Over Time</h4>
               <ResponsiveContainer width="100%" height={400}>
@@ -550,7 +562,14 @@ const ComparisonReport: React.FC = () => {
                   <XAxis dataKey="date" />
                   <YAxis tickFormatter={(value) => formatCurrency(value)} />
                   <Tooltip formatter={(value: any) => formatCurrency(value)} />
-                  <Area type="monotone" dataKey="invested" stackId="1" stroke="#8B5CF6" fill="#8B5CF6" name="Total Invested" />
+                  <Area
+                    type="monotone"
+                    dataKey="invested"
+                    stackId="1"
+                    stroke="#8B5CF6"
+                    fill="#8B5CF6"
+                    name="Total Invested"
+                  />
                   <Area type="monotone" dataKey="gains" stackId="1" stroke="#10B981" fill="#10B981" name="Gains" />
                   <Legend />
                 </AreaChart>
@@ -567,7 +586,14 @@ const ComparisonReport: React.FC = () => {
                   <YAxis yAxisId="right" orientation="right" tickFormatter={(value) => formatCurrency(value)} />
                   <Tooltip />
                   <Bar yAxisId="right" dataKey="value" fill="#8B5CF6" opacity={0.3} name="Portfolio Value" />
-                  <Line yAxisId="left" type="monotone" dataKey="drawdown" stroke="#EF4444" strokeWidth={2} name="Drawdown %" />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="drawdown"
+                    stroke="#EF4444"
+                    strokeWidth={2}
+                    name="Drawdown %"
+                  />
                   <Legend />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -625,7 +651,7 @@ const ComparisonReport: React.FC = () => {
         <>
           <div className="category-analysis">
             <h3>Category Performance Comparison</h3>
-            
+
             <div className="category-comparison-chart">
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={categoryComparisonData}>
@@ -645,8 +671,8 @@ const ComparisonReport: React.FC = () => {
               <h4>Category Analysis & Opportunities</h4>
               <div className="category-cards">
                 {categoryComparisonData.map((category) => (
-                  <div 
-                    key={category.category} 
+                  <div
+                    key={category.category}
                     className={`category-card ${category.difference >= 0 ? 'outperforming' : 'underperforming'}`}
                   >
                     <h5>{category.category}</h5>
@@ -664,11 +690,15 @@ const ComparisonReport: React.FC = () => {
                     </div>
                     <div className="performance-indicator">
                       <div className="indicator-bar">
-                        <div 
+                        <div
                           className="indicator-fill"
-                          style={{ 
+                          style={{
                             width: `${Math.min(100, (category.myPortfolio / category.topPerformer) * 100)}%`,
-                            backgroundColor: getPerformanceColor(category.myPortfolio, category.marketAverage, category.topPerformer)
+                            backgroundColor: getPerformanceColor(
+                              category.myPortfolio,
+                              category.marketAverage,
+                              category.topPerformer
+                            ),
                           }}
                         />
                       </div>
@@ -678,9 +708,7 @@ const ComparisonReport: React.FC = () => {
                         <span>Excellent</span>
                       </div>
                     </div>
-                    <div className="category-recommendation">
-                      {getCategoryRecommendation(category)}
-                    </div>
+                    <div className="category-recommendation">{getCategoryRecommendation(category)}</div>
                   </div>
                 ))}
               </div>
@@ -716,13 +744,14 @@ const ComparisonReport: React.FC = () => {
                   <h5>Rebalancing Recommendations</h5>
                   <div className="rebalancing-list">
                     {assetAllocationData
-                      .filter(asset => Math.abs(asset.difference) > 5)
+                      .filter((asset) => Math.abs(asset.difference) > 5)
                       .sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference))
                       .map((asset) => (
                         <div key={asset.asset} className="rebalancing-item">
                           <span className="asset-name">{asset.asset}</span>
                           <span className={`action ${asset.difference > 0 ? 'reduce' : 'increase'}`}>
-                            {asset.difference > 0 ? '↓ Reduce' : '↑ Increase'} by {Math.abs(asset.difference).toFixed(1)}%
+                            {asset.difference > 0 ? '↓ Reduce' : '↑ Increase'} by{' '}
+                            {Math.abs(asset.difference).toFixed(1)}%
                           </span>
                           <span className="target">Target: {asset.optimalPercentage}%</span>
                         </div>
@@ -741,11 +770,7 @@ const ComparisonReport: React.FC = () => {
                   <YAxis dataKey="return" name="Return" unit="%" />
                   <ZAxis dataKey="value" range={[100, 1000]} name="Value" />
                   <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                  <Scatter 
-                    name="Categories" 
-                    data={getCategoryRiskReturnData(state.cards)} 
-                    fill="#8B5CF6"
-                  >
+                  <Scatter name="Categories" data={getCategoryRiskReturnData(state.cards)} fill="#8B5CF6">
                     {getCategoryRiskReturnData(state.cards).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
@@ -795,21 +820,24 @@ function calculatePortfolioMonthlyPerformance(cards: Card[]): number[] {
 }
 
 function groupByCategory(cards: Card[]): Record<string, Card[]> {
-  return cards.reduce((acc, card) => {
-    if (!acc[card.category]) acc[card.category] = [];
-    acc[card.category].push(card);
-    return acc;
-  }, {} as Record<string, Card[]>);
+  return cards.reduce(
+    (acc, card) => {
+      if (!acc[card.category]) acc[card.category] = [];
+      acc[card.category].push(card);
+      return acc;
+    },
+    {} as Record<string, Card[]>
+  );
 }
 
 function calculatePercentile(value: number, average: number, topQuartile: number): number {
-  if (value >= topQuartile) return 75 + (value - topQuartile) / topQuartile * 25;
-  if (value >= average) return 50 + (value - average) / (topQuartile - average) * 25;
+  if (value >= topQuartile) return 75 + ((value - topQuartile) / topQuartile) * 25;
+  if (value >= average) return 50 + ((value - average) / (topQuartile - average)) * 25;
   return Math.max(0, (value / average) * 50);
 }
 
 function calculateWinRate(cards: Card[]): number {
-  const profitable = cards.filter(c => c.currentValue > c.purchasePrice).length;
+  const profitable = cards.filter((c) => c.currentValue > c.purchasePrice).length;
   return (profitable / cards.length) * 100;
 }
 
@@ -826,29 +854,29 @@ function formatMetricValue(metric: string, value: number): string {
 
 function generatePeerInsights(peerData: PeerComparison[], metrics: any) {
   const insights = [];
-  
+
   const overallPercentile = calculateOverallPercentile(peerData);
   if (overallPercentile >= 75) {
     insights.push({
       type: 'success',
       icon: '🏆',
       title: 'Top Performer!',
-      description: 'You\'re in the top 25% of collectors. Your strategy is working well.',
-      action: 'Consider sharing your insights with the community'
+      description: "You're in the top 25% of collectors. Your strategy is working well.",
+      action: 'Consider sharing your insights with the community',
     });
   }
-  
-  const weakestMetric = peerData.reduce((min, m) => m.percentile < min.percentile ? m : min);
+
+  const weakestMetric = peerData.reduce((min, m) => (m.percentile < min.percentile ? m : min));
   if (weakestMetric.percentile < 50) {
     insights.push({
       type: 'warning',
       icon: '⚠️',
       title: `Improve ${weakestMetric.metric}`,
       description: `Your ${weakestMetric.metric} is below average. Focus on improvement here.`,
-      action: 'View top strategies for this metric'
+      action: 'View top strategies for this metric',
     });
   }
-  
+
   return insights;
 }
 
@@ -899,14 +927,12 @@ function getCategoryRecommendation(category: CategoryComparison): string {
 function getCategoryRiskReturnData(cards: Card[]) {
   const categories = groupByCategory(cards);
   return Object.entries(categories).map(([category, categoryCards]) => {
-    const returns = categoryCards.map(c => 
-      ((c.currentValue - c.purchasePrice) / c.purchasePrice) * 100
-    );
+    const returns = categoryCards.map((c) => ((c.currentValue - c.purchasePrice) / c.purchasePrice) * 100);
     return {
       category,
       risk: calculateVolatility(returns),
       return: returns.reduce((a, b) => a + b, 0) / returns.length,
-      value: categoryCards.reduce((sum, c) => sum + c.currentValue, 0)
+      value: categoryCards.reduce((sum, c) => sum + c.currentValue, 0),
     };
   });
 }

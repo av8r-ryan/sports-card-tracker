@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useCallback } from 'react';
+
 import { logInfo, logError } from '../../utils/logger';
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import CollapsibleMenu from '../UI/CollapsibleMenu';
@@ -46,25 +47,25 @@ const Contact: React.FC = () => {
     email: '',
     subject: '',
     message: '',
-    category: 'general'
+    category: 'general',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  
+
   // Live chat states
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [chatStatus, setChatStatus] = useState<'online' | 'offline' | 'away'>('online');
-  
+
   // Knowledge base states
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<KnowledgeBaseArticle[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<KnowledgeBaseArticle | null>(null);
   const [knowledgeBaseCategories, setKnowledgeBaseCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  
+
   // FAQ states
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
   const [faqSearchQuery, setFaqSearchQuery] = useState('');
@@ -75,51 +76,57 @@ const Contact: React.FC = () => {
     {
       id: '1',
       question: 'How quickly do you respond to support requests?',
-      answer: 'We typically respond within 2 hours during business hours (9 AM - 6 PM EST) and within 24 hours on weekends. For urgent issues, we have a priority support queue.',
+      answer:
+        'We typically respond within 2 hours during business hours (9 AM - 6 PM EST) and within 24 hours on weekends. For urgent issues, we have a priority support queue.',
       category: 'Support',
       helpful: 45,
-      notHelpful: 2
+      notHelpful: 2,
     },
     {
       id: '2',
       question: 'Is my data secure when I contact support?',
-      answer: 'Absolutely! All communications are encrypted using industry-standard SSL/TLS encryption. Your personal data is never shared with third parties and is stored securely in our encrypted databases.',
+      answer:
+        'Absolutely! All communications are encrypted using industry-standard SSL/TLS encryption. Your personal data is never shared with third parties and is stored securely in our encrypted databases.',
       category: 'Security',
       helpful: 38,
-      notHelpful: 1
+      notHelpful: 1,
     },
     {
       id: '3',
       question: 'Can I request new features?',
-      answer: 'Yes! We love hearing from our users. Use the "Feature Request" category when submitting your message, or vote on existing feature requests in our community forum.',
+      answer:
+        'Yes! We love hearing from our users. Use the "Feature Request" category when submitting your message, or vote on existing feature requests in our community forum.',
       category: 'Features',
       helpful: 52,
-      notHelpful: 3
+      notHelpful: 3,
     },
     {
       id: '4',
       question: 'Do you offer phone support?',
-      answer: 'Yes, we offer phone support for premium users and urgent technical issues. Call us at +1 (555) 123-4567 during business hours.',
+      answer:
+        'Yes, we offer phone support for premium users and urgent technical issues. Call us at +1 (555) 123-4567 during business hours.',
       category: 'Support',
       helpful: 29,
-      notHelpful: 4
+      notHelpful: 4,
     },
     {
       id: '5',
       question: 'How do I export my card collection data?',
-      answer: 'You can export your collection data in multiple formats (CSV, JSON, Excel) from the Collections page. Go to Collections > Export Options to download your data.',
+      answer:
+        'You can export your collection data in multiple formats (CSV, JSON, Excel) from the Collections page. Go to Collections > Export Options to download your data.',
       category: 'Data',
       helpful: 67,
-      notHelpful: 2
+      notHelpful: 2,
     },
     {
       id: '6',
       question: 'What payment methods do you accept?',
-      answer: 'We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers. All payments are processed securely through Stripe.',
+      answer:
+        'We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers. All payments are processed securely through Stripe.',
       category: 'Billing',
       helpful: 41,
-      notHelpful: 1
-    }
+      notHelpful: 1,
+    },
   ];
 
   const knowledgeBaseData: KnowledgeBaseArticle[] = [
@@ -130,16 +137,17 @@ const Contact: React.FC = () => {
       category: 'Getting Started',
       tags: ['beginner', 'setup', 'tutorial'],
       lastUpdated: new Date('2024-01-15'),
-      views: 1250
+      views: 1250,
     },
     {
       id: '2',
       title: 'Understanding Card Grading and Condition',
-      content: 'A comprehensive guide to card grading systems, condition assessment, and how to properly evaluate your cards...',
+      content:
+        'A comprehensive guide to card grading systems, condition assessment, and how to properly evaluate your cards...',
       category: 'Card Management',
       tags: ['grading', 'condition', 'evaluation'],
       lastUpdated: new Date('2024-01-10'),
-      views: 890
+      views: 890,
     },
     {
       id: '3',
@@ -148,23 +156,24 @@ const Contact: React.FC = () => {
       category: 'eBay Integration',
       tags: ['ebay', 'selling', 'optimization'],
       lastUpdated: new Date('2024-01-08'),
-      views: 756
+      views: 756,
     },
     {
       id: '4',
       title: 'Advanced Collection Organization',
-      content: 'Tips and tricks for organizing large collections, using smart groups, and maintaining your inventory...',
+      content:
+        'Tips and tricks for organizing large collections, using smart groups, and maintaining your inventory...',
       category: 'Organization',
       tags: ['organization', 'collections', 'inventory'],
       lastUpdated: new Date('2024-01-05'),
-      views: 634
-    }
+      views: 634,
+    },
   ];
 
   React.useEffect(() => {
     logInfo('Contact', 'Contact page loaded');
     setFilteredFAQs(faqData);
-    setKnowledgeBaseCategories(['all', ...Array.from(new Set(knowledgeBaseData.map(article => article.category)))]);
+    setKnowledgeBaseCategories(['all', ...Array.from(new Set(knowledgeBaseData.map((article) => article.category)))]);
   }, []);
 
   // Chat functions
@@ -174,13 +183,13 @@ const Contact: React.FC = () => {
       text: message,
       sender: 'user',
       timestamp: new Date(),
-      type: 'text'
+      type: 'text',
     };
-    
-    setChatMessages(prev => [...prev, userMessage]);
+
+    setChatMessages((prev) => [...prev, userMessage]);
     setChatInput('');
     setIsTyping(true);
-    
+
     // Simulate bot response
     setTimeout(() => {
       const botResponse: ChatMessage = {
@@ -188,10 +197,10 @@ const Contact: React.FC = () => {
         text: getBotResponse(message),
         sender: 'bot',
         timestamp: new Date(),
-        type: 'text'
+        type: 'text',
       };
-      
-      setChatMessages(prev => [...prev, botResponse]);
+
+      setChatMessages((prev) => [...prev, botResponse]);
       setIsTyping(false);
     }, 1500);
   }, []);
@@ -201,8 +210,8 @@ const Contact: React.FC = () => {
       "I understand you're looking for help. Let me connect you with our support team.",
       "That's a great question! I can help you find the right information.",
       "I'm here to help! Can you provide more details about your issue?",
-      "Let me search our knowledge base for relevant articles about that topic.",
-      "I'll make sure our support team gets back to you with a detailed response."
+      'Let me search our knowledge base for relevant articles about that topic.',
+      "I'll make sure our support team gets back to you with a detailed response.",
     ];
     return responses[Math.floor(Math.random() * responses.length)];
   };
@@ -213,13 +222,14 @@ const Contact: React.FC = () => {
       setSearchResults([]);
       return;
     }
-    
-    const results = knowledgeBaseData.filter(article =>
-      article.title.toLowerCase().includes(query.toLowerCase()) ||
-      article.content.toLowerCase().includes(query.toLowerCase()) ||
-      article.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+
+    const results = knowledgeBaseData.filter(
+      (article) =>
+        article.title.toLowerCase().includes(query.toLowerCase()) ||
+        article.content.toLowerCase().includes(query.toLowerCase()) ||
+        article.tags.some((tag) => tag.toLowerCase().includes(query.toLowerCase()))
     );
-    
+
     setSearchResults(results);
   }, []);
 
@@ -229,28 +239,29 @@ const Contact: React.FC = () => {
       setFilteredFAQs(faqData);
       return;
     }
-    
-    const results = faqData.filter(faq =>
-      faq.question.toLowerCase().includes(query.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(query.toLowerCase()) ||
-      faq.category.toLowerCase().includes(query.toLowerCase())
+
+    const results = faqData.filter(
+      (faq) =>
+        faq.question.toLowerCase().includes(query.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(query.toLowerCase()) ||
+        faq.category.toLowerCase().includes(query.toLowerCase())
     );
-    
+
     setFilteredFAQs(results);
   }, []);
 
   const toggleFAQ = useCallback((faqId: string) => {
-    setExpandedFAQ(prev => prev === faqId ? null : faqId);
+    setExpandedFAQ((prev) => (prev === faqId ? null : faqId));
   }, []);
 
   const rateFAQ = useCallback((faqId: string, helpful: boolean) => {
-    setFilteredFAQs(prev => 
-      prev.map(faq => 
-        faq.id === faqId 
-          ? { 
-              ...faq, 
+    setFilteredFAQs((prev) =>
+      prev.map((faq) =>
+        faq.id === faqId
+          ? {
+              ...faq,
               helpful: helpful ? faq.helpful + 1 : faq.helpful,
-              notHelpful: !helpful ? faq.notHelpful + 1 : faq.notHelpful
+              notHelpful: !helpful ? faq.notHelpful + 1 : faq.notHelpful,
             }
           : faq
       )
@@ -259,9 +270,9 @@ const Contact: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     logInfo('Contact', 'Form input changed', { field: name, value: value.substring(0, 50) });
   };
@@ -272,16 +283,16 @@ const Contact: React.FC = () => {
     setSubmitStatus('idle');
 
     try {
-      logInfo('Contact', 'Contact form submission started', { 
+      logInfo('Contact', 'Contact form submission started', {
         category: formData.category,
         hasName: !!formData.name,
         hasEmail: !!formData.email,
         hasSubject: !!formData.subject,
-        hasMessage: !!formData.message
+        hasMessage: !!formData.message,
       });
 
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // In a real app, this would send to your backend
       console.log('Contact form data:', formData);
@@ -292,7 +303,7 @@ const Contact: React.FC = () => {
         email: '',
         subject: '',
         message: '',
-        category: 'general'
+        category: 'general',
       });
 
       logInfo('Contact', 'Contact form submitted successfully');
@@ -310,52 +321,52 @@ const Contact: React.FC = () => {
       title: 'Email Support',
       description: 'Get help via email within 24 hours',
       contact: 'support@collectorsplaybook.com',
-      action: () => window.open('mailto:support@collectorsplaybook.com')
+      action: () => window.open('mailto:support@collectorsplaybook.com'),
     },
     {
       icon: '💬',
       title: 'Live Chat',
       description: 'Chat with our support team in real-time',
       contact: 'Available 9 AM - 6 PM EST',
-      action: () => logInfo('Contact', 'Live chat clicked')
+      action: () => logInfo('Contact', 'Live chat clicked'),
     },
     {
       icon: '📞',
       title: 'Phone Support',
       description: 'Speak directly with our team',
       contact: '+1 (555) 123-4567',
-      action: () => window.open('tel:+15551234567')
+      action: () => window.open('tel:+15551234567'),
     },
     {
       icon: '📚',
       title: 'Help Center',
       description: 'Browse our comprehensive guides',
       contact: 'Self-service resources',
-      action: () => logInfo('Contact', 'Help center clicked')
-    }
+      action: () => logInfo('Contact', 'Help center clicked'),
+    },
   ];
 
   const features = [
     {
       icon: '🚀',
       title: 'Fast Response',
-      description: 'We typically respond within 2 hours during business hours'
+      description: 'We typically respond within 2 hours during business hours',
     },
     {
       icon: '🔒',
       title: 'Secure & Private',
-      description: 'Your data is encrypted and never shared with third parties'
+      description: 'Your data is encrypted and never shared with third parties',
     },
     {
       icon: '🎯',
       title: 'Expert Support',
-      description: 'Our team includes sports card collecting experts'
+      description: 'Our team includes sports card collecting experts',
     },
     {
       icon: '📈',
       title: 'Continuous Improvement',
-      description: 'We use your feedback to make the app better'
-    }
+      description: 'We use your feedback to make the app better',
+    },
   ];
 
   return (
@@ -364,91 +375,91 @@ const Contact: React.FC = () => {
       <AnimatedWrapper animation="fadeInDown" duration={0.8}>
         <div className="contact-hero card-glass">
           <div className="hero-background">
-            <motion.div 
+            <motion.div
               className="floating-element floating-element-1"
-              animate={{ 
+              animate={{
                 y: [0, -20, 0],
-                rotate: [0, 5, -5, 0]
+                rotate: [0, 5, -5, 0],
               }}
-              transition={{ 
+              transition={{
                 duration: 4,
                 repeat: Infinity,
-                repeatType: "reverse"
+                repeatType: 'reverse',
               }}
             >
               🃏
             </motion.div>
-            <motion.div 
+            <motion.div
               className="floating-element floating-element-2"
-              animate={{ 
+              animate={{
                 y: [0, -15, 0],
-                rotate: [0, -3, 3, 0]
+                rotate: [0, -3, 3, 0],
               }}
-              transition={{ 
+              transition={{
                 duration: 3,
                 repeat: Infinity,
-                repeatType: "reverse",
-                delay: 0.5
+                repeatType: 'reverse',
+                delay: 0.5,
               }}
             >
               ⚾
             </motion.div>
-            <motion.div 
+            <motion.div
               className="floating-element floating-element-3"
-              animate={{ 
+              animate={{
                 y: [0, -25, 0],
-                rotate: [0, 4, -4, 0]
+                rotate: [0, 4, -4, 0],
               }}
-              transition={{ 
+              transition={{
                 duration: 5,
                 repeat: Infinity,
-                repeatType: "reverse",
-                delay: 1
+                repeatType: 'reverse',
+                delay: 1,
               }}
             >
               🏀
             </motion.div>
-            <motion.div 
+            <motion.div
               className="floating-element floating-element-4"
-              animate={{ 
+              animate={{
                 y: [0, -18, 0],
-                rotate: [0, -2, 2, 0]
+                rotate: [0, -2, 2, 0],
               }}
-              transition={{ 
+              transition={{
                 duration: 3.5,
                 repeat: Infinity,
-                repeatType: "reverse",
-                delay: 1.5
+                repeatType: 'reverse',
+                delay: 1.5,
               }}
             >
               📊
             </motion.div>
-            <motion.div 
+            <motion.div
               className="floating-element floating-element-5"
-              animate={{ 
+              animate={{
                 y: [0, -22, 0],
-                rotate: [0, 3, -3, 0]
+                rotate: [0, 3, -3, 0],
               }}
-              transition={{ 
+              transition={{
                 duration: 4.5,
                 repeat: Infinity,
-                repeatType: "reverse",
-                delay: 2
+                repeatType: 'reverse',
+                delay: 2,
               }}
             >
               💎
             </motion.div>
           </div>
-          
+
           <div className="hero-content">
             <h1 className="hero-title text-gradient">
               Get in <span className="gradient-text">Touch</span>
             </h1>
             <p className="hero-subtitle">
-              We're here to help you make the most of your sports card collection. 
-              Reach out anytime for support, feedback, or just to say hello!
+              We're here to help you make the most of your sports card collection. Reach out anytime for support,
+              feedback, or just to say hello!
             </p>
-            
+
             <div className="hero-actions">
               <motion.button
                 className="chat-toggle-btn"
@@ -460,7 +471,7 @@ const Contact: React.FC = () => {
               </motion.button>
               <motion.button
                 className="knowledge-base-btn"
-                onClick={() => window.location.href = '/docs'}
+                onClick={() => (window.location.href = '/docs')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -477,11 +488,7 @@ const Contact: React.FC = () => {
           <h2 className="section-title">How can we help you?</h2>
           <div className="methods-grid">
             {contactMethods.map((method, index) => (
-              <div 
-                key={index} 
-                className="method-card"
-                onClick={method.action}
-              >
+              <div key={index} className="method-card" onClick={method.action}>
                 <div className="method-icon">{method.icon}</div>
                 <h3 className="method-title">{method.title}</h3>
                 <p className="method-description">{method.description}</p>
@@ -499,9 +506,7 @@ const Contact: React.FC = () => {
           <div className="form-container">
             <div className="form-header">
               <h2 className="form-title">Send us a message</h2>
-              <p className="form-subtitle">
-                Fill out the form below and we'll get back to you as soon as possible.
-              </p>
+              <p className="form-subtitle">Fill out the form below and we'll get back to you as soon as possible.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="contact-form">
@@ -535,13 +540,7 @@ const Contact: React.FC = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="category">Category *</label>
-                  <select
-                    id="category"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    required
-                  >
+                  <select id="category" name="category" value={formData.category} onChange={handleInputChange} required>
                     <option value="general">General Inquiry</option>
                     <option value="support">Technical Support</option>
                     <option value="feature">Feature Request</option>
@@ -590,14 +589,10 @@ const Contact: React.FC = () => {
                 </div>
               )}
 
-              <button 
-                type="submit" 
-                className="submit-btn"
-                disabled={isSubmitting}
-              >
+              <button type="submit" className="submit-btn" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <div className="spinner"></div>
+                    <div className="spinner" />
                     Sending...
                   </>
                 ) : (
@@ -636,7 +631,7 @@ const Contact: React.FC = () => {
               <h2 className="section-title text-gradient">Knowledge Base</h2>
               <p className="section-subtitle">Find answers to common questions and learn how to use our features</p>
             </div>
-            
+
             <div className="knowledge-base-search">
               <div className="search-container">
                 <input
@@ -651,14 +646,14 @@ const Contact: React.FC = () => {
                 />
                 <button className="search-btn">🔍</button>
               </div>
-              
+
               <div className="category-filter">
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="category-select"
                 >
-                  {knowledgeBaseCategories.map(category => (
+                  {knowledgeBaseCategories.map((category) => (
                     <option key={category} value={category}>
                       {category === 'all' ? 'All Categories' : category}
                     </option>
@@ -666,7 +661,7 @@ const Contact: React.FC = () => {
                 </select>
               </div>
             </div>
-            
+
             <div className="knowledge-base-content">
               {searchResults.length > 0 ? (
                 <div className="search-results">
@@ -687,13 +682,13 @@ const Contact: React.FC = () => {
                       <p className="article-preview">{article.content}</p>
                       <div className="article-meta">
                         <span className="article-views">{article.views} views</span>
-                        <span className="article-date">
-                          Updated {article.lastUpdated.toLocaleDateString()}
-                        </span>
+                        <span className="article-date">Updated {article.lastUpdated.toLocaleDateString()}</span>
                       </div>
                       <div className="article-tags">
-                        {article.tags.map(tag => (
-                          <span key={tag} className="tag">{tag}</span>
+                        {article.tags.map((tag) => (
+                          <span key={tag} className="tag">
+                            {tag}
+                          </span>
                         ))}
                       </div>
                     </motion.div>
@@ -702,7 +697,7 @@ const Contact: React.FC = () => {
               ) : (
                 <div className="knowledge-base-grid">
                   {knowledgeBaseData
-                    .filter(article => selectedCategory === 'all' || article.category === selectedCategory)
+                    .filter((article) => selectedCategory === 'all' || article.category === selectedCategory)
                     .map((article, index) => (
                       <motion.div
                         key={article.id}
@@ -720,9 +715,7 @@ const Contact: React.FC = () => {
                         <p className="knowledge-preview">{article.content}</p>
                         <div className="knowledge-meta">
                           <span className="knowledge-views">{article.views} views</span>
-                          <span className="knowledge-date">
-                            {article.lastUpdated.toLocaleDateString()}
-                          </span>
+                          <span className="knowledge-date">{article.lastUpdated.toLocaleDateString()}</span>
                         </div>
                       </motion.div>
                     ))}
@@ -741,7 +734,7 @@ const Contact: React.FC = () => {
               <h2 className="section-title text-gradient">Frequently Asked Questions</h2>
               <p className="section-subtitle">Quick answers to the most common questions</p>
             </div>
-            
+
             <div className="faq-search">
               <input
                 type="text"
@@ -754,7 +747,7 @@ const Contact: React.FC = () => {
                 className="faq-search-input"
               />
             </div>
-            
+
             <div className="faq-list">
               <AnimatePresence>
                 {filteredFAQs.map((faq, index) => (
@@ -777,16 +770,10 @@ const Contact: React.FC = () => {
                         <div className="faq-rating">
                           <span className="faq-category">{faq.category}</span>
                           <div className="faq-actions">
-                            <button
-                              className="faq-helpful-btn"
-                              onClick={() => rateFAQ(faq.id, true)}
-                            >
+                            <button className="faq-helpful-btn" onClick={() => rateFAQ(faq.id, true)}>
                               👍 {faq.helpful}
                             </button>
-                            <button
-                              className="faq-not-helpful-btn"
-                              onClick={() => rateFAQ(faq.id, false)}
-                            >
+                            <button className="faq-not-helpful-btn" onClick={() => rateFAQ(faq.id, false)}>
                               👎 {faq.notHelpful}
                             </button>
                           </div>
@@ -813,17 +800,14 @@ const Contact: React.FC = () => {
           >
             <div className="chat-header">
               <div className="chat-status">
-                <div className={`status-indicator ${chatStatus}`}></div>
+                <div className={`status-indicator ${chatStatus}`} />
                 <span>Support Team</span>
               </div>
-              <button
-                className="chat-close-btn"
-                onClick={() => setIsChatOpen(false)}
-              >
+              <button className="chat-close-btn" onClick={() => setIsChatOpen(false)}>
                 ✕
               </button>
             </div>
-            
+
             <div className="chat-messages">
               <AnimatePresence>
                 {chatMessages.map((message) => (
@@ -837,14 +821,12 @@ const Contact: React.FC = () => {
                   >
                     <div className="message-content">
                       <p>{message.text}</p>
-                      <span className="message-time">
-                        {message.timestamp.toLocaleTimeString()}
-                      </span>
+                      <span className="message-time">{message.timestamp.toLocaleTimeString()}</span>
                     </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
-              
+
               {isTyping && (
                 <motion.div
                   className="typing-indicator"
@@ -853,15 +835,15 @@ const Contact: React.FC = () => {
                   exit={{ opacity: 0 }}
                 >
                   <div className="typing-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span />
+                    <span />
+                    <span />
                   </div>
                   <span>Support is typing...</span>
                 </motion.div>
               )}
             </div>
-            
+
             <div className="chat-input-container">
               <input
                 type="text"

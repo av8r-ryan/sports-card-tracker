@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState, useCallback, useMemo } from 'react';
-import { Card, PortfolioStats } from '../types';
+
 import { cardDatabase } from '../db/simpleDatabase';
+import { Card, PortfolioStats } from '../types';
 import { createAutoBackup } from '../utils/backupRestore';
 
 interface CardState {
@@ -27,7 +28,7 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [state, setState] = useState<CardState>({
     cards: [],
     loading: false, // Start with false to prevent initial flicker
-    error: null
+    error: null,
   });
 
   // Load cards on mount
@@ -37,7 +38,7 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const loadCards = async () => {
       try {
         console.log('Loading cards from Dexie...');
-        
+
         // Clean up old localStorage backups if they exist
         try {
           const oldBackup = localStorage.getItem('sports-cards-auto-backup');
@@ -50,7 +51,7 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } catch (e) {
           // Ignore errors during cleanup
         }
-        
+
         // First initialize collections for the current user
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -65,21 +66,21 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             console.error('Error initializing collections:', e);
           }
         }
-        
+
         const cards = await cardDatabase.getAllCards();
         console.log('[DexieCardContext] getAllCards returned:', cards.length, 'cards');
-        
+
         if (isMounted) {
           setState({
             cards,
             loading: false,
-            error: null
+            error: null,
           });
           console.log('[DexieCardContext] State updated with', cards.length, 'cards');
-          
+
           // Create auto-backup on startup if we have cards
           if (cards.length > 0) {
-            createAutoBackup().catch(error => {
+            createAutoBackup().catch((error) => {
               console.error('Auto-backup failed:', error);
               // Silently fail - auto-backup is not critical
             });
@@ -88,10 +89,10 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } catch (error) {
         console.error('Failed to load cards:', error);
         if (isMounted) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             loading: false,
-            error: 'Failed to load cards'
+            error: 'Failed to load cards',
           }));
         }
       }
@@ -117,22 +118,22 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           console.log('[DexieCardContext.addCard] Set collectionId to:', card.collectionId);
         }
       }
-      
+
       console.log('[DexieCardContext.addCard] Calling cardDatabase.addCard');
       await cardDatabase.addCard(card);
       console.log('[DexieCardContext.addCard] Card added to database successfully');
-      
+
       // Optimistically update state
-      setState(prev => ({ 
-        ...prev, 
-        cards: [...prev.cards, card] 
+      setState((prev) => ({
+        ...prev,
+        cards: [...prev.cards, card],
       }));
       console.log('[DexieCardContext.addCard] State updated');
     } catch (error) {
       console.error('[DexieCardContext.addCard] Error adding card:', error);
       // Reload cards on error to ensure consistency
       const cards = await cardDatabase.getAllCards();
-      setState(prev => ({ ...prev, cards }));
+      setState((prev) => ({ ...prev, cards }));
       throw error;
     }
   }, []);
@@ -142,23 +143,23 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('DexieCardContext.updateCard called with:', {
         id: card.id,
         player: card.player,
-        currentValue: card.currentValue
+        currentValue: card.currentValue,
       });
-      
+
       await cardDatabase.updateCard(card);
-      
+
       // Optimistically update state
-      setState(prev => ({ 
-        ...prev, 
-        cards: prev.cards.map(c => c.id === card.id ? card : c) 
+      setState((prev) => ({
+        ...prev,
+        cards: prev.cards.map((c) => (c.id === card.id ? card : c)),
       }));
-      
+
       console.log('Card updated successfully');
     } catch (error) {
       console.error('Error updating card:', error);
       // Reload cards on error to ensure consistency
       const cards = await cardDatabase.getAllCards();
-      setState(prev => ({ ...prev, cards }));
+      setState((prev) => ({ ...prev, cards }));
       throw error;
     }
   }, []);
@@ -167,29 +168,29 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       await cardDatabase.deleteCard(id);
       // Optimistically update state
-      setState(prev => ({ 
-        ...prev, 
-        cards: prev.cards.filter(c => c.id !== id) 
+      setState((prev) => ({
+        ...prev,
+        cards: prev.cards.filter((c) => c.id !== id),
       }));
     } catch (error) {
       console.error('Error deleting card:', error);
       // Reload cards on error to ensure consistency
       const cards = await cardDatabase.getAllCards();
-      setState(prev => ({ ...prev, cards }));
+      setState((prev) => ({ ...prev, cards }));
       throw error;
     }
   }, []);
 
   const setCards = useCallback((cards: Card[]) => {
-    setState(prev => ({ ...prev, cards }));
+    setState((prev) => ({ ...prev, cards }));
   }, []);
 
   const setLoading = useCallback((loading: boolean) => {
-    setState(prev => ({ ...prev, loading }));
+    setState((prev) => ({ ...prev, loading }));
   }, []);
 
   const setError = useCallback((error: string | null) => {
-    setState(prev => ({ ...prev, error }));
+    setState((prev) => ({ ...prev, error }));
   }, []);
 
   const getPortfolioStats = useCallback((): PortfolioStats => {
@@ -198,8 +199,8 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const totalCostBasis = cards.reduce((sum, card) => sum + card.purchasePrice, 0);
     const totalCurrentValue = cards.reduce((sum, card) => sum + card.currentValue, 0);
     const totalProfit = totalCurrentValue - totalCostBasis;
-    
-    const soldCards = cards.filter(card => card.sellDate && card.sellPrice);
+
+    const soldCards = cards.filter((card) => card.sellDate && card.sellPrice);
     const totalSold = soldCards.length;
     const totalSoldValue = soldCards.reduce((sum, card) => sum + (card.sellPrice || 0), 0);
 
@@ -210,7 +211,7 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       totalCostBasis,
       totalCurrentValue,
       totalProfit,
-      firstCardSample: cards.length > 0 ? cards[0] : null
+      firstCardSample: cards.length > 0 ? cards[0] : null,
     });
 
     return {
@@ -219,31 +220,34 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       totalCurrentValue,
       totalProfit,
       totalSold,
-      totalSoldValue
+      totalSoldValue,
     };
   }, [state.cards]);
 
   const clearAllCards = useCallback(async () => {
     try {
       await cardDatabase.clearAllCards();
-      setState(prev => ({ ...prev, cards: [] }));
+      setState((prev) => ({ ...prev, cards: [] }));
     } catch (error) {
       console.error('Error clearing all cards:', error);
       throw error;
     }
   }, []);
 
-  const value: CardContextType = useMemo(() => ({
-    state,
-    addCard,
-    updateCard,
-    deleteCard,
-    setCards,
-    setLoading,
-    setError,
-    getPortfolioStats,
-    clearAllCards
-  }), [state, addCard, updateCard, deleteCard, setCards, setLoading, setError, getPortfolioStats, clearAllCards]);
+  const value: CardContextType = useMemo(
+    () => ({
+      state,
+      addCard,
+      updateCard,
+      deleteCard,
+      setCards,
+      setLoading,
+      setError,
+      getPortfolioStats,
+      clearAllCards,
+    }),
+    [state, addCard, updateCard, deleteCard, setCards, setLoading, setError, getPortfolioStats, clearAllCards]
+  );
 
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>;
 };

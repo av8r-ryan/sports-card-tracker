@@ -1,8 +1,9 @@
+import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
 import { ReportingService } from '../services/reportingService';
 import { ReportFilter, ReportTemplate } from '../types/reports';
-import { format } from 'date-fns';
 
 type ExtendedJsPDF = jsPDF & {
   lastAutoTable: {
@@ -42,21 +43,21 @@ export const exportAdvancedReportToPDF = async (
     case 'financial-performance':
       yPosition = addPortfolioSection(doc, portfolioData, metrics, yPosition, margin);
       break;
-    
+
     case 'collection-analytics':
       yPosition = addAnalyticsSection(doc, analyticsData, yPosition, margin);
       break;
-    
+
     case 'market-analysis':
     case 'investment-insights':
       yPosition = addMarketSection(doc, marketData, yPosition, margin);
       break;
-    
+
     case 'tax-summary':
       const taxData = reportingService.generateTaxReport(new Date().getFullYear(), filters);
       yPosition = addTaxSection(doc, taxData, yPosition, margin);
       break;
-    
+
     case 'insurance-appraisal':
       const insuranceData = reportingService.generateInsuranceReport(filters);
       yPosition = addInsuranceSection(doc, insuranceData, yPosition, margin);
@@ -80,7 +81,7 @@ const addReportHeader = (doc: ExtendedJsPDF, template: ReportTemplate, pageWidth
   // Title
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  
+
   const titles: Record<ReportTemplate, string> = {
     'portfolio-summary': 'Portfolio Summary Report',
     'financial-performance': 'Financial Performance Analysis',
@@ -91,7 +92,7 @@ const addReportHeader = (doc: ExtendedJsPDF, template: ReportTemplate, pageWidth
     'investment-insights': 'Investment Insights Report',
     'detailed-inventory': 'Detailed Inventory Report',
     'comparison-analysis': 'Comparison Analysis Report',
-    'executive-dashboard': 'Executive Dashboard Report'
+    'executive-dashboard': 'Executive Dashboard Report',
   };
 
   doc.text(titles[template], margin, 30);
@@ -100,7 +101,7 @@ const addReportHeader = (doc: ExtendedJsPDF, template: ReportTemplate, pageWidth
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
   doc.text(`Generated on ${format(new Date(), 'MMMM d, yyyy')}`, margin, 40);
-  
+
   // Header line
   doc.setLineWidth(1);
   doc.line(margin, 45, pageWidth - margin, 45);
@@ -125,7 +126,7 @@ const addExecutiveSummary = (
     ['Total Return', formatCurrency(metrics.totalProfit)],
     ['ROI', `${metrics.roi.toFixed(1)}%`],
     ['Cards Sold', metrics.cardsSold.toString()],
-    ['Sales Revenue', formatCurrency(metrics.salesRevenue)]
+    ['Sales Revenue', formatCurrency(metrics.salesRevenue)],
   ];
 
   autoTable(doc, {
@@ -138,8 +139,8 @@ const addExecutiveSummary = (
     margin: { left: margin, right: margin },
     columnStyles: {
       0: { cellWidth: 80 },
-      1: { cellWidth: 80, halign: 'right' }
-    }
+      1: { cellWidth: 80, halign: 'right' },
+    },
   });
 
   return doc.lastAutoTable.finalY + 20;
@@ -169,7 +170,7 @@ const addPortfolioSection = (
     ['Unrealized Gains', formatCurrency(portfolioData.unrealizedGains)],
     ['Realized Gains', formatCurrency(portfolioData.realizedGains)],
     ['Average Card Value', formatCurrency(metrics.averageValue)],
-    ['Average Cost Basis', formatCurrency(metrics.averageCost)]
+    ['Average Cost Basis', formatCurrency(metrics.averageCost)],
   ];
 
   autoTable(doc, {
@@ -179,7 +180,7 @@ const addPortfolioSection = (
     theme: 'striped',
     styles: { fontSize: 9 },
     headStyles: { fillColor: [52, 152, 219] },
-    margin: { left: margin, right: margin }
+    margin: { left: margin, right: margin },
   });
 
   yPosition = doc.lastAutoTable.finalY + 20;
@@ -197,15 +198,15 @@ const addPortfolioSection = (
 
   const topPerformersData = portfolioData.bestPerformers.slice(0, 10).map((card: any) => {
     const gain = (card.currentValue || 0) - (card.purchasePrice || 0);
-    const percentage = card.purchasePrice > 0 ? ((gain / card.purchasePrice) * 100) : 0;
-    
+    const percentage = card.purchasePrice > 0 ? (gain / card.purchasePrice) * 100 : 0;
+
     return [
       card.player,
       `${card.year} ${card.brand}`,
       formatCurrency(card.purchasePrice || 0),
       formatCurrency(card.currentValue || 0),
       formatCurrency(gain),
-      `${percentage.toFixed(1)}%`
+      `${percentage.toFixed(1)}%`,
     ];
   });
 
@@ -221,19 +222,14 @@ const addPortfolioSection = (
       2: { halign: 'right' },
       3: { halign: 'right' },
       4: { halign: 'right' },
-      5: { halign: 'right' }
-    }
+      5: { halign: 'right' },
+    },
   });
 
   return doc.lastAutoTable.finalY + 20;
 };
 
-const addAnalyticsSection = (
-  doc: ExtendedJsPDF,
-  analyticsData: any,
-  yPosition: number,
-  margin: number
-): number => {
+const addAnalyticsSection = (doc: ExtendedJsPDF, analyticsData: any, yPosition: number, margin: number): number => {
   if (yPosition > 200) {
     doc.addPage();
     yPosition = 25;
@@ -250,7 +246,7 @@ const addAnalyticsSection = (
     cat.count.toString(),
     `${cat.percentage.toFixed(1)}%`,
     formatCurrency(cat.totalValue),
-    formatCurrency(cat.averageValue)
+    formatCurrency(cat.averageValue),
   ]);
 
   autoTable(doc, {
@@ -260,18 +256,13 @@ const addAnalyticsSection = (
     theme: 'striped',
     styles: { fontSize: 9 },
     headStyles: { fillColor: [255, 193, 7] },
-    margin: { left: margin, right: margin }
+    margin: { left: margin, right: margin },
   });
 
   return doc.lastAutoTable.finalY + 20;
 };
 
-const addMarketSection = (
-  doc: ExtendedJsPDF,
-  marketData: any,
-  yPosition: number,
-  margin: number
-): number => {
+const addMarketSection = (doc: ExtendedJsPDF, marketData: any, yPosition: number, margin: number): number => {
   if (yPosition > 200) {
     doc.addPage();
     yPosition = 25;
@@ -286,7 +277,7 @@ const addMarketSection = (
   const comparisonData = [
     ['Portfolio Return', `${marketData.marketComparison.portfolioReturn.toFixed(1)}%`],
     ['Market Benchmark', `${marketData.marketComparison.marketIndex.toFixed(1)}%`],
-    ['Outperformance', `${marketData.marketComparison.outperformance.toFixed(1)}%`]
+    ['Outperformance', `${marketData.marketComparison.outperformance.toFixed(1)}%`],
   ];
 
   autoTable(doc, {
@@ -296,18 +287,13 @@ const addMarketSection = (
     theme: 'grid',
     styles: { fontSize: 10 },
     headStyles: { fillColor: [220, 53, 69] },
-    margin: { left: margin, right: margin }
+    margin: { left: margin, right: margin },
   });
 
   return doc.lastAutoTable.finalY + 20;
 };
 
-const addTaxSection = (
-  doc: ExtendedJsPDF,
-  taxData: any,
-  yPosition: number,
-  margin: number
-): number => {
+const addTaxSection = (doc: ExtendedJsPDF, taxData: any, yPosition: number, margin: number): number => {
   if (yPosition > 200) {
     doc.addPage();
     yPosition = 25;
@@ -321,7 +307,7 @@ const addTaxSection = (
   const taxSummaryData = [
     ['Short-Term Capital Gains', formatCurrency(taxData.totalShortTerm)],
     ['Long-Term Capital Gains', formatCurrency(taxData.totalLongTerm)],
-    ['Net Capital Gain/Loss', formatCurrency(taxData.netGainLoss)]
+    ['Net Capital Gain/Loss', formatCurrency(taxData.netGainLoss)],
   ];
 
   autoTable(doc, {
@@ -331,18 +317,13 @@ const addTaxSection = (
     theme: 'grid',
     styles: { fontSize: 10 },
     headStyles: { fillColor: [108, 117, 125] },
-    margin: { left: margin, right: margin }
+    margin: { left: margin, right: margin },
   });
 
   return doc.lastAutoTable.finalY + 20;
 };
 
-const addInsuranceSection = (
-  doc: ExtendedJsPDF,
-  insuranceData: any,
-  yPosition: number,
-  margin: number
-): number => {
+const addInsuranceSection = (doc: ExtendedJsPDF, insuranceData: any, yPosition: number, margin: number): number => {
   if (yPosition > 200) {
     doc.addPage();
     yPosition = 25;
@@ -357,7 +338,7 @@ const addInsuranceSection = (
     ['Total Replacement Value', formatCurrency(insuranceData.totalReplacementValue)],
     ['Recommended Coverage', formatCurrency(insuranceData.recommendedCoverage)],
     ['High-Value Items', insuranceData.highValueCards.length.toString()],
-    ['Last Updated', format(insuranceData.lastUpdated, 'MM/dd/yyyy')]
+    ['Last Updated', format(insuranceData.lastUpdated, 'MM/dd/yyyy')],
   ];
 
   autoTable(doc, {
@@ -367,18 +348,13 @@ const addInsuranceSection = (
     theme: 'grid',
     styles: { fontSize: 10 },
     headStyles: { fillColor: [111, 66, 193] },
-    margin: { left: margin, right: margin }
+    margin: { left: margin, right: margin },
   });
 
   return doc.lastAutoTable.finalY + 20;
 };
 
-const addCardListings = (
-  doc: ExtendedJsPDF,
-  cards: any[],
-  yPosition: number,
-  margin: number
-): number => {
+const addCardListings = (doc: ExtendedJsPDF, cards: any[], yPosition: number, margin: number): number => {
   if (cards.length === 0) return yPosition;
 
   if (yPosition > 200) {
@@ -391,15 +367,17 @@ const addCardListings = (
   doc.text('Detailed Card Listings', margin, yPosition);
   yPosition += 10;
 
-  const cardData = cards.slice(0, 50).map(card => [
-    card.player,
-    card.team,
-    card.year.toString(),
-    card.brand,
-    card.condition,
-    formatCurrency(card.purchasePrice || 0),
-    formatCurrency(card.currentValue || 0)
-  ]);
+  const cardData = cards
+    .slice(0, 50)
+    .map((card) => [
+      card.player,
+      card.team,
+      card.year.toString(),
+      card.brand,
+      card.condition,
+      formatCurrency(card.purchasePrice || 0),
+      formatCurrency(card.currentValue || 0),
+    ]);
 
   autoTable(doc, {
     startY: yPosition,
@@ -411,8 +389,8 @@ const addCardListings = (
     margin: { left: margin, right: margin },
     columnStyles: {
       5: { halign: 'right' },
-      6: { halign: 'right' }
-    }
+      6: { halign: 'right' },
+    },
   });
 
   return doc.lastAutoTable.finalY + 20;
@@ -424,11 +402,7 @@ const addPageNumbers = (doc: ExtendedJsPDF, pageWidth: number, margin: number) =
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text(
-      `Page ${i} of ${totalPages}`,
-      pageWidth - margin - 30,
-      doc.internal.pageSize.height - 10
-    );
+    doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin - 30, doc.internal.pageSize.height - 10);
   }
 };
 
@@ -437,6 +411,6 @@ const formatCurrency = (value: number): string => {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value);
 };

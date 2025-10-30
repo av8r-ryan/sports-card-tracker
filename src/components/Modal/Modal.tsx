@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback } from 'react';
+
 import { logDebug, logInfo } from '../../utils/logger';
 import './Modal.css';
 
@@ -37,7 +38,7 @@ const Modal: React.FC<ModalProps> = ({
   hasPrevious = false,
   hasNext = false,
   currentIndex = 0,
-  totalItems = 0
+  totalItems = 0,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -47,19 +48,19 @@ const Modal: React.FC<ModalProps> = ({
       logInfo('Modal', 'Modal opened', { title, size, showNavigation });
       // Store the currently focused element
       previousFocusRef.current = document.activeElement as HTMLElement;
-      
+
       // Focus the modal
       if (modalRef.current) {
         modalRef.current.focus();
       }
-      
+
       // Prevent body scroll
       document.body.style.overflow = 'hidden';
     } else {
       logInfo('Modal', 'Modal closed');
       // Restore body scroll
       document.body.style.overflow = 'unset';
-      
+
       // Restore focus to the previously focused element
       if (previousFocusRef.current) {
         previousFocusRef.current.focus();
@@ -74,35 +75,41 @@ const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen, title, size, showNavigation]);
 
-  const handleOverlayClick = useCallback((e: React.MouseEvent) => {
-    if (closeOnOverlayClick && e.target === e.currentTarget) {
-      logDebug('Modal', 'Overlay clicked - closing modal');
-      onClose();
-    }
-  }, [closeOnOverlayClick, onClose]);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!isOpen) return;
-
-    logDebug('Modal', 'Key pressed in modal', { key: e.key });
-
-    if (closeOnEscape && e.key === 'Escape') {
-      logInfo('Modal', 'Escape key pressed - closing modal');
-      onClose();
-    }
-
-    if (showNavigation) {
-      if (e.key === 'ArrowLeft' && hasPrevious && onPrevious) {
-        logInfo('Modal', 'Left arrow pressed - going to previous');
-        e.preventDefault();
-        onPrevious();
-      } else if (e.key === 'ArrowRight' && hasNext && onNext) {
-        logInfo('Modal', 'Right arrow pressed - going to next');
-        e.preventDefault();
-        onNext();
+  const handleOverlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (closeOnOverlayClick && e.target === e.currentTarget) {
+        logDebug('Modal', 'Overlay clicked - closing modal');
+        onClose();
       }
-    }
-  }, [isOpen, closeOnEscape, onClose, showNavigation, hasPrevious, hasNext, onPrevious, onNext]);
+    },
+    [closeOnOverlayClick, onClose]
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!isOpen) return;
+
+      logDebug('Modal', 'Key pressed in modal', { key: e.key });
+
+      if (closeOnEscape && e.key === 'Escape') {
+        logInfo('Modal', 'Escape key pressed - closing modal');
+        onClose();
+      }
+
+      if (showNavigation) {
+        if (e.key === 'ArrowLeft' && hasPrevious && onPrevious) {
+          logInfo('Modal', 'Left arrow pressed - going to previous');
+          e.preventDefault();
+          onPrevious();
+        } else if (e.key === 'ArrowRight' && hasNext && onNext) {
+          logInfo('Modal', 'Right arrow pressed - going to next');
+          e.preventDefault();
+          onNext();
+        }
+      }
+    },
+    [isOpen, closeOnEscape, onClose, showNavigation, hasPrevious, hasNext, onPrevious, onNext]
+  );
 
   const handlePrevious = useCallback(() => {
     if (hasPrevious && onPrevious) {
@@ -123,12 +130,8 @@ const Modal: React.FC<ModalProps> = ({
   }
 
   return (
-    <div 
-      className={`modal-overlay ${className}`}
-      onClick={handleOverlayClick}
-      onKeyDown={handleKeyDown}
-    >
-      <div 
+    <div className={`modal-overlay ${className}`} onClick={handleOverlayClick} onKeyDown={handleKeyDown}>
+      <div
         className={`modal ${size}`}
         ref={modalRef}
         tabIndex={-1}
@@ -161,28 +164,22 @@ const Modal: React.FC<ModalProps> = ({
               </button>
             </div>
           )}
-          
+
           {title && (
             <h2 id="modal-title" className="modal-title">
               {title}
             </h2>
           )}
-          
+
           {showCloseButton && (
-            <button
-              className="modal-close"
-              onClick={onClose}
-              aria-label="Close modal"
-            >
+            <button className="modal-close" onClick={onClose} aria-label="Close modal">
               <span className="close-icon">×</span>
             </button>
           )}
         </div>
 
         {/* Modal Content */}
-        <div className="modal-content">
-          {children}
-        </div>
+        <div className="modal-content">{children}</div>
       </div>
     </div>
   );

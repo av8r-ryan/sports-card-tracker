@@ -1,10 +1,13 @@
 import React, { useState, useCallback } from 'react';
+
 import { useBundleAnalysis, formatBytes } from '../../utils/bundleAnalyzer';
 import './BundleAnalysis.css';
 
 const BundleAnalysis: React.FC = () => {
   const { analysis, isAnalyzing, error, runAnalysis } = useBundleAnalysis();
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'chunks' | 'dependencies' | 'recommendations'>('overview');
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'chunks' | 'dependencies' | 'recommendations'>(
+    'overview'
+  );
 
   const handleTabChange = useCallback((tab: typeof selectedTab) => {
     setSelectedTab(tab);
@@ -14,7 +17,7 @@ const BundleAnalysis: React.FC = () => {
     return (
       <div className="bundle-analysis">
         <div className="analysis-loading">
-          <div className="loading-spinner"></div>
+          <div className="loading-spinner" />
           <p>Analyzing bundle...</p>
         </div>
       </div>
@@ -66,10 +69,7 @@ const BundleAnalysis: React.FC = () => {
         >
           Overview
         </button>
-        <button
-          className={`tab ${selectedTab === 'chunks' ? 'active' : ''}`}
-          onClick={() => handleTabChange('chunks')}
-        >
+        <button className={`tab ${selectedTab === 'chunks' ? 'active' : ''}`} onClick={() => handleTabChange('chunks')}>
           Chunks ({analysis.chunks.length})
         </button>
         <button
@@ -93,27 +93,23 @@ const BundleAnalysis: React.FC = () => {
               <div className="metric-card">
                 <h3>Total Bundle Size</h3>
                 <div className="metric-value">{formatBytes(analysis.totalSize)}</div>
-                <div className="metric-subtitle">
-                  {analysis.chunks.length} chunks
-                </div>
+                <div className="metric-subtitle">{analysis.chunks.length} chunks</div>
               </div>
-              
+
               <div className="metric-card">
                 <h3>Largest Chunk</h3>
-                <div className="metric-value">
-                  {formatBytes(Math.max(...analysis.chunks.map(c => c.size)))}
-                </div>
+                <div className="metric-value">{formatBytes(Math.max(...analysis.chunks.map((c) => c.size)))}</div>
                 <div className="metric-subtitle">
-                  {analysis.chunks.find(c => c.size === Math.max(...analysis.chunks.map(c => c.size)))?.name}
+                  {analysis.chunks.find((c) => c.size === Math.max(...analysis.chunks.map((c) => c.size)))?.name}
                 </div>
               </div>
-              
+
               <div className="metric-card">
                 <h3>Dependencies</h3>
                 <div className="metric-value">{analysis.dependencies.length}</div>
                 <div className="metric-subtitle">Total packages</div>
               </div>
-              
+
               <div className="metric-card">
                 <h3>Recommendations</h3>
                 <div className="metric-value">{analysis.recommendations.length}</div>
@@ -148,19 +144,17 @@ const BundleAnalysis: React.FC = () => {
                       <div className="chunk-size">
                         {formatBytes(chunk.size)}
                         {chunk.gzippedSize && (
-                          <span className="gzipped-size">
-                            ({formatBytes(chunk.gzippedSize)} gzipped)
-                          </span>
+                          <span className="gzipped-size">({formatBytes(chunk.gzippedSize)} gzipped)</span>
                         )}
                       </div>
                     </div>
                     <div className="chunk-progress">
-                      <div 
+                      <div
                         className="progress-bar"
-                        style={{ 
-                          width: `${(chunk.size / analysis.totalSize) * 100}%` 
+                        style={{
+                          width: `${(chunk.size / analysis.totalSize) * 100}%`,
                         }}
-                      ></div>
+                      />
                     </div>
                     <div className="chunk-percentage">
                       {((chunk.size / analysis.totalSize) * 100).toFixed(1)}% of total bundle
@@ -180,15 +174,11 @@ const BundleAnalysis: React.FC = () => {
                   <div key={index} className="dependency-item">
                     <div className="dependency-header">
                       <h4>{dep.name}</h4>
-                      <div className="dependency-size">
-                        {formatBytes(dep.size)}
-                      </div>
+                      <div className="dependency-size">{formatBytes(dep.size)}</div>
                     </div>
                     <div className="dependency-details">
                       <span className="dependency-version">v{dep.version}</span>
-                      {dep.isDevDependency && (
-                        <span className="dev-dependency">dev</span>
-                      )}
+                      {dep.isDevDependency && <span className="dev-dependency">dev</span>}
                     </div>
                     {dep.alternatives && dep.alternatives.length > 0 && (
                       <div className="dependency-alternatives">

@@ -12,8 +12,9 @@ import {
   Cell,
   LineChart,
   Line,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
+
 import { ReportingService } from '../../services/reportingService';
 import { ReportFilter } from '../../types/reports';
 
@@ -23,17 +24,14 @@ interface Props {
 }
 
 const CollectionAnalyticsReport: React.FC<Props> = ({ reportingService, filters }) => {
-  const analytics = useMemo(() => 
-    reportingService.generateCollectionAnalytics(filters), 
-    [reportingService, filters]
-  );
+  const analytics = useMemo(() => reportingService.generateCollectionAnalytics(filters), [reportingService, filters]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   };
 
@@ -71,8 +69,10 @@ const CollectionAnalyticsReport: React.FC<Props> = ({ reportingService, filters 
             </PieChart>
           </ResponsiveContainer>
           <div className="chart-summary">
-            <p>Most collected: <strong>{analytics.categoryDistribution[0]?.category}</strong> 
-               ({analytics.categoryDistribution[0]?.count} cards)</p>
+            <p>
+              Most collected: <strong>{analytics.categoryDistribution[0]?.category}</strong>(
+              {analytics.categoryDistribution[0]?.count} cards)
+            </p>
           </div>
         </div>
 
@@ -118,10 +118,12 @@ const CollectionAnalyticsReport: React.FC<Props> = ({ reportingService, filters 
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="range" />
               <YAxis />
-              <Tooltip formatter={(value: number, name: string) => [
-                name === 'totalValue' ? formatCurrency(value) : value,
-                name
-              ]} />
+              <Tooltip
+                formatter={(value: number, name: string) => [
+                  name === 'totalValue' ? formatCurrency(value) : value,
+                  name,
+                ]}
+              />
               <Bar dataKey="count" fill="#ffc107" />
             </BarChart>
           </ResponsiveContainer>
@@ -140,13 +142,22 @@ const CollectionAnalyticsReport: React.FC<Props> = ({ reportingService, filters 
             <XAxis dataKey="month" />
             <YAxis yAxisId="left" />
             <YAxis yAxisId="right" orientation="right" tickFormatter={formatCurrency} />
-            <Tooltip formatter={(value: number, name: string) => [
-              name === 'totalSpent' || name === 'averagePrice' ? formatCurrency(value) : value,
-              name
-            ]} />
+            <Tooltip
+              formatter={(value: number, name: string) => [
+                name === 'totalSpent' || name === 'averagePrice' ? formatCurrency(value) : value,
+                name,
+              ]}
+            />
             <Legend />
             <Bar yAxisId="left" dataKey="count" fill="#007bff" name="Cards Acquired" />
-            <Line yAxisId="right" type="monotone" dataKey="totalSpent" stroke="#dc3545" strokeWidth={3} name="Total Spent" />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="totalSpent"
+              stroke="#dc3545"
+              strokeWidth={3}
+              name="Total Spent"
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -199,29 +210,27 @@ const CollectionAnalyticsReport: React.FC<Props> = ({ reportingService, filters 
               <div className="insight-item">
                 <span className="insight-icon">🏆</span>
                 <span className="insight-text">
-                  Top category: {analytics.categoryDistribution[0]?.category} 
-                  ({analytics.categoryDistribution[0]?.percentage.toFixed(1)}%)
+                  Top category: {analytics.categoryDistribution[0]?.category}(
+                  {analytics.categoryDistribution[0]?.percentage.toFixed(1)}%)
                 </span>
               </div>
               <div className="insight-item">
                 <span className="insight-icon">💰</span>
                 <span className="insight-text">
-                  Highest value category: {analytics.categoryDistribution
-                    .sort((a, b) => b.averageValue - a.averageValue)[0]?.category}
+                  Highest value category:{' '}
+                  {analytics.categoryDistribution.sort((a, b) => b.averageValue - a.averageValue)[0]?.category}
                 </span>
               </div>
               <div className="insight-item">
                 <span className="insight-icon">⭐</span>
                 <span className="insight-text">
-                  Most common condition: {analytics.conditionDistribution
-                    .sort((a, b) => b.count - a.count)[0]?.condition}
+                  Most common condition:{' '}
+                  {analytics.conditionDistribution.sort((a, b) => b.count - a.count)[0]?.condition}
                 </span>
               </div>
               <div className="insight-item">
                 <span className="insight-icon">📅</span>
-                <span className="insight-text">
-                  Most collected year: {analytics.yearDistribution[0]?.year}
-                </span>
+                <span className="insight-text">Most collected year: {analytics.yearDistribution[0]?.year}</span>
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo } from 'react';
+
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import CollapsibleMenu from '../UI/CollapsibleMenu';
 import './Docs.css';
@@ -23,18 +24,19 @@ const Docs: React.FC = () => {
   const [selectedArticle, setSelectedArticle] = useState<DocArticle | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const docSections: DocSection[] = useMemo(() => [
-    {
-      id: 'getting-started',
-      title: 'Getting Started',
-      icon: '🚀',
-      articles: [
-        {
-          id: 'quick-start',
-          title: 'Quick Start Guide',
-          category: 'Getting Started',
-          tags: ['beginner', 'setup'],
-          content: `# Quick Start Guide
+  const docSections: DocSection[] = useMemo(
+    () => [
+      {
+        id: 'getting-started',
+        title: 'Getting Started',
+        icon: '🚀',
+        articles: [
+          {
+            id: 'quick-start',
+            title: 'Quick Start Guide',
+            category: 'Getting Started',
+            tags: ['beginner', 'setup'],
+            content: `# Quick Start Guide
 
 Welcome to CardFlex™! This guide will help you get started with managing your sports card collection.
 
@@ -60,14 +62,14 @@ Welcome to CardFlex™! This guide will help you get started with managing your 
 - Keep your card values updated for accurate tracking
 - Use the photo upload feature for visual references
 - Regularly back up your collection data
-- Explore the reports section for insights`
-        },
-        {
-          id: 'interface-overview',
-          title: 'Interface Overview',
-          category: 'Getting Started',
-          tags: ['navigation', 'ui'],
-          content: `# Interface Overview
+- Explore the reports section for insights`,
+          },
+          {
+            id: 'interface-overview',
+            title: 'Interface Overview',
+            category: 'Getting Started',
+            tags: ['navigation', 'ui'],
+            content: `# Interface Overview
 
 ## Navigation Menu
 - **Dashboard**: View your collection overview and stats
@@ -88,21 +90,21 @@ Welcome to CardFlex™! This guide will help you get started with managing your 
 - Total Cards, Investment, Value, and P&L tracking
 - Recent Additions carousel
 - Top Performers showcase
-- Quick access to key features`
-        }
-      ]
-    },
-    {
-      id: 'managing-cards',
-      title: 'Managing Cards',
-      icon: '📇',
-      articles: [
-        {
-          id: 'adding-cards',
-          title: 'Adding Cards',
-          category: 'Managing Cards',
-          tags: ['cards', 'add'],
-          content: `# Adding Cards
+- Quick access to key features`,
+          },
+        ],
+      },
+      {
+        id: 'managing-cards',
+        title: 'Managing Cards',
+        icon: '📇',
+        articles: [
+          {
+            id: 'adding-cards',
+            title: 'Adding Cards',
+            category: 'Managing Cards',
+            tags: ['cards', 'add'],
+            content: `# Adding Cards
 
 ## Manual Entry
 1. Go to "Add Card" from the navigation
@@ -125,14 +127,14 @@ Welcome to CardFlex™! This guide will help you get started with managing your 
 ## Collection Assignment
 - Assign cards to specific collections
 - Create new collections on-the-fly
-- Move cards between collections anytime`
-        },
-        {
-          id: 'editing-cards',
-          title: 'Editing & Deleting Cards',
-          category: 'Managing Cards',
-          tags: ['cards', 'edit', 'delete'],
-          content: `# Editing & Deleting Cards
+- Move cards between collections anytime`,
+          },
+          {
+            id: 'editing-cards',
+            title: 'Editing & Deleting Cards',
+            category: 'Managing Cards',
+            tags: ['cards', 'edit', 'delete'],
+            content: `# Editing & Deleting Cards
 
 ## Editing Card Details
 1. Navigate to Inventory
@@ -158,21 +160,21 @@ Keep your collection value accurate:
 - Select multiple cards
 - Bulk delete
 - Bulk export
-- Move to different collections`
-        }
-      ]
-    },
-    {
-      id: 'collections',
-      title: 'Collections & Organization',
-      icon: '📚',
-      articles: [
-        {
-          id: 'creating-collections',
-          title: 'Creating Collections',
-          category: 'Collections',
-          tags: ['collections', 'organize'],
-          content: `# Creating Collections
+- Move to different collections`,
+          },
+        ],
+      },
+      {
+        id: 'collections',
+        title: 'Collections & Organization',
+        icon: '📚',
+        articles: [
+          {
+            id: 'creating-collections',
+            title: 'Creating Collections',
+            category: 'Collections',
+            tags: ['collections', 'organize'],
+            content: `# Creating Collections
 
 ## What are Collections?
 Collections allow you to organize your cards into logical groups like:
@@ -193,14 +195,14 @@ Collections allow you to organize your cards into logical groups like:
 - **Visual Builder**: Drag and drop interface
 - **Smart Grouping**: Auto-organize by category or value
 - **Statistics**: View collection-specific stats
-- **Export**: Export individual collections`
-        },
-        {
-          id: 'smart-grouping',
-          title: 'Smart Grouping',
-          category: 'Collections',
-          tags: ['collections', 'automation'],
-          content: `# Smart Grouping
+- **Export**: Export individual collections`,
+          },
+          {
+            id: 'smart-grouping',
+            title: 'Smart Grouping',
+            category: 'Collections',
+            tags: ['collections', 'automation'],
+            content: `# Smart Grouping
 
 ## Automatic Organization
 CardFlex™ can automatically group your cards:
@@ -226,21 +228,21 @@ CardFlex™ can automatically group your cards:
 - Quick access to specific card types
 - Better portfolio understanding
 - Easier inventory management
-- Automated organization`
-        }
-      ]
-    },
-    {
-      id: 'reports-analytics',
-      title: 'Reports & Analytics',
-      icon: '📊',
-      articles: [
-        {
-          id: 'portfolio-reports',
-          title: 'Portfolio Reports',
-          category: 'Reports',
-          tags: ['reports', 'analytics'],
-          content: `# Portfolio Reports
+- Automated organization`,
+          },
+        ],
+      },
+      {
+        id: 'reports-analytics',
+        title: 'Reports & Analytics',
+        icon: '📊',
+        articles: [
+          {
+            id: 'portfolio-reports',
+            title: 'Portfolio Reports',
+            category: 'Reports',
+            tags: ['reports', 'analytics'],
+            content: `# Portfolio Reports
 
 ## Available Reports
 
@@ -268,14 +270,14 @@ CardFlex™ can automatically group your cards:
 ## Exporting Reports
 - PDF format
 - CSV format
-- JSON format`
-        },
-        {
-          id: 'market-insights',
-          title: 'Market Insights',
-          category: 'Reports',
-          tags: ['market', 'trends'],
-          content: `# Market Insights
+- JSON format`,
+          },
+          {
+            id: 'market-insights',
+            title: 'Market Insights',
+            category: 'Reports',
+            tags: ['market', 'trends'],
+            content: `# Market Insights
 
 ## Understanding Market Trends
 CardFlex™ provides insights into:
@@ -294,21 +296,21 @@ CardFlex™ provides insights into:
 - Top performers in your collection
 - Biggest gainers/losers
 - ROI calculations
-- Profit/loss tracking`
-        }
-      ]
-    },
-    {
-      id: 'ebay-integration',
-      title: 'eBay Integration',
-      icon: '🛒',
-      articles: [
-        {
-          id: 'ebay-setup',
-          title: 'Setting Up eBay',
-          category: 'eBay',
-          tags: ['ebay', 'setup'],
-          content: `# eBay Integration Setup
+- Profit/loss tracking`,
+          },
+        ],
+      },
+      {
+        id: 'ebay-integration',
+        title: 'eBay Integration',
+        icon: '🛒',
+        articles: [
+          {
+            id: 'ebay-setup',
+            title: 'Setting Up eBay',
+            category: 'eBay',
+            tags: ['ebay', 'setup'],
+            content: `# eBay Integration Setup
 
 ## Connecting Your eBay Account
 1. Go to eBay Listings page
@@ -332,14 +334,14 @@ CardFlex™ analyzes:
 ## Sync Status
 - Real-time sync updates
 - Live listing tracking
-- Automatic price updates`
-        },
-        {
-          id: 'bulk-operations',
-          title: 'Bulk eBay Operations',
-          category: 'eBay',
-          tags: ['ebay', 'bulk'],
-          content: `# Bulk eBay Operations
+- Automatic price updates`,
+          },
+          {
+            id: 'bulk-operations',
+            title: 'Bulk eBay Operations',
+            category: 'eBay',
+            tags: ['ebay', 'bulk'],
+            content: `# Bulk eBay Operations
 
 ## Selecting Cards for Bulk Operations
 1. Go to eBay Listings page
@@ -368,21 +370,21 @@ Monitor bulk operations:
 - Progress bars
 - Success/failure counts
 - Error details
-- Export results`
-        }
-      ]
-    },
-    {
-      id: 'account-settings',
-      title: 'Account & Settings',
-      icon: '⚙️',
-      articles: [
-        {
-          id: 'profile-settings',
-          title: 'Profile Settings',
-          category: 'Settings',
-          tags: ['account', 'profile'],
-          content: `# Profile Settings
+- Export results`,
+          },
+        ],
+      },
+      {
+        id: 'account-settings',
+        title: 'Account & Settings',
+        icon: '⚙️',
+        articles: [
+          {
+            id: 'profile-settings',
+            title: 'Profile Settings',
+            category: 'Settings',
+            tags: ['account', 'profile'],
+            content: `# Profile Settings
 
 ## Managing Your Profile
 - Update username
@@ -409,14 +411,14 @@ View your recent activity:
 - Cards added
 - Sales recorded
 - Exports performed
-- Collection changes`
-        },
-        {
-          id: 'backup-restore',
-          title: 'Backup & Restore',
-          category: 'Settings',
-          tags: ['backup', 'data'],
-          content: `# Backup & Restore
+- Collection changes`,
+          },
+          {
+            id: 'backup-restore',
+            title: 'Backup & Restore',
+            category: 'Settings',
+            tags: ['backup', 'data'],
+            content: `# Backup & Restore
 
 ## Creating Backups
 Protect your collection data:
@@ -444,21 +446,21 @@ Protect your collection data:
 Export your data in multiple formats:
 - **JSON**: Full data export
 - **CSV**: Spreadsheet format
-- **PDF**: Printable reports`
-        }
-      ]
-    },
-    {
-      id: 'troubleshooting',
-      title: 'Troubleshooting',
-      icon: '🔧',
-      articles: [
-        {
-          id: 'common-issues',
-          title: 'Common Issues',
-          category: 'Troubleshooting',
-          tags: ['help', 'support'],
-          content: `# Common Issues
+- **PDF**: Printable reports`,
+          },
+        ],
+      },
+      {
+        id: 'troubleshooting',
+        title: 'Troubleshooting',
+        icon: '🔧',
+        articles: [
+          {
+            id: 'common-issues',
+            title: 'Common Issues',
+            category: 'Troubleshooting',
+            tags: ['help', 'support'],
+            content: `# Common Issues
 
 ## Login Problems
 **Can't log in?**
@@ -493,14 +495,14 @@ Export your data in multiple formats:
 - Check internet connection
 - Refresh the page
 - Log out and back in
-- Contact support if persists`
-        },
-        {
-          id: 'browser-support',
-          title: 'Browser Support',
-          category: 'Troubleshooting',
-          tags: ['browsers', 'compatibility'],
-          content: `# Browser Support
+- Contact support if persists`,
+          },
+          {
+            id: 'browser-support',
+            title: 'Browser Support',
+            category: 'Troubleshooting',
+            tags: ['browsers', 'compatibility'],
+            content: `# Browser Support
 
 ## Supported Browsers
 CardFlex™ works best on:
@@ -536,24 +538,27 @@ CardFlex™ works best on:
 ### Safari
 1. Preferences > Privacy
 2. Click "Manage Website Data"
-3. Click "Remove All"`
-        }
-      ]
-    }
-  ], []);
+3. Click "Remove All"`,
+          },
+        ],
+      },
+    ],
+    []
+  );
 
   const allArticles = useMemo(() => {
-    return docSections.flatMap(section => section.articles);
+    return docSections.flatMap((section) => section.articles);
   }, [docSections]);
 
   const filteredArticles = useMemo(() => {
     if (!searchQuery) return allArticles;
-    
+
     const query = searchQuery.toLowerCase();
-    return allArticles.filter(article =>
-      article.title.toLowerCase().includes(query) ||
-      article.content.toLowerCase().includes(query) ||
-      article.tags.some(tag => tag.toLowerCase().includes(query))
+    return allArticles.filter(
+      (article) =>
+        article.title.toLowerCase().includes(query) ||
+        article.content.toLowerCase().includes(query) ||
+        article.tags.some((tag) => tag.toLowerCase().includes(query))
     );
   }, [searchQuery, allArticles]);
 
@@ -570,9 +575,7 @@ CardFlex™ works best on:
       <AnimatedWrapper animation="fadeInDown" duration={0.6}>
         <div className="docs-header">
           <h1 className="text-gradient">📚 Knowledge Base</h1>
-          <p className="docs-subtitle">
-            Everything you need to know about CardFlex™
-          </p>
+          <p className="docs-subtitle">Everything you need to know about CardFlex™</p>
         </div>
       </AnimatedWrapper>
 
@@ -616,8 +619,10 @@ CardFlex™ works best on:
                         <h3>{article.title}</h3>
                         <p className="article-category">{article.category}</p>
                         <div className="article-tags">
-                          {article.tags.map(tag => (
-                            <span key={tag} className="tag">{tag}</span>
+                          {article.tags.map((tag) => (
+                            <span key={tag} className="tag">
+                              {tag}
+                            </span>
                           ))}
                         </div>
                       </motion.div>
@@ -627,17 +632,8 @@ CardFlex™ works best on:
               ) : (
                 <div className="docs-sections">
                   {docSections.map((section, sectionIndex) => (
-                    <AnimatedWrapper
-                      key={section.id}
-                      animation="fadeInUp"
-                      duration={0.6}
-                      delay={sectionIndex * 0.1}
-                    >
-                      <CollapsibleMenu
-                        title={section.title}
-                        icon={section.icon}
-                        defaultOpen={sectionIndex === 0}
-                      >
+                    <AnimatedWrapper key={section.id} animation="fadeInUp" duration={0.6} delay={sectionIndex * 0.1}>
+                      <CollapsibleMenu title={section.title} icon={section.icon} defaultOpen={sectionIndex === 0}>
                         <div className="articles-grid">
                           {section.articles.map((article, articleIndex) => (
                             <motion.div
@@ -652,8 +648,10 @@ CardFlex™ works best on:
                             >
                               <h3>{article.title}</h3>
                               <div className="article-tags">
-                                {article.tags.map(tag => (
-                                  <span key={tag} className="tag">{tag}</span>
+                                {article.tags.map((tag) => (
+                                  <span key={tag} className="tag">
+                                    {tag}
+                                  </span>
                                 ))}
                               </div>
                             </motion.div>
@@ -676,17 +674,19 @@ CardFlex™ works best on:
               <button className="back-btn" onClick={handleBackToList}>
                 ← Back to Documentation
               </button>
-              
+
               <div className="article-header">
                 <span className="article-category-badge">{selectedArticle.category}</span>
                 <h1>{selectedArticle.title}</h1>
                 <div className="article-tags">
-                  {selectedArticle.tags.map(tag => (
-                    <span key={tag} className="tag">{tag}</span>
+                  {selectedArticle.tags.map((tag) => (
+                    <span key={tag} className="tag">
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
-              
+
               <div className="article-content">
                 {selectedArticle.content.split('\n').map((line, index) => {
                   if (line.startsWith('# ')) {
@@ -700,7 +700,11 @@ CardFlex™ works best on:
                   } else if (line.trim() === '') {
                     return <br key={index} />;
                   } else if (line.startsWith('⚠️') || line.startsWith('✅')) {
-                    return <p key={index} className="callout">{line}</p>;
+                    return (
+                      <p key={index} className="callout">
+                        {line}
+                      </p>
+                    );
                   } else {
                     return <p key={index}>{line}</p>;
                   }
@@ -715,4 +719,3 @@ CardFlex™ works best on:
 };
 
 export default Docs;
-

@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { EnhancedCard, PRINTING_TECHNOLOGIES, CARD_ERAS, PURCHASE_VENUES, STORAGE_METHODS, COLLECTION_CATEGORIES } from '../../types/card-enhanced';
+
 import { CATEGORIES, CONDITIONS, GRADING_COMPANIES } from '../../types';
+import {
+  EnhancedCard,
+  PRINTING_TECHNOLOGIES,
+  CARD_ERAS,
+  PURCHASE_VENUES,
+  STORAGE_METHODS,
+  COLLECTION_CATEGORIES,
+} from '../../types/card-enhanced';
 import './EnhancedCardForm.css';
 
 interface Props {
@@ -19,12 +27,17 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
     playerMetadata: card?.playerMetadata || { isRookie: false },
     specialFeatures: card?.specialFeatures || { hasAutograph: false, hasMemorabilia: false },
     marketData: card?.marketData || { purchaseVenue: 'Private Sale', priceHistory: [], lastSaleComps: [] },
-    storage: card?.storage || { storageLocation: '', storageMethod: 'Toploader', collectionCategory: 'PC', displayStatus: 'Stored' },
+    storage: card?.storage || {
+      storageLocation: '',
+      storageMethod: 'Toploader',
+      collectionCategory: 'PC',
+      displayStatus: 'Stored',
+    },
     transaction: card?.transaction || { insuredValue: 0, acquisitionType: 'Purchase' },
     authentication: card?.authentication || undefined,
     physicalAttributes: card?.physicalAttributes || undefined,
     analytics: card?.analytics || undefined,
-    collectionMeta: card?.collectionMeta || undefined
+    collectionMeta: card?.collectionMeta || undefined,
   });
 
   // Load collections
@@ -51,23 +64,23 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
     { id: 'physical', label: '📐 Physical', icon: '📐' },
     { id: 'storage', label: '📦 Storage', icon: '📦' },
     { id: 'transaction', label: '💼 Transaction', icon: '💼' },
-    { id: 'collection', label: '🎯 Collection', icon: '🎯' }
+    { id: 'collection', label: '🎯 Collection', icon: '🎯' },
   ];
 
   const handleInputChange = (section: string, field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [section]: {
-        ...(prev[section as keyof EnhancedCard] as any || {}),
-        [field]: value
-      }
+        ...((prev[section as keyof EnhancedCard] as any) || {}),
+        [field]: value,
+      },
     }));
   };
 
   const handleBasicChange = (field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -89,7 +102,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Team*</label>
           <input
@@ -99,7 +112,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Year*</label>
           <input
@@ -111,7 +124,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Brand*</label>
           <input
@@ -121,7 +134,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Category*</label>
           <select
@@ -130,12 +143,14 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           >
             <option value="">Select Category</option>
-            {CATEGORIES.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         </div>
-        
+
         <div className="form-group">
           <label>Card Number*</label>
           <input
@@ -145,7 +160,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Parallel/Variation</label>
           <input
@@ -154,7 +169,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             onChange={(e) => handleBasicChange('parallel', e.target.value)}
           />
         </div>
-        
+
         <div className="form-group">
           <label>Condition*</label>
           <select
@@ -163,12 +178,14 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           >
             <option value="">Select Condition</option>
-            {CONDITIONS.map(cond => (
-              <option key={cond} value={cond}>{cond}</option>
+            {CONDITIONS.map((cond) => (
+              <option key={cond} value={cond}>
+                {cond}
+              </option>
             ))}
           </select>
         </div>
-        
+
         {formData.condition !== 'RAW' && (
           <div className="form-group">
             <label>Grading Company</label>
@@ -177,13 +194,15 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
               onChange={(e) => handleBasicChange('gradingCompany', e.target.value)}
             >
               <option value="">Select Company</option>
-              {GRADING_COMPANIES.map(company => (
-                <option key={company} value={company}>{company}</option>
+              {GRADING_COMPANIES.map((company) => (
+                <option key={company} value={company}>
+                  {company}
+                </option>
               ))}
             </select>
           </div>
         )}
-        
+
         <div className="form-group full-width">
           <label>Notes</label>
           <textarea
@@ -210,7 +229,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="e.g., Panini America"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Product Line</label>
           <input
@@ -220,7 +239,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="e.g., Prizm Basketball"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Set Name</label>
           <input
@@ -230,7 +249,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="e.g., 2023-24 Prizm Basketball"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Subset</label>
           <input
@@ -240,7 +259,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="e.g., Rookie Penmanship"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Insert Set</label>
           <input
@@ -250,7 +269,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="e.g., Kaboom!"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Serial Number</label>
           <input
@@ -260,7 +279,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="e.g., 23/99"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Print Run</label>
           <input
@@ -270,7 +289,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="Total printed"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Printing Technology</label>
           <select
@@ -278,12 +297,14 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             onChange={(e) => handleInputChange('identification', 'printingTechnology', e.target.value)}
           >
             <option value="">Select Technology</option>
-            {PRINTING_TECHNOLOGIES.map(tech => (
-              <option key={tech} value={tech}>{tech}</option>
+            {PRINTING_TECHNOLOGIES.map((tech) => (
+              <option key={tech} value={tech}>
+                {tech}
+              </option>
             ))}
           </select>
         </div>
-        
+
         <div className="form-group">
           <label>Era</label>
           <select
@@ -291,8 +312,10 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             onChange={(e) => handleInputChange('identification', 'era', e.target.value)}
           >
             <option value="">Select Era</option>
-            {CARD_ERAS.map(era => (
-              <option key={era} value={era}>{era}</option>
+            {CARD_ERAS.map((era) => (
+              <option key={era} value={era}>
+                {era}
+              </option>
             ))}
           </select>
         </div>
@@ -314,7 +337,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             Rookie Card
           </label>
         </div>
-        
+
         {formData.playerMetadata?.isRookie && (
           <div className="form-group">
             <label>Rookie Year</label>
@@ -325,7 +348,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             />
           </div>
         )}
-        
+
         <div className="form-group">
           <label>Jersey Number</label>
           <input
@@ -334,7 +357,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             onChange={(e) => handleInputChange('playerMetadata', 'jerseyNumber', e.target.value)}
           />
         </div>
-        
+
         <div className="form-group">
           <label>Position</label>
           <input
@@ -343,7 +366,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             onChange={(e) => handleInputChange('playerMetadata', 'position', e.target.value)}
           />
         </div>
-        
+
         <div className="form-group checkbox-group">
           <label>
             <input
@@ -354,7 +377,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             Hall of Fame
           </label>
         </div>
-        
+
         <div className="form-group">
           <label>Championships</label>
           <input
@@ -364,7 +387,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             min="0"
           />
         </div>
-        
+
         <div className="form-group">
           <label>All-Star Appearances</label>
           <input
@@ -374,7 +397,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             min="0"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Special Event</label>
           <input
@@ -391,7 +414,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
   const renderSpecialFeatures = () => (
     <div className="form-section">
       <h3>Special Features</h3>
-      
+
       <div className="feature-section">
         <h4>Autograph</h4>
         <div className="form-grid">
@@ -405,7 +428,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
               Has Autograph
             </label>
           </div>
-          
+
           {formData.specialFeatures?.hasAutograph && (
             <>
               <div className="form-group">
@@ -420,7 +443,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
                   <option value="Cut">Cut Signature</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label>Autograph Color</label>
                 <input
@@ -434,7 +457,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           )}
         </div>
       </div>
-      
+
       <div className="feature-section">
         <h4>Memorabilia</h4>
         <div className="form-grid">
@@ -448,7 +471,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
               Has Memorabilia
             </label>
           </div>
-          
+
           {formData.specialFeatures?.hasMemorabilia && (
             <>
               <div className="form-group checkbox-group">
@@ -461,7 +484,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
                   Is Patch
                 </label>
               </div>
-              
+
               <div className="form-group checkbox-group">
                 <label>
                   <input
@@ -476,7 +499,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           )}
         </div>
       </div>
-      
+
       <div className="form-group checkbox-group">
         <label>
           <input
@@ -505,7 +528,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Current Value*</label>
           <input
@@ -517,7 +540,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Purchase Venue</label>
           <select
@@ -525,12 +548,14 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             onChange={(e) => handleInputChange('marketData', 'purchaseVenue', e.target.value)}
           >
             <option value="">Select Venue</option>
-            {PURCHASE_VENUES.map(venue => (
-              <option key={venue} value={venue}>{venue}</option>
+            {PURCHASE_VENUES.map((venue) => (
+              <option key={venue} value={venue}>
+                {venue}
+              </option>
             ))}
           </select>
         </div>
-        
+
         <div className="form-group">
           <label>Seller</label>
           <input
@@ -540,7 +565,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="Seller name or username"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Market Trend</label>
           <select
@@ -553,7 +578,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             <option value="Falling">Falling</option>
           </select>
         </div>
-        
+
         <div className="form-group">
           <label>Demand Level</label>
           <select
@@ -584,7 +609,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Storage Method</label>
           <select
@@ -592,12 +617,14 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             onChange={(e) => handleInputChange('storage', 'storageMethod', e.target.value)}
           >
             <option value="">Select Method</option>
-            {STORAGE_METHODS.map(method => (
-              <option key={method} value={method}>{method}</option>
+            {STORAGE_METHODS.map((method) => (
+              <option key={method} value={method}>
+                {method}
+              </option>
             ))}
           </select>
         </div>
-        
+
         <div className="form-group">
           <label>Collection Category</label>
           <select
@@ -605,12 +632,14 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             onChange={(e) => handleInputChange('storage', 'collectionCategory', e.target.value)}
           >
             <option value="">Select Category</option>
-            {COLLECTION_CATEGORIES.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+            {COLLECTION_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         </div>
-        
+
         <div className="form-group">
           <label>Box/Binder Number</label>
           <input
@@ -637,16 +666,20 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="e.g., 12345678"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Grading Date</label>
           <input
             type="date"
-            value={formData.authentication?.gradingDate ? new Date(formData.authentication.gradingDate).toISOString().split('T')[0] : ''}
+            value={
+              formData.authentication?.gradingDate
+                ? new Date(formData.authentication.gradingDate).toISOString().split('T')[0]
+                : ''
+            }
             onChange={(e) => handleInputChange('authentication', 'gradingDate', new Date(e.target.value))}
           />
         </div>
-        
+
         <div className="form-group">
           <label>Grading Cost</label>
           <input
@@ -658,7 +691,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           />
         </div>
       </div>
-      
+
       {(formData.gradingCompany === 'BGS' || formData.gradingCompany === 'SGC') && (
         <>
           <h4>Subgrades</h4>
@@ -668,55 +701,63 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
               <input
                 type="number"
                 value={formData.authentication?.subgrades?.centering || ''}
-                onChange={(e) => handleInputChange('authentication', 'subgrades', {
-                  ...formData.authentication?.subgrades,
-                  centering: parseFloat(e.target.value)
-                })}
+                onChange={(e) =>
+                  handleInputChange('authentication', 'subgrades', {
+                    ...formData.authentication?.subgrades,
+                    centering: parseFloat(e.target.value),
+                  })
+                }
                 min="0"
                 max="10"
                 step="0.5"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Corners</label>
               <input
                 type="number"
                 value={formData.authentication?.subgrades?.corners || ''}
-                onChange={(e) => handleInputChange('authentication', 'subgrades', {
-                  ...formData.authentication?.subgrades,
-                  corners: parseFloat(e.target.value)
-                })}
+                onChange={(e) =>
+                  handleInputChange('authentication', 'subgrades', {
+                    ...formData.authentication?.subgrades,
+                    corners: parseFloat(e.target.value),
+                  })
+                }
                 min="0"
                 max="10"
                 step="0.5"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Edges</label>
               <input
                 type="number"
                 value={formData.authentication?.subgrades?.edges || ''}
-                onChange={(e) => handleInputChange('authentication', 'subgrades', {
-                  ...formData.authentication?.subgrades,
-                  edges: parseFloat(e.target.value)
-                })}
+                onChange={(e) =>
+                  handleInputChange('authentication', 'subgrades', {
+                    ...formData.authentication?.subgrades,
+                    edges: parseFloat(e.target.value),
+                  })
+                }
                 min="0"
                 max="10"
                 step="0.5"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Surface</label>
               <input
                 type="number"
                 value={formData.authentication?.subgrades?.surface || ''}
-                onChange={(e) => handleInputChange('authentication', 'subgrades', {
-                  ...formData.authentication?.subgrades,
-                  surface: parseFloat(e.target.value)
-                })}
+                onChange={(e) =>
+                  handleInputChange('authentication', 'subgrades', {
+                    ...formData.authentication?.subgrades,
+                    surface: parseFloat(e.target.value),
+                  })
+                }
                 min="0"
                 max="10"
                 step="0.5"
@@ -746,7 +787,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             <option value="Booklet">Booklet</option>
           </select>
         </div>
-        
+
         <div className="form-group checkbox-group">
           <label>
             <input
@@ -757,7 +798,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             Refractor/Prizm
           </label>
         </div>
-        
+
         <div className="form-group">
           <label>Stock Weight</label>
           <select
@@ -771,7 +812,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           </select>
         </div>
       </div>
-      
+
       <h4>Condition Notes</h4>
       <div className="form-grid">
         <div className="form-group">
@@ -779,10 +820,12 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           <input
             type="text"
             value={formData.physicalAttributes?.conditionNotes?.centering || ''}
-            onChange={(e) => handleInputChange('physicalAttributes', 'conditionNotes', {
-              ...formData.physicalAttributes?.conditionNotes,
-              centering: e.target.value
-            })}
+            onChange={(e) =>
+              handleInputChange('physicalAttributes', 'conditionNotes', {
+                ...formData.physicalAttributes?.conditionNotes,
+                centering: e.target.value,
+              })
+            }
             placeholder="e.g., 60/40 L/R, 55/45 T/B"
           />
         </div>
@@ -804,7 +847,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             step="0.01"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Acquisition Type</label>
           <select
@@ -818,7 +861,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             <option value="Trade">Trade</option>
           </select>
         </div>
-        
+
         <div className="form-group">
           <label>Tax Basis</label>
           <input
@@ -829,7 +872,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             step="0.01"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Insurance Company</label>
           <input
@@ -839,7 +882,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             placeholder="e.g., State Farm, USAA"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Policy Number</label>
           <input
@@ -864,7 +907,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             required
           >
             <option value="">Select a Collection</option>
-            {collections.map(collection => (
+            {collections.map((collection) => (
               <option key={collection.id} value={collection.id}>
                 {collection.icon} {collection.name} {collection.isDefault ? '(Default)' : ''}
               </option>
@@ -872,7 +915,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           </select>
           <small className="form-hint">Assign this card to a specific collection</small>
         </div>
-        
+
         <div className="form-group">
           <label>Personal Grade (1-10)</label>
           <input
@@ -883,7 +926,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             max="10"
           />
         </div>
-        
+
         <div className="form-group">
           <label>Sentimental Value</label>
           <select
@@ -896,7 +939,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             <option value="High">High</option>
           </select>
         </div>
-        
+
         <div className="form-group checkbox-group">
           <label>
             <input
@@ -907,7 +950,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
             Willing to Trade
           </label>
         </div>
-        
+
         {formData.collectionMeta?.willingToTrade && (
           <div className="form-group">
             <label>Trade Value</label>
@@ -921,7 +964,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           </div>
         )}
       </div>
-      
+
       <div className="form-group full-width">
         <label>Personal Story</label>
         <textarea
@@ -931,7 +974,7 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           placeholder="Any special meaning or story about this card?"
         />
       </div>
-      
+
       <div className="form-group full-width">
         <label>Acquisition Story</label>
         <textarea
@@ -977,9 +1020,9 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
         <h2>{card ? 'Edit Enhanced Card' : 'Add Enhanced Card'}</h2>
         <p>Fill in as much detail as you'd like. Only basic fields are required.</p>
       </div>
-      
+
       <div className="form-tabs">
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
@@ -991,12 +1034,10 @@ const EnhancedCardForm: React.FC<Props> = ({ card, onSave, onCancel }) => {
           </button>
         ))}
       </div>
-      
+
       <form onSubmit={handleSubmit} className="enhanced-form">
-        <div className="form-content">
-          {renderTabContent()}
-        </div>
-        
+        <div className="form-content">{renderTabContent()}</div>
+
         <div className="form-actions">
           <button type="button" onClick={onCancel} className="btn-secondary">
             Cancel

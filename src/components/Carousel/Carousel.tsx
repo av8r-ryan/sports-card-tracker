@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+
 import { logDebug, logInfo } from '../../utils/logger';
 import './Carousel.css';
 
@@ -37,7 +38,7 @@ const Carousel: React.FC<CarouselProps> = ({
   itemsPerView = 3,
   className = '',
   onItemClick,
-  onItemHover
+  onItemHover,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -46,11 +47,11 @@ const Carousel: React.FC<CarouselProps> = ({
   const carouselRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    logDebug('Carousel', 'Carousel component mounted', { 
-      itemCount: items.length, 
-      autoScroll, 
+    logDebug('Carousel', 'Carousel component mounted', {
+      itemCount: items.length,
+      autoScroll,
       scrollInterval,
-      itemsPerView 
+      itemsPerView,
     });
   }, [items.length, autoScroll, scrollInterval, itemsPerView]);
 
@@ -58,7 +59,7 @@ const Carousel: React.FC<CarouselProps> = ({
     if (autoScroll && !isPaused && !isHovered && items.length > itemsPerView) {
       logDebug('Carousel', 'Starting auto-scroll', { currentIndex, scrollInterval });
       intervalRef.current = setInterval(() => {
-        setCurrentIndex(prev => {
+        setCurrentIndex((prev) => {
           const nextIndex = (prev + 1) % items.length;
           logDebug('Carousel', 'Auto-scrolling to next item', { from: prev, to: nextIndex });
           return nextIndex;
@@ -87,27 +88,36 @@ const Carousel: React.FC<CarouselProps> = ({
     setCurrentIndex(prevIndex);
   }, [currentIndex, items.length]);
 
-  const goToSlide = useCallback((index: number) => {
-    logInfo('Carousel', 'Manual navigation to slide', { from: currentIndex, to: index });
-    setCurrentIndex(index);
-  }, [currentIndex]);
+  const goToSlide = useCallback(
+    (index: number) => {
+      logInfo('Carousel', 'Manual navigation to slide', { from: currentIndex, to: index });
+      setCurrentIndex(index);
+    },
+    [currentIndex]
+  );
 
-  const handleItemClick = useCallback((item: CarouselItem) => {
-    logInfo('Carousel', 'Item clicked', { itemId: item.id, itemTitle: item.title });
-    if (onItemClick) {
-      onItemClick(item);
-    }
-    if (item.onClick) {
-      item.onClick();
-    }
-  }, [onItemClick]);
+  const handleItemClick = useCallback(
+    (item: CarouselItem) => {
+      logInfo('Carousel', 'Item clicked', { itemId: item.id, itemTitle: item.title });
+      if (onItemClick) {
+        onItemClick(item);
+      }
+      if (item.onClick) {
+        item.onClick();
+      }
+    },
+    [onItemClick]
+  );
 
-  const handleItemHover = useCallback((item: CarouselItem) => {
-    logDebug('Carousel', 'Item hovered', { itemId: item.id, itemTitle: item.title });
-    if (onItemHover) {
-      onItemHover(item);
-    }
-  }, [onItemHover]);
+  const handleItemHover = useCallback(
+    (item: CarouselItem) => {
+      logDebug('Carousel', 'Item hovered', { itemId: item.id, itemTitle: item.title });
+      if (onItemHover) {
+        onItemHover(item);
+      }
+    },
+    [onItemHover]
+  );
 
   const handleMouseEnter = useCallback(() => {
     if (pauseOnHover) {
@@ -126,7 +136,7 @@ const Carousel: React.FC<CarouselProps> = ({
 
   const togglePause = useCallback(() => {
     logInfo('Carousel', 'Toggle pause', { currentPaused: isPaused });
-    setIsPaused(prev => !prev);
+    setIsPaused((prev) => !prev);
   }, [isPaused]);
 
   // Auto-scroll effect
@@ -160,49 +170,35 @@ const Carousel: React.FC<CarouselProps> = ({
   const clampedIndex = Math.min(currentIndex, maxIndex);
 
   return (
-    <div 
-      className={`carousel ${className}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className={`carousel ${className}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className="carousel-header">
         <div className="carousel-controls">
           {showNavigation && items.length > itemsPerView && (
             <>
-              <button 
-                className="carousel-btn prev"
-                onClick={goToPrevious}
-                aria-label="Previous items"
-              >
+              <button className="carousel-btn prev" onClick={goToPrevious} aria-label="Previous items">
                 <span className="carousel-arrow">‹</span>
               </button>
-              <button 
-                className="carousel-btn next"
-                onClick={goToNext}
-                aria-label="Next items"
-              >
+              <button className="carousel-btn next" onClick={goToNext} aria-label="Next items">
                 <span className="carousel-arrow">›</span>
               </button>
             </>
           )}
-          <button 
+          <button
             className={`carousel-btn pause ${isPaused ? 'paused' : ''}`}
             onClick={togglePause}
             aria-label={isPaused ? 'Resume auto-scroll' : 'Pause auto-scroll'}
           >
-            <span className="pause-icon">
-              {isPaused ? '▶' : '⏸'}
-            </span>
+            <span className="pause-icon">{isPaused ? '▶' : '⏸'}</span>
           </button>
         </div>
       </div>
 
       <div className="carousel-container" ref={carouselRef}>
-        <div 
+        <div
           className="carousel-track"
           style={{
             transform: `translateX(-${clampedIndex * (100 / itemsPerView)}%)`,
-            width: `${(items.length * 100) / itemsPerView}%`
+            width: `${(items.length * 100) / itemsPerView}%`,
           }}
         >
           {items.map((item, index) => (
@@ -219,20 +215,12 @@ const Carousel: React.FC<CarouselProps> = ({
                     <img src={item.image} alt={item.title} />
                   </div>
                 )}
-                {item.icon && !item.image && (
-                  <div className="carousel-item-icon">
-                    {item.icon}
-                  </div>
-                )}
+                {item.icon && !item.image && <div className="carousel-item-icon">{item.icon}</div>}
                 <div className="carousel-item-text">
                   <h3 className="carousel-item-title">{item.title}</h3>
                   <p className="carousel-item-description">{item.description}</p>
-                  {item.value && (
-                    <div className="carousel-item-value">{item.value}</div>
-                  )}
-                  {item.category && (
-                    <div className="carousel-item-category">{item.category}</div>
-                  )}
+                  {item.value && <div className="carousel-item-value">{item.value}</div>}
+                  {item.category && <div className="carousel-item-category">{item.category}</div>}
                 </div>
               </div>
             </div>

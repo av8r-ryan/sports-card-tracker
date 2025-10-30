@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { CardProvider, useCards } from './context/DexieCardContext'; // Use Dexie context
-import { ThemeProvider } from './context/ThemeContext';
-import { useApi } from './hooks/useApi';
-import { registerServiceWorker } from './utils/serviceWorker';
-import Layout from './components/Layout/Layout';
-import Dashboard from './components/Dashboard/Dashboard';
-import CardList from './components/CardList/CardList';
-import CardForm from './components/CardForm/CardForm';
+
 import EnhancedCardForm from './components/EnhancedCardForm/EnhancedCardForm';
 import PhotoCardForm from './components/PhotoCardForm/PhotoCardForm';
 import CardDetail from './components/CardDetail/CardDetail';
@@ -22,14 +13,24 @@ import Reports from './components/Reports/Reports';
 import EbayListings from './components/EbayListings/EbayListings';
 import { BackupRestore } from './components/BackupRestore/BackupRestore';
 import About from './components/About/About';
+import CardForm from './components/CardForm/CardForm';
+import CardList from './components/CardList/CardList';
 import Contact from './components/Contact/Contact';
-import Docs from './components/Docs/Docs';
-import NotFound from './components/NotFound/NotFound';
+import Dashboard from './components/Dashboard/Dashboard';
 import DebugPanel from './components/DebugPanel/DebugPanel';
 import DevTools from './components/DevTools/DevTools';
+import Docs from './components/Docs/Docs';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import Layout from './components/Layout/Layout';
+import NotFound from './components/NotFound/NotFound';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { CardProvider, useCards } from './context/DexieCardContext'; // Use Dexie context
+import { ThemeProvider } from './context/ThemeContext';
+import { useApi } from './hooks/useApi';
 import { Card } from './types';
 import { saveEnhancedCard, mergeCardWithEnhanced } from './utils/enhancedCardIntegration';
 import { logInfo } from './utils/logger';
+import { registerServiceWorker } from './utils/serviceWorker';
 import './utils/debugDatabase'; // Import debug utility
 import './utils/debugEnhancedCards'; // Import enhanced cards debug utility
 import './utils/testCollectionMove'; // Import collection move test utility
@@ -38,7 +39,21 @@ import './utils/debugBackup'; // Import backup debug utility
 import './utils/resetAdmin'; // Import admin reset utility
 import './App.css';
 
-type View = 'dashboard' | 'inventory' | 'add-card' | 'admin' | 'profile' | 'reports' | 'ebay' | 'backup' | 'users' | 'collections' | 'about' | 'contact' | 'docs' | '404';
+type View =
+  | 'dashboard'
+  | 'inventory'
+  | 'add-card'
+  | 'admin'
+  | 'profile'
+  | 'reports'
+  | 'ebay'
+  | 'backup'
+  | 'users'
+  | 'collections'
+  | 'about'
+  | 'contact'
+  | 'docs'
+  | '404';
 type FormType = 'classic' | 'enhanced' | 'photo';
 
 const AppRoutes: React.FC = () => {
@@ -51,9 +66,9 @@ const AppRoutes: React.FC = () => {
   const [formType, setFormType] = useState<FormType>('enhanced'); // Form type selection
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   const location = useLocation();
-  
+
   useApi();
-  
+
   logInfo('App', 'Application initialized', { pathname: location.pathname });
 
   // Handle hash changes for collection navigation
@@ -79,7 +94,7 @@ const AppRoutes: React.FC = () => {
   React.useEffect(() => {
     const path = location.pathname;
     logInfo('App', 'URL changed', { path });
-    
+
     if (path === '/login' || path === '/register') {
       setAuthMode(path === '/login' ? 'login' : 'register');
     } else if (path === '/') {
@@ -98,9 +113,9 @@ const AppRoutes: React.FC = () => {
         '/collections': 'collections',
         '/about': 'about',
         '/contact': 'contact',
-        '/docs': 'docs'
+        '/docs': 'docs',
       };
-      
+
       if (viewMap[path]) {
         setCurrentView(viewMap[path]);
       }
@@ -109,12 +124,7 @@ const AppRoutes: React.FC = () => {
 
   // Show auth form if user is not authenticated
   if (!authState.user) {
-    return (
-      <AuthForm 
-        mode={authMode} 
-        onToggleMode={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} 
-      />
-    );
+    return <AuthForm mode={authMode} onToggleMode={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} />;
   }
 
   const handleViewChange = (view: View) => {
@@ -122,28 +132,28 @@ const AppRoutes: React.FC = () => {
     setCurrentView(view);
     setSelectedCard(null);
     setEditingCard(null);
-    
+
     // Navigate to the appropriate URL
     const viewToPath: { [key in View]: string } = {
-      'dashboard': '/dashboard',
-      'inventory': '/inventory',
+      dashboard: '/dashboard',
+      inventory: '/inventory',
       'add-card': '/add-card',
-      'admin': '/admin',
-      'profile': '/profile',
-      'reports': '/reports',
-      'ebay': '/ebay',
-      'backup': '/backup',
-      'users': '/users',
-      'collections': '/collections',
-      'about': '/about',
-      'contact': '/contact',
-      'docs': '/docs',
-      '404': '/404'
+      admin: '/admin',
+      profile: '/profile',
+      reports: '/reports',
+      ebay: '/ebay',
+      backup: '/backup',
+      users: '/users',
+      collections: '/collections',
+      about: '/about',
+      contact: '/contact',
+      docs: '/docs',
+      '404': '/404',
     };
-    
+
     const path = viewToPath[view] || '/';
     window.history.pushState({}, '', path);
-    
+
     // Clear collection filter when navigating away from inventory
     if (view !== 'inventory') {
       setSelectedCollectionId(null);
@@ -181,7 +191,7 @@ const AppRoutes: React.FC = () => {
         return <Dashboard />;
       case 'inventory':
         return (
-          <CardList 
+          <CardList
             onCardSelect={handleCardSelect}
             onEditCard={handleEditCard}
             selectedCollectionId={selectedCollectionId}
@@ -191,13 +201,15 @@ const AppRoutes: React.FC = () => {
         return (
           <>
             {/* Form Type Selector */}
-            <div style={{ 
-              marginBottom: '24px', 
-              textAlign: 'center',
-              background: '#f7fafc',
-              padding: '16px',
-              borderRadius: '12px'
-            }}>
+            <div
+              style={{
+                marginBottom: '24px',
+                textAlign: 'center',
+                background: '#f7fafc',
+                padding: '16px',
+                borderRadius: '12px',
+              }}
+            >
               <div style={{ marginBottom: '12px', fontSize: '16px', fontWeight: '600', color: '#2d3748' }}>
                 Choose Entry Method:
               </div>
@@ -213,7 +225,7 @@ const AppRoutes: React.FC = () => {
                     cursor: 'pointer',
                     fontSize: '14px',
                     fontWeight: formType === 'classic' ? '600' : '400',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
                   }}
                 >
                   📝 Classic Form
@@ -229,7 +241,7 @@ const AppRoutes: React.FC = () => {
                     cursor: 'pointer',
                     fontSize: '14px',
                     fontWeight: formType === 'enhanced' ? '600' : '400',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
                   }}
                 >
                   ⚡ Enhanced Form
@@ -245,7 +257,7 @@ const AppRoutes: React.FC = () => {
                     cursor: 'pointer',
                     fontSize: '14px',
                     fontWeight: formType === 'photo' ? '600' : '400',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
                   }}
                 >
                   📸 Photo Scan
@@ -255,7 +267,7 @@ const AppRoutes: React.FC = () => {
 
             {/* Render appropriate form based on selection */}
             {formType === 'classic' && (
-              <CardForm 
+              <CardForm
                 key={editingCard?.id || 'new-card'}
                 card={editingCard || undefined}
                 onSuccess={handleFormSuccess}
@@ -263,7 +275,7 @@ const AppRoutes: React.FC = () => {
               />
             )}
             {formType === 'enhanced' && (
-              <EnhancedCardForm 
+              <EnhancedCardForm
                 key={editingCard?.id || 'new-card-enhanced'}
                 card={editingCard ? mergeCardWithEnhanced(editingCard) : undefined}
                 onSave={async (enhancedCardData) => {
@@ -278,9 +290,7 @@ const AppRoutes: React.FC = () => {
                 onCancel={handleFormCancel}
               />
             )}
-            {formType === 'photo' && (
-              <PhotoCardForm onSuccess={handleFormSuccess} />
-            )}
+            {formType === 'photo' && <PhotoCardForm onSuccess={handleFormSuccess} />}
           </>
         );
       case 'admin':
@@ -313,15 +323,9 @@ const AppRoutes: React.FC = () => {
   return (
     <Layout currentView={currentView} onViewChange={handleViewChange}>
       {renderCurrentView()}
-      
-      {selectedCard && (
-        <CardDetail
-          card={selectedCard}
-          onEdit={handleEditCard}
-          onClose={handleCloseDetail}
-        />
-      )}
-      
+
+      {selectedCard && <CardDetail card={selectedCard} onEdit={handleEditCard} onClose={handleCloseDetail} />}
+
       <DebugPanel />
       <DevTools />
     </Layout>
@@ -343,7 +347,7 @@ function App() {
       },
       onOfflineReady: () => {
         console.log('App is ready for offline use');
-      }
+      },
     });
   }, []);
 
@@ -370,7 +374,7 @@ function App() {
                 <Route path="/about" element={<AppRoutes />} />
                 <Route path="/contact" element={<AppRoutes />} />
                 <Route path="/docs" element={<AppRoutes />} />
-                <Route path="*" element={<NotFound onNavigateHome={() => window.location.href = '/'} />} />
+                <Route path="*" element={<NotFound onNavigateHome={() => (window.location.href = '/')} />} />
               </Routes>
             </CardProvider>
           </AuthProvider>

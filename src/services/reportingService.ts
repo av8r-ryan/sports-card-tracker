@@ -1,3 +1,6 @@
+import { startOfMonth, format, differenceInMonths, differenceInDays } from 'date-fns';
+import { groupBy, orderBy, sumBy, meanBy } from 'lodash';
+
 import { Card } from '../types';
 import {
   ReportFilter,
@@ -17,10 +20,8 @@ import {
   MonthlyReturn,
   CategoryPerformance,
   TaxGain,
-  CategoryInsurance
+  CategoryInsurance,
 } from '../types/reports';
-import { startOfMonth, format, differenceInMonths, differenceInDays } from 'date-fns';
-import { groupBy, orderBy, sumBy, meanBy } from 'lodash';
 
 export class ReportingService {
   private cards: Card[];
@@ -33,7 +34,7 @@ export class ReportingService {
   filterCards(filter?: ReportFilter): Card[] {
     if (!filter) return this.cards;
 
-    return this.cards.filter(card => {
+    return this.cards.filter((card) => {
       // Date range filter
       if (filter.dateRange) {
         const purchaseDate = new Date(card.purchaseDate);
@@ -54,9 +55,7 @@ export class ReportingService {
 
       // Player filter
       if (filter.players && filter.players.length > 0) {
-        if (!filter.players.some(player => 
-          card.player.toLowerCase().includes(player.toLowerCase())
-        )) return false;
+        if (!filter.players.some((player) => card.player.toLowerCase().includes(player.toLowerCase()))) return false;
       }
 
       // Condition filter
@@ -96,8 +95,8 @@ export class ReportingService {
     const averageValue = totalCards > 0 ? totalValue / totalCards : 0;
     const averageCost = totalCards > 0 ? totalCost / totalCards : 0;
     const roi = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
-    
-    const soldCards = cards.filter(card => card.sellPrice && card.sellDate);
+
+    const soldCards = cards.filter((card) => card.sellPrice && card.sellDate);
     const cardsSold = soldCards.length;
     const salesRevenue = sumBy(soldCards, 'sellPrice') || 0;
 
@@ -111,7 +110,7 @@ export class ReportingService {
       averageCost,
       roi,
       cardsSold,
-      salesRevenue
+      salesRevenue,
     };
   }
 
@@ -125,21 +124,20 @@ export class ReportingService {
     const annualizedReturn = this.calculateAnnualizedReturn(filteredCards);
 
     // Best and worst performers
-    const cardsWithGains = filteredCards.map(card => ({
+    const cardsWithGains = filteredCards.map((card) => ({
       card,
       gain: (card.currentValue || 0) - (card.purchasePrice || 0),
-      percentage: card.purchasePrice > 0 
-        ? (((card.currentValue || 0) - card.purchasePrice) / card.purchasePrice) * 100 
-        : 0
+      percentage:
+        card.purchasePrice > 0 ? (((card.currentValue || 0) - card.purchasePrice) / card.purchasePrice) * 100 : 0,
     }));
 
     const bestPerformers = orderBy(cardsWithGains, 'gain', 'desc')
       .slice(0, 10)
-      .map(item => item.card);
+      .map((item) => item.card);
 
     const worstPerformers = orderBy(cardsWithGains, 'gain', 'asc')
       .slice(0, 10)
-      .map(item => item.card);
+      .map((item) => item.card);
 
     // Monthly returns
     const monthlyReturns = this.calculateMonthlyReturns(filteredCards);
@@ -148,10 +146,8 @@ export class ReportingService {
     const categoryPerformance = this.calculateCategoryPerformance(filteredCards);
 
     // Realized vs unrealized gains
-    const soldCards = filteredCards.filter(card => card.sellPrice && card.sellDate);
-    const realizedGains = sumBy(soldCards, card => 
-      (card.sellPrice || 0) - (card.purchasePrice || 0)
-    );
+    const soldCards = filteredCards.filter((card) => card.sellPrice && card.sellDate);
+    const realizedGains = sumBy(soldCards, (card) => (card.sellPrice || 0) - (card.purchasePrice || 0));
     const unrealizedGains = totalReturn - realizedGains;
 
     return {
@@ -164,7 +160,7 @@ export class ReportingService {
       bestPerformers,
       worstPerformers,
       monthlyReturns,
-      categoryPerformance
+      categoryPerformance,
     };
   }
 
@@ -180,7 +176,7 @@ export class ReportingService {
       brandDistribution: this.calculateBrandDistribution(filteredCards, totalCards),
       teamDistribution: this.calculateTeamDistribution(filteredCards, totalCards),
       acquisitionPattern: this.calculateAcquisitionPattern(filteredCards),
-      valueDistribution: this.calculateValueDistribution(filteredCards, totalCards)
+      valueDistribution: this.calculateValueDistribution(filteredCards, totalCards),
     };
   }
 
@@ -188,14 +184,13 @@ export class ReportingService {
   generateMarketAnalysis(filter?: ReportFilter): MarketAnalysis {
     const filteredCards = this.filterCards(filter);
 
-    const performers = filteredCards.map(card => ({
+    const performers = filteredCards.map((card) => ({
       card,
       gainLoss: (card.currentValue || 0) - (card.purchasePrice || 0),
-      percentage: card.purchasePrice > 0 
-        ? (((card.currentValue || 0) - card.purchasePrice) / card.purchasePrice) * 100 
-        : 0,
+      percentage:
+        card.purchasePrice > 0 ? (((card.currentValue || 0) - card.purchasePrice) / card.purchasePrice) * 100 : 0,
       currentValue: card.currentValue || 0,
-      purchaseValue: card.purchasePrice || 0
+      purchaseValue: card.purchasePrice || 0,
     }));
 
     const topGainers = orderBy(performers, 'percentage', 'desc').slice(0, 10);
@@ -209,25 +204,23 @@ export class ReportingService {
       marketComparison: {
         portfolioReturn: this.calculateMetrics(filteredCards).roi,
         marketIndex: 8.5, // Placeholder - could integrate with actual market data
-        outperformance: this.calculateMetrics(filteredCards).roi - 8.5
-      }
+        outperformance: this.calculateMetrics(filteredCards).roi - 8.5,
+      },
     };
   }
 
   // Tax Reporting
   generateTaxReport(year: number, filter?: ReportFilter): TaxReport {
     const filteredCards = this.filterCards(filter);
-    const soldCards = filteredCards.filter(card => 
-      card.sellPrice && 
-      card.sellDate && 
-      new Date(card.sellDate).getFullYear() === year
+    const soldCards = filteredCards.filter(
+      (card) => card.sellPrice && card.sellDate && new Date(card.sellDate).getFullYear() === year
     );
 
-    const taxGains: TaxGain[] = soldCards.map(card => {
+    const taxGains: TaxGain[] = soldCards.map((card) => {
       const purchaseDate = new Date(card.purchaseDate);
       const sellDate = new Date(card.sellDate!);
       const holdingPeriod = differenceInDays(sellDate, purchaseDate);
-      
+
       return {
         card,
         purchaseDate,
@@ -235,12 +228,12 @@ export class ReportingService {
         costBasis: card.purchasePrice || 0,
         salePrice: card.sellPrice || 0,
         gainLoss: (card.sellPrice || 0) - (card.purchasePrice || 0),
-        holdingPeriod
+        holdingPeriod,
       };
     });
 
-    const shortTermGains = taxGains.filter(gain => gain.holdingPeriod <= 365);
-    const longTermGains = taxGains.filter(gain => gain.holdingPeriod > 365);
+    const shortTermGains = taxGains.filter((gain) => gain.holdingPeriod <= 365);
+    const longTermGains = taxGains.filter((gain) => gain.holdingPeriod > 365);
 
     return {
       year,
@@ -248,7 +241,7 @@ export class ReportingService {
       longTermGains,
       totalShortTerm: sumBy(shortTermGains, 'gainLoss'),
       totalLongTerm: sumBy(longTermGains, 'gainLoss'),
-      netGainLoss: sumBy(taxGains, 'gainLoss')
+      netGainLoss: sumBy(taxGains, 'gainLoss'),
     };
   }
 
@@ -256,28 +249,28 @@ export class ReportingService {
   generateInsuranceReport(filter?: ReportFilter): InsuranceReport {
     const filteredCards = this.filterCards(filter);
     const totalReplacementValue = sumBy(filteredCards, 'currentValue') || 0;
-    
+
     // High value cards (top 10% by value)
     const sortedByValue = orderBy(filteredCards, 'currentValue', 'desc');
     const highValueThreshold = Math.ceil(filteredCards.length * 0.1);
     const highValueCards = sortedByValue.slice(0, highValueThreshold);
 
-    const categoryBreakdown: CategoryInsurance[] = Object.entries(
-      groupBy(filteredCards, 'category')
-    ).map(([category, cards]) => ({
-      category,
-      totalValue: sumBy(cards, 'currentValue') || 0,
-      cardCount: cards.length,
-      highestValue: Math.max(...cards.map(c => c.currentValue || 0)),
-      averageValue: meanBy(cards, 'currentValue') || 0
-    }));
+    const categoryBreakdown: CategoryInsurance[] = Object.entries(groupBy(filteredCards, 'category')).map(
+      ([category, cards]) => ({
+        category,
+        totalValue: sumBy(cards, 'currentValue') || 0,
+        cardCount: cards.length,
+        highestValue: Math.max(...cards.map((c) => c.currentValue || 0)),
+        averageValue: meanBy(cards, 'currentValue') || 0,
+      })
+    );
 
     return {
       totalReplacementValue,
       highValueCards,
       categoryBreakdown,
       recommendedCoverage: totalReplacementValue * 1.2, // 20% buffer
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
   }
 
@@ -285,7 +278,7 @@ export class ReportingService {
   private calculateAnnualizedReturn(cards: Card[]): number {
     if (cards.length === 0) return 0;
 
-    const oldestCard = cards.reduce((oldest, card) => 
+    const oldestCard = cards.reduce((oldest, card) =>
       new Date(card.purchaseDate) < new Date(oldest.purchaseDate) ? card : oldest
     );
 
@@ -297,24 +290,24 @@ export class ReportingService {
   }
 
   private calculateMonthlyReturns(cards: Card[]): MonthlyReturn[] {
-    const monthlyData = groupBy(cards, card => 
-      format(startOfMonth(new Date(card.purchaseDate)), 'yyyy-MM')
-    );
+    const monthlyData = groupBy(cards, (card) => format(startOfMonth(new Date(card.purchaseDate)), 'yyyy-MM'));
 
-    return Object.entries(monthlyData).map(([month, monthCards]) => {
-      const value = sumBy(monthCards, 'currentValue') || 0;
-      const cost = sumBy(monthCards, 'purchasePrice') || 0;
-      const returnAmount = value - cost;
-      const percentage = cost > 0 ? (returnAmount / cost) * 100 : 0;
+    return Object.entries(monthlyData)
+      .map(([month, monthCards]) => {
+        const value = sumBy(monthCards, 'currentValue') || 0;
+        const cost = sumBy(monthCards, 'purchasePrice') || 0;
+        const returnAmount = value - cost;
+        const percentage = cost > 0 ? (returnAmount / cost) * 100 : 0;
 
-      return {
-        month,
-        value,
-        cost,
-        return: returnAmount,
-        percentage
-      };
-    }).sort((a, b) => a.month.localeCompare(b.month));
+        return {
+          month,
+          value,
+          cost,
+          return: returnAmount,
+          percentage,
+        };
+      })
+      .sort((a, b) => a.month.localeCompare(b.month));
   }
 
   private calculateCategoryPerformance(cards: Card[]): CategoryPerformance[] {
@@ -332,7 +325,7 @@ export class ReportingService {
         totalCost,
         return: returnAmount,
         percentage,
-        cardCount: categoryCards.length
+        cardCount: categoryCards.length,
       };
     });
   }
@@ -345,7 +338,7 @@ export class ReportingService {
       count: categoryCards.length,
       percentage: (categoryCards.length / total) * 100,
       totalValue: sumBy(categoryCards, 'currentValue') || 0,
-      averageValue: meanBy(categoryCards, 'currentValue') || 0
+      averageValue: meanBy(categoryCards, 'currentValue') || 0,
     }));
   }
 
@@ -356,19 +349,21 @@ export class ReportingService {
       condition,
       count: conditionCards.length,
       percentage: (conditionCards.length / total) * 100,
-      averageValue: meanBy(conditionCards, 'currentValue') || 0
+      averageValue: meanBy(conditionCards, 'currentValue') || 0,
     }));
   }
 
   private calculateYearDistribution(cards: Card[], total: number): YearDistribution[] {
     const yearData = groupBy(cards, 'year');
 
-    return Object.entries(yearData).map(([year, yearCards]) => ({
-      year: parseInt(year),
-      count: yearCards.length,
-      percentage: (yearCards.length / total) * 100,
-      averageValue: meanBy(yearCards, 'currentValue') || 0
-    })).sort((a, b) => b.year - a.year);
+    return Object.entries(yearData)
+      .map(([year, yearCards]) => ({
+        year: parseInt(year),
+        count: yearCards.length,
+        percentage: (yearCards.length / total) * 100,
+        averageValue: meanBy(yearCards, 'currentValue') || 0,
+      }))
+      .sort((a, b) => b.year - a.year);
   }
 
   private calculateBrandDistribution(cards: Card[], total: number): BrandDistribution[] {
@@ -378,7 +373,7 @@ export class ReportingService {
       brand,
       count: brandCards.length,
       percentage: (brandCards.length / total) * 100,
-      totalValue: sumBy(brandCards, 'currentValue') || 0
+      totalValue: sumBy(brandCards, 'currentValue') || 0,
     }));
   }
 
@@ -389,21 +384,21 @@ export class ReportingService {
       team,
       count: teamCards.length,
       percentage: (teamCards.length / total) * 100,
-      totalValue: sumBy(teamCards, 'currentValue') || 0
+      totalValue: sumBy(teamCards, 'currentValue') || 0,
     }));
   }
 
   private calculateAcquisitionPattern(cards: Card[]): AcquisitionPattern[] {
-    const monthlyData = groupBy(cards, card => 
-      format(startOfMonth(new Date(card.purchaseDate)), 'yyyy-MM')
-    );
+    const monthlyData = groupBy(cards, (card) => format(startOfMonth(new Date(card.purchaseDate)), 'yyyy-MM'));
 
-    return Object.entries(monthlyData).map(([month, monthCards]) => ({
-      month,
-      count: monthCards.length,
-      totalSpent: sumBy(monthCards, 'purchasePrice') || 0,
-      averagePrice: meanBy(monthCards, 'purchasePrice') || 0
-    })).sort((a, b) => a.month.localeCompare(b.month));
+    return Object.entries(monthlyData)
+      .map(([month, monthCards]) => ({
+        month,
+        count: monthCards.length,
+        totalSpent: sumBy(monthCards, 'purchasePrice') || 0,
+        averagePrice: meanBy(monthCards, 'purchasePrice') || 0,
+      }))
+      .sort((a, b) => a.month.localeCompare(b.month));
   }
 
   private calculateValueDistribution(cards: Card[], total: number): ValueDistribution[] {
@@ -413,11 +408,11 @@ export class ReportingService {
       { min: 50, max: 100, label: '$50-$100' },
       { min: 100, max: 500, label: '$100-$500' },
       { min: 500, max: 1000, label: '$500-$1,000' },
-      { min: 1000, max: Infinity, label: '$1,000+' }
+      { min: 1000, max: Infinity, label: '$1,000+' },
     ];
 
-    return ranges.map(range => {
-      const cardsInRange = cards.filter(card => {
+    return ranges.map((range) => {
+      const cardsInRange = cards.filter((card) => {
         const value = card.currentValue || 0;
         return value >= range.min && value < range.max;
       });
@@ -426,7 +421,7 @@ export class ReportingService {
         range: range.label,
         count: cardsInRange.length,
         percentage: (cardsInRange.length / total) * 100,
-        totalValue: sumBy(cardsInRange, 'currentValue') || 0
+        totalValue: sumBy(cardsInRange, 'currentValue') || 0,
       };
     });
   }
@@ -445,7 +440,7 @@ export class ReportingService {
         totalCards: playerCards.length,
         totalValue,
         averageGain,
-        bestCard
+        bestCard,
       };
     });
   }

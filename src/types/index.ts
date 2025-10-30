@@ -74,7 +74,7 @@ export interface SortOption {
   direction: 'asc' | 'desc';
 }
 
-export type ConditionGrade = 
+export type ConditionGrade =
   | 'RAW'
   | '10: GEM MINT'
   | '9.5: MINT+'
@@ -116,10 +116,10 @@ export const CONDITIONS: ConditionGrade[] = [
   '2.5: GOOD+',
   '2: GOOD',
   '1.5: POOR+',
-  '1: POOR'
+  '1: POOR',
 ];
 
-export type CardCategory = 
+export type CardCategory =
   | 'Racing'
   | 'MMA'
   | 'Wrestling'
@@ -141,10 +141,10 @@ export const CATEGORIES: CardCategory[] = [
   'Baseball',
   'Basketball',
   'Football',
-  'Magic: The Gathering'
+  'Magic: The Gathering',
 ];
 
-export type GradingCompany = 
+export type GradingCompany =
   | 'PSA'
   | 'BGS'
   | 'SGC'
@@ -166,5 +166,5 @@ export const GRADING_COMPANIES: GradingCompany[] = [
   'TAG',
   'ISA',
   'GMA Grading',
-  'ACE Grading'
+  'ACE Grading',
 ];

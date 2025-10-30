@@ -1,12 +1,29 @@
 import React, { useState, useMemo } from 'react';
+import {
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  RadialBarChart,
+  RadialBar,
+  ComposedChart,
+  Treemap,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PolarGrid,
+  PolarAngleAxis,
+} from 'recharts';
+
 import { useCards } from '../../context/DexieCardContext';
 import { Card } from '../../types';
-import {
-  Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
-  RadialBarChart, RadialBar, ComposedChart, Treemap,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PolarGrid, PolarAngleAxis
-} from 'recharts';
 import './ExecutiveDashboard.css';
 
 // Helper functions - defined outside component to avoid initialization errors
@@ -15,13 +32,13 @@ const formatCurrency = (value: number): string => {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value);
 };
 
 const calculateWinRate = (cards: Card[]): number => {
   if (cards.length === 0) return 0;
-  const profitable = cards.filter(c => c.currentValue > c.purchasePrice).length;
+  const profitable = cards.filter((c) => c.currentValue > c.purchasePrice).length;
   return (profitable / cards.length) * 100;
 };
 
@@ -37,7 +54,7 @@ const calculateAverageROI = (cards: Card[]): number => {
 const calculatePortfolioVolatility = (cards: Card[]): number => {
   if (cards.length === 0) return 0;
   // Simplified volatility calculation
-  const returns = cards.map(c => ((c.currentValue - c.purchasePrice) / c.purchasePrice) * 100);
+  const returns = cards.map((c) => ((c.currentValue - c.purchasePrice) / c.purchasePrice) * 100);
   const avg = returns.reduce((a, b) => a + b, 0) / returns.length;
   const variance = returns.reduce((sum, r) => sum + Math.pow(r - avg, 2), 0) / returns.length;
   return Math.sqrt(variance);
@@ -50,20 +67,23 @@ const calculateTotalROI = (cards: Card[]): number => {
 };
 
 const groupByCategory = (cards: Card[]): Record<string, Card[]> => {
-  return cards.reduce((acc, card) => {
-    if (!acc[card.category]) acc[card.category] = [];
-    acc[card.category].push(card);
-    return acc;
-  }, {} as Record<string, Card[]>);
+  return cards.reduce(
+    (acc, card) => {
+      if (!acc[card.category]) acc[card.category] = [];
+      acc[card.category].push(card);
+      return acc;
+    },
+    {} as Record<string, Card[]>
+  );
 };
 
 const calculateConcentrationRisk = (cards: Card[]) => {
   const totalValue = cards.reduce((sum, c) => sum + c.currentValue, 0);
   const categories = groupByCategory(cards);
-  
+
   let maxCategory = '';
   let maxPercentage = 0;
-  
+
   Object.entries(categories).forEach(([category, categoryCards]) => {
     const categoryValue = categoryCards.reduce((sum, c) => sum + c.currentValue, 0);
     const percentage = (categoryValue / totalValue) * 100;
@@ -72,14 +92,14 @@ const calculateConcentrationRisk = (cards: Card[]) => {
       maxPercentage = percentage;
     }
   });
-  
+
   return { category: maxCategory, maxPercentage };
 };
 
 const getTopPerformingCategory = (categories: Record<string, Card[]>): { category: string; roi: number } | null => {
   let topCategory: { category: string; roi: number } | null = null;
   let topROI = -Infinity;
-  
+
   Object.entries(categories).forEach(([category, cards]) => {
     const avgROI = calculateAverageROI(cards);
     if (avgROI > topROI) {
@@ -87,7 +107,7 @@ const getTopPerformingCategory = (categories: Record<string, Card[]>): { categor
       topCategory = { category, roi: avgROI };
     }
   });
-  
+
   return topCategory;
 };
 
@@ -96,14 +116,14 @@ const generatePerformanceTimeline = (cards: Card[], timeframe: string) => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const currentValue = cards.reduce((sum, c) => sum + c.currentValue, 0);
   const invested = cards.reduce((sum, c) => sum + c.purchasePrice, 0);
-  
+
   return months.map((month, index) => {
-    const factor = 1 + (index * 0.02); // Simplified growth
+    const factor = 1 + index * 0.02; // Simplified growth
     return {
       date: month,
       value: currentValue * factor,
       invested: invested,
-      roi: ((currentValue * factor - invested) / invested) * 100
+      roi: ((currentValue * factor - invested) / invested) * 100,
     };
   });
 };
@@ -141,18 +161,19 @@ const getCategoryTreemapData = (cards: Card[]) => {
       name: category,
       value,
       roi,
-      count: categoryCards.length
+      count: categoryCards.length,
     };
   });
 };
 
 const calculateAnnualizedReturn = (cards: Card[]): number => {
   const roi = calculateTotalROI(cards);
-  const avgDays = cards.reduce((sum, c) => {
-    const days = Math.floor((new Date().getTime() - new Date(c.purchaseDate).getTime()) / (1000 * 60 * 60 * 24));
-    return sum + days;
-  }, 0) / cards.length;
-  
+  const avgDays =
+    cards.reduce((sum, c) => {
+      const days = Math.floor((new Date().getTime() - new Date(c.purchaseDate).getTime()) / (1000 * 60 * 60 * 24));
+      return sum + days;
+    }, 0) / cards.length;
+
   return avgDays > 0 ? (Math.pow(1 + roi / 100, 365 / avgDays) - 1) * 100 : 0;
 };
 
@@ -165,14 +186,14 @@ const getWorstMonth = (cards: Card[]) => {
 };
 
 const calculateWinLossRatio = (cards: Card[]): number => {
-  const wins = cards.filter(c => c.currentValue > c.purchasePrice).length;
-  const losses = cards.filter(c => c.currentValue <= c.purchasePrice).length;
+  const wins = cards.filter((c) => c.currentValue > c.purchasePrice).length;
+  const losses = cards.filter((c) => c.currentValue <= c.purchasePrice).length;
   return losses > 0 ? wins / losses : wins;
 };
 
 const getRiskColor = (value: number, benchmark: number, metric: string): string => {
   const isLowerBetter = metric === 'Volatility' || metric === 'Max Drawdown';
-  
+
   if (isLowerBetter) {
     if (value <= benchmark) return '#10B981';
     if (value <= benchmark * 1.2) return '#F59E0B';
@@ -187,7 +208,7 @@ const getRiskColor = (value: number, benchmark: number, metric: string): string 
 const getConcentrationData = (cards: Card[], type: 'category' | 'player') => {
   const totalValue = cards.reduce((sum, c) => sum + c.currentValue, 0);
   const groups = type === 'category' ? groupByCategory(cards) : groupByPlayer(cards);
-  
+
   return Object.entries(groups)
     .map(([name, groupCards]) => {
       const value = groupCards.reduce((sum, c) => sum + c.currentValue, 0);
@@ -195,18 +216,21 @@ const getConcentrationData = (cards: Card[], type: 'category' | 'player') => {
         name,
         value,
         percentage: (value / totalValue) * 100,
-        count: groupCards.length
+        count: groupCards.length,
       };
     })
     .sort((a, b) => b.percentage - a.percentage);
 };
 
 const groupByPlayer = (cards: Card[]): Record<string, Card[]> => {
-  return cards.reduce((acc, card) => {
-    if (!acc[card.player]) acc[card.player] = [];
-    acc[card.player].push(card);
-    return acc;
-  }, {} as Record<string, Card[]>);
+  return cards.reduce(
+    (acc, card) => {
+      if (!acc[card.player]) acc[card.player] = [];
+      acc[card.player].push(card);
+      return acc;
+    },
+    {} as Record<string, Card[]>
+  );
 };
 
 interface KPIMetric {
@@ -250,13 +274,13 @@ const ExecutiveDashboard: React.FC = () => {
     const currentValue = state.cards.reduce((sum, card) => sum + card.currentValue, 0);
     const totalReturn = currentValue - totalInvestment;
     const roi = totalInvestment > 0 ? (totalReturn / totalInvestment) * 100 : 0;
-    
+
     // Calculate 30-day change (simulated)
     const thirtyDayChange = roi * 0.15; // Simulated
     const cardGrowth = 12; // Simulated new cards added
     const avgCardValue = currentValue / totalCards;
     const previousAvg = avgCardValue * 0.92; // Simulated previous average
-    
+
     return [
       {
         label: 'Portfolio Value',
@@ -264,7 +288,7 @@ const ExecutiveDashboard: React.FC = () => {
         change: 8.5,
         trend: 'up',
         target: currentValue * 1.2,
-        achievement: 83
+        achievement: 83,
       },
       {
         label: 'Total ROI',
@@ -272,19 +296,19 @@ const ExecutiveDashboard: React.FC = () => {
         change: thirtyDayChange,
         trend: roi > 0 ? 'up' : 'down',
         target: 25,
-        achievement: (roi / 25) * 100
+        achievement: (roi / 25) * 100,
       },
       {
         label: 'Collection Size',
         value: totalCards,
         change: cardGrowth,
-        trend: 'up'
+        trend: 'up',
       },
       {
         label: 'Avg Card Value',
         value: formatCurrency(avgCardValue),
         change: ((avgCardValue - previousAvg) / previousAvg) * 100,
-        trend: avgCardValue > previousAvg ? 'up' : 'down'
+        trend: avgCardValue > previousAvg ? 'up' : 'down',
       },
       {
         label: 'Win Rate',
@@ -292,40 +316,40 @@ const ExecutiveDashboard: React.FC = () => {
         change: 3.2,
         trend: 'up',
         target: 70,
-        achievement: (calculateWinRate(state.cards) / 70) * 100
+        achievement: (calculateWinRate(state.cards) / 70) * 100,
       },
       {
         label: 'Active Investments',
-        value: state.cards.filter(c => !c.sellDate).length,
+        value: state.cards.filter((c) => !c.sellDate).length,
         change: 5,
-        trend: 'up'
-      }
+        trend: 'up',
+      },
     ];
   }, [state.cards]);
 
   // Portfolio health score calculation
   const portfolioHealth = useMemo((): PortfolioHealth => {
-    const categories = new Set(state.cards.map(c => c.category)).size;
-    const players = new Set(state.cards.map(c => c.player)).size;
+    const categories = new Set(state.cards.map((c) => c.category)).size;
+    const players = new Set(state.cards.map((c) => c.player)).size;
     const avgROI = calculateAverageROI(state.cards);
-    const gradedPercent = (state.cards.filter(c => c.gradingCompany).length / state.cards.length) * 100;
-    
+    const gradedPercent = (state.cards.filter((c) => c.gradingCompany).length / state.cards.length) * 100;
+
     const factors = {
-      diversification: Math.min(100, (categories * 15 + players * 2)),
+      diversification: Math.min(100, categories * 15 + players * 2),
       performance: Math.min(100, avgROI * 2),
       liquidity: Math.min(100, gradedPercent * 1.2),
       risk: Math.max(0, 100 - calculatePortfolioVolatility(state.cards) * 2),
-      growth: Math.min(100, (state.cards.length / 50) * 100)
+      growth: Math.min(100, (state.cards.length / 50) * 100),
     };
-    
+
     const score = Object.values(factors).reduce((sum, val) => sum + val, 0) / 5;
-    
+
     let rating: PortfolioHealth['rating'];
     if (score >= 80) rating = 'Excellent';
     else if (score >= 65) rating = 'Good';
     else if (score >= 50) rating = 'Fair';
     else rating = 'Poor';
-    
+
     return { score, rating, factors };
   }, [state.cards]);
 
@@ -335,7 +359,7 @@ const ExecutiveDashboard: React.FC = () => {
     const roi = calculateTotalROI(state.cards);
     const winRate = calculateWinRate(state.cards);
     const categories = groupByCategory(state.cards);
-    
+
     // Performance insights
     if (roi > 50) {
       insights.push({
@@ -343,10 +367,10 @@ const ExecutiveDashboard: React.FC = () => {
         title: 'Outstanding Performance',
         description: `Your portfolio has achieved ${roi.toFixed(1)}% ROI, significantly outperforming market averages.`,
         impact: 'high',
-        action: 'Consider taking profits on top performers'
+        action: 'Consider taking profits on top performers',
       });
     }
-    
+
     // Risk insights
     const concentration = calculateConcentrationRisk(state.cards);
     if (concentration.maxPercentage > 30) {
@@ -355,10 +379,10 @@ const ExecutiveDashboard: React.FC = () => {
         title: 'High Concentration Risk',
         description: `${concentration.maxPercentage.toFixed(1)}% of your portfolio is in ${concentration.category}. This poses a significant risk.`,
         impact: 'high',
-        action: 'Diversify into other categories to reduce risk'
+        action: 'Diversify into other categories to reduce risk',
       });
     }
-    
+
     // Opportunity insights
     const topCategory = getTopPerformingCategory(categories);
     if (topCategory && topCategory.roi > 40) {
@@ -367,10 +391,10 @@ const ExecutiveDashboard: React.FC = () => {
         title: `${topCategory.category} Momentum`,
         description: `${topCategory.category} cards showing strong performance with ${topCategory.roi.toFixed(1)}% average ROI.`,
         impact: 'medium',
-        action: 'Research additional investment opportunities in this category'
+        action: 'Research additional investment opportunities in this category',
       });
     }
-    
+
     // Win rate insight
     if (winRate < 50) {
       insights.push({
@@ -378,12 +402,12 @@ const ExecutiveDashboard: React.FC = () => {
         title: 'Low Win Rate Alert',
         description: `Only ${winRate.toFixed(1)}% of your investments are profitable. Review your selection criteria.`,
         impact: 'high',
-        action: 'Analyze losing positions and adjust strategy'
+        action: 'Analyze losing positions and adjust strategy',
       });
     }
-    
+
     // Liquidity insight
-    const liquidCards = state.cards.filter(c => c.gradingCompany).length;
+    const liquidCards = state.cards.filter((c) => c.gradingCompany).length;
     const liquidityRate = (liquidCards / state.cards.length) * 100;
     if (liquidityRate < 30) {
       insights.push({
@@ -391,10 +415,10 @@ const ExecutiveDashboard: React.FC = () => {
         title: 'Low Portfolio Liquidity',
         description: `Only ${liquidityRate.toFixed(1)}% of cards are graded. This may impact resale value.`,
         impact: 'medium',
-        action: 'Consider grading high-value cards to improve liquidity'
+        action: 'Consider grading high-value cards to improve liquidity',
       });
     }
-    
+
     return insights.sort((a, b) => {
       const impactOrder = { high: 0, medium: 1, low: 2 };
       return impactOrder[a.impact] - impactOrder[b.impact];
@@ -413,21 +437,27 @@ const ExecutiveDashboard: React.FC = () => {
       name: category,
       value: cards.reduce((sum, card) => sum + card.currentValue, 0),
       count: cards.length,
-      percentage: 0 // Will be calculated by the chart
+      percentage: 0, // Will be calculated by the chart
     }));
   }, [state.cards]);
 
   // Top movers data
   const topMovers = useMemo(() => {
-    const movers = state.cards.map(card => ({
+    const movers = state.cards.map((card) => ({
       card,
       change: ((card.currentValue - card.purchasePrice) / card.purchasePrice) * 100,
-      changeAmount: card.currentValue - card.purchasePrice
+      changeAmount: card.currentValue - card.purchasePrice,
     }));
-    
+
     return {
-      gainers: movers.filter(m => m.change > 0).sort((a, b) => b.change - a.change).slice(0, 5),
-      losers: movers.filter(m => m.change < 0).sort((a, b) => a.change - b.change).slice(0, 5)
+      gainers: movers
+        .filter((m) => m.change > 0)
+        .sort((a, b) => b.change - a.change)
+        .slice(0, 5),
+      losers: movers
+        .filter((m) => m.change < 0)
+        .sort((a, b) => a.change - b.change)
+        .slice(0, 5),
     };
   }, [state.cards]);
 
@@ -437,15 +467,14 @@ const ExecutiveDashboard: React.FC = () => {
     const sharpe = calculateSharpeRatio(state.cards);
     const maxDrawdown = calculateMaxDrawdown(state.cards);
     const beta = calculateBeta(state.cards);
-    
+
     return [
       { name: 'Volatility', value: volatility, benchmark: 18, unit: '%' },
       { name: 'Sharpe Ratio', value: sharpe, benchmark: 1.0, unit: '' },
       { name: 'Max Drawdown', value: Math.abs(maxDrawdown), benchmark: 15, unit: '%' },
-      { name: 'Beta', value: beta, benchmark: 1.0, unit: '' }
+      { name: 'Beta', value: beta, benchmark: 1.0, unit: '' },
     ];
   }, [state.cards]);
-
 
   const COLORS = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#6366F1'];
 
@@ -458,12 +487,8 @@ const ExecutiveDashboard: React.FC = () => {
         </div>
         <div className="header-controls">
           <div className="timeframe-selector">
-            {['7D', '1M', '3M', '6M', '1Y', 'ALL'].map(tf => (
-              <button
-                key={tf}
-                className={timeframe === tf ? 'active' : ''}
-                onClick={() => setTimeframe(tf as any)}
-              >
+            {['7D', '1M', '3M', '6M', '1Y', 'ALL'].map((tf) => (
+              <button key={tf} className={timeframe === tf ? 'active' : ''} onClick={() => setTimeframe(tf as any)}>
                 {tf}
               </button>
             ))}
@@ -480,8 +505,8 @@ const ExecutiveDashboard: React.FC = () => {
           { id: 'overview', label: 'Overview', icon: '🏠' },
           { id: 'performance', label: 'Performance', icon: '📈' },
           { id: 'risk', label: 'Risk Analysis', icon: '⚠️' },
-          { id: 'opportunities', label: 'Opportunities', icon: '💡' }
-        ].map(view => (
+          { id: 'opportunities', label: 'Opportunities', icon: '💡' },
+        ].map((view) => (
           <button
             key={view.id}
             className={viewMode === view.id ? 'active' : ''}
@@ -510,14 +535,9 @@ const ExecutiveDashboard: React.FC = () => {
                 {kpi.target && (
                   <div className="kpi-progress">
                     <div className="progress-bar">
-                      <div 
-                        className="progress-fill"
-                        style={{ width: `${Math.min(100, kpi.achievement || 0)}%` }}
-                      />
+                      <div className="progress-fill" style={{ width: `${Math.min(100, kpi.achievement || 0)}%` }} />
                     </div>
-                    <span className="progress-label">
-                      {kpi.achievement?.toFixed(0)}% of target
-                    </span>
+                    <span className="progress-label">{kpi.achievement?.toFixed(0)}% of target</span>
                   </div>
                 )}
               </div>
@@ -530,9 +550,15 @@ const ExecutiveDashboard: React.FC = () => {
             <div className="health-score-container">
               <div className="health-score-visual">
                 <ResponsiveContainer width="100%" height={300}>
-                  <RadialBarChart cx="50%" cy="50%" innerRadius="20%" outerRadius="90%" data={[
-                    { name: 'Score', value: portfolioHealth.score, fill: getHealthColor(portfolioHealth.score) }
-                  ]}>
+                  <RadialBarChart
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="20%"
+                    outerRadius="90%"
+                    data={[
+                      { name: 'Score', value: portfolioHealth.score, fill: getHealthColor(portfolioHealth.score) },
+                    ]}
+                  >
                     <PolarGrid />
                     <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
                     <RadialBar
@@ -541,13 +567,7 @@ const ExecutiveDashboard: React.FC = () => {
                       cornerRadius={10}
                       fill={getHealthColor(portfolioHealth.score)}
                     />
-                    <text 
-                      x="50%" 
-                      y="50%" 
-                      textAnchor="middle" 
-                      dominantBaseline="middle"
-                      className="health-score-text"
-                    >
+                    <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" className="health-score-text">
                       <tspan x="50%" dy="-10" fontSize="48" fontWeight="700">
                         {portfolioHealth.score.toFixed(0)}
                       </tspan>
@@ -562,15 +582,13 @@ const ExecutiveDashboard: React.FC = () => {
                 <h3>Health Factors</h3>
                 {Object.entries(portfolioHealth.factors).map(([factor, score]) => (
                   <div key={factor} className="health-factor">
-                    <span className="factor-label">
-                      {factor.charAt(0).toUpperCase() + factor.slice(1)}
-                    </span>
+                    <span className="factor-label">{factor.charAt(0).toUpperCase() + factor.slice(1)}</span>
                     <div className="factor-bar">
-                      <div 
+                      <div
                         className="factor-fill"
-                        style={{ 
+                        style={{
                           width: `${score}%`,
-                          backgroundColor: getHealthColor(score)
+                          backgroundColor: getHealthColor(score),
                         }}
                       />
                     </div>
@@ -589,9 +607,13 @@ const ExecutiveDashboard: React.FC = () => {
                 <div key={index} className={`insight-card ${insight.type} ${insight.impact}`}>
                   <div className="insight-header">
                     <span className="insight-icon">
-                      {insight.type === 'success' ? '✅' : 
-                       insight.type === 'warning' ? '⚠️' : 
-                       insight.type === 'opportunity' ? '💡' : '🚨'}
+                      {insight.type === 'success'
+                        ? '✅'
+                        : insight.type === 'warning'
+                          ? '⚠️'
+                          : insight.type === 'opportunity'
+                            ? '💡'
+                            : '🚨'}
                     </span>
                     <span className="insight-impact">{insight.impact.toUpperCase()}</span>
                   </div>
@@ -615,19 +637,19 @@ const ExecutiveDashboard: React.FC = () => {
                 <XAxis dataKey="date" />
                 <YAxis tickFormatter={(value) => formatCurrency(value)} />
                 <Tooltip formatter={(value: any) => formatCurrency(value)} />
-                <Area 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#8B5CF6" 
-                  fill="#8B5CF6" 
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8B5CF6"
+                  fill="#8B5CF6"
                   fillOpacity={0.3}
                   strokeWidth={2}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="invested" 
-                  stroke="#3B82F6" 
-                  fill="#3B82F6" 
+                <Area
+                  type="monotone"
+                  dataKey="invested"
+                  stroke="#3B82F6"
+                  fill="#3B82F6"
                   fillOpacity={0.3}
                   strokeWidth={2}
                 />
@@ -661,10 +683,7 @@ const ExecutiveDashboard: React.FC = () => {
               <div className="allocation-legend">
                 {assetAllocation.slice(0, 4).map((item, index) => (
                   <div key={index} className="legend-item">
-                    <span 
-                      className="legend-color" 
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                    />
+                    <span className="legend-color" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                     <span className="legend-label">{item.name}</span>
                     <span className="legend-value">{formatCurrency(item.value)}</span>
                   </div>
@@ -682,9 +701,7 @@ const ExecutiveDashboard: React.FC = () => {
                       <span className="mover-name">
                         {mover.card.player} {mover.card.year}
                       </span>
-                      <span className="mover-change positive">
-                        +{mover.change.toFixed(1)}%
-                      </span>
+                      <span className="mover-change positive">+{mover.change.toFixed(1)}%</span>
                     </div>
                   ))}
                 </div>
@@ -695,9 +712,7 @@ const ExecutiveDashboard: React.FC = () => {
                       <span className="mover-name">
                         {mover.card.player} {mover.card.year}
                       </span>
-                      <span className="mover-change negative">
-                        {mover.change.toFixed(1)}%
-                      </span>
+                      <span className="mover-change negative">{mover.change.toFixed(1)}%</span>
                     </div>
                   ))}
                 </div>
@@ -725,7 +740,14 @@ const ExecutiveDashboard: React.FC = () => {
                 <YAxis yAxisId="right" orientation="right" tickFormatter={(value) => `${value}%`} />
                 <Tooltip />
                 <Bar yAxisId="left" dataKey="invested" fill="#3B82F6" opacity={0.8} name="Total Invested" />
-                <Line yAxisId="left" type="monotone" dataKey="value" stroke="#8B5CF6" strokeWidth={3} name="Portfolio Value" />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8B5CF6"
+                  strokeWidth={3}
+                  name="Portfolio Value"
+                />
                 <Line yAxisId="right" type="monotone" dataKey="roi" stroke="#10B981" strokeWidth={2} name="ROI %" />
                 <Legend />
               </ComposedChart>
@@ -739,11 +761,11 @@ const ExecutiveDashboard: React.FC = () => {
               <Treemap
                 data={getCategoryTreemapData(state.cards)}
                 dataKey="value"
-                aspectRatio={4/3}
+                aspectRatio={4 / 3}
                 stroke="#fff"
                 fill="#8B5CF6"
               >
-                <Tooltip 
+                <Tooltip
                   content={({ active, payload }) => {
                     if (active && payload && payload[0]) {
                       const data = payload[0].payload;
@@ -769,7 +791,8 @@ const ExecutiveDashboard: React.FC = () => {
               <h4>Annualized Return</h4>
               <div className="metric-value">{calculateAnnualizedReturn(state.cards).toFixed(2)}%</div>
               <div className="metric-comparison">
-                vs S&P 500: <span className="positive">+{(calculateAnnualizedReturn(state.cards) - 10.5).toFixed(2)}%</span>
+                vs S&P 500:{' '}
+                <span className="positive">+{(calculateAnnualizedReturn(state.cards) - 10.5).toFixed(2)}%</span>
               </div>
             </div>
             <div className="metric-card">
@@ -786,8 +809,8 @@ const ExecutiveDashboard: React.FC = () => {
               <h4>Win/Loss Ratio</h4>
               <div className="metric-value">{calculateWinLossRatio(state.cards).toFixed(2)}</div>
               <div className="metric-subtext">
-                {state.cards.filter(c => c.currentValue > c.purchasePrice).length}W / 
-                {state.cards.filter(c => c.currentValue <= c.purchasePrice).length}L
+                {state.cards.filter((c) => c.currentValue > c.purchasePrice).length}W /
+                {state.cards.filter((c) => c.currentValue <= c.purchasePrice).length}L
               </div>
             </div>
           </div>
@@ -815,12 +838,14 @@ const ExecutiveDashboard: React.FC = () => {
                         cy="50%"
                         innerRadius="30%"
                         outerRadius="90%"
-                        data={[{
-                          name: metric.name,
-                          value: metric.value,
-                          benchmark: metric.benchmark,
-                          fill: getRiskColor(metric.value, metric.benchmark, metric.name)
-                        }]}
+                        data={[
+                          {
+                            name: metric.name,
+                            value: metric.value,
+                            benchmark: metric.benchmark,
+                            fill: getRiskColor(metric.value, metric.benchmark, metric.name),
+                          },
+                        ]}
                       >
                         <RadialBar
                           background
@@ -828,21 +853,23 @@ const ExecutiveDashboard: React.FC = () => {
                           cornerRadius={5}
                           fill={getRiskColor(metric.value, metric.benchmark, metric.name)}
                         />
-                        <text 
-                          x="50%" 
-                          y="50%" 
-                          textAnchor="middle" 
+                        <text
+                          x="50%"
+                          y="50%"
+                          textAnchor="middle"
                           dominantBaseline="middle"
                           fontSize="24"
                           fontWeight="700"
                         >
-                          {metric.value.toFixed(2)}{metric.unit}
+                          {metric.value.toFixed(2)}
+                          {metric.unit}
                         </text>
                       </RadialBarChart>
                     </ResponsiveContainer>
                   </div>
                   <div className="gauge-benchmark">
-                    Benchmark: {metric.benchmark}{metric.unit}
+                    Benchmark: {metric.benchmark}
+                    {metric.unit}
                   </div>
                 </div>
               ))}
@@ -863,9 +890,9 @@ const ExecutiveDashboard: React.FC = () => {
                     <Tooltip formatter={(value: any) => `${value.toFixed(1)}%`} />
                     <Bar dataKey="percentage" fill="#8B5CF6">
                       {getConcentrationData(state.cards, 'category').map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.percentage > 30 ? '#EF4444' : entry.percentage > 20 ? '#F59E0B' : '#10B981'} 
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={entry.percentage > 30 ? '#EF4444' : entry.percentage > 20 ? '#F59E0B' : '#10B981'}
                         />
                       ))}
                     </Bar>
@@ -882,12 +909,14 @@ const ExecutiveDashboard: React.FC = () => {
                     <YAxis type="category" dataKey="name" width={100} />
                     <Tooltip formatter={(value: any) => `${value.toFixed(1)}%`} />
                     <Bar dataKey="percentage" fill="#3B82F6">
-                      {getConcentrationData(state.cards, 'player').slice(0, 10).map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.percentage > 15 ? '#EF4444' : entry.percentage > 10 ? '#F59E0B' : '#10B981'} 
-                        />
-                      ))}
+                      {getConcentrationData(state.cards, 'player')
+                        .slice(0, 10)
+                        .map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.percentage > 15 ? '#EF4444' : entry.percentage > 10 ? '#F59E0B' : '#10B981'}
+                          />
+                        ))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -990,9 +1019,33 @@ const ExecutiveDashboard: React.FC = () => {
                 <XAxis dataKey="month" />
                 <YAxis tickFormatter={(value) => formatCurrency(value)} />
                 <Tooltip formatter={(value: any) => formatCurrency(value)} />
-                <Area type="monotone" dataKey="conservative" stackId="1" stroke="#6B7280" fill="#6B7280" fillOpacity={0.3} name="Conservative" />
-                <Area type="monotone" dataKey="moderate" stackId="2" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} name="Moderate" />
-                <Area type="monotone" dataKey="aggressive" stackId="3" stroke="#10B981" fill="#10B981" fillOpacity={0.3} name="Aggressive" />
+                <Area
+                  type="monotone"
+                  dataKey="conservative"
+                  stackId="1"
+                  stroke="#6B7280"
+                  fill="#6B7280"
+                  fillOpacity={0.3}
+                  name="Conservative"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="moderate"
+                  stackId="2"
+                  stroke="#3B82F6"
+                  fill="#3B82F6"
+                  fillOpacity={0.3}
+                  name="Moderate"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="aggressive"
+                  stackId="3"
+                  stroke="#10B981"
+                  fill="#10B981"
+                  fillOpacity={0.3}
+                  name="Aggressive"
+                />
                 <Legend />
               </AreaChart>
             </ResponsiveContainer>
@@ -1007,8 +1060,8 @@ const ExecutiveDashboard: React.FC = () => {
 
 function generateRiskRecommendations(cards: Card[], riskMetrics: any[]) {
   const recommendations = [];
-  
-  const volatility = riskMetrics.find(m => m.name === 'Volatility')?.value || 0;
+
+  const volatility = riskMetrics.find((m) => m.name === 'Volatility')?.value || 0;
   if (volatility > 25) {
     recommendations.push({
       icon: '🛡️',
@@ -1018,11 +1071,11 @@ function generateRiskRecommendations(cards: Card[], riskMetrics: any[]) {
       actions: [
         'Add more graded cards from established players',
         'Reduce concentration in speculative rookies',
-        'Consider vintage cards for stability'
-      ]
+        'Consider vintage cards for stability',
+      ],
     });
   }
-  
+
   const concentration = calculateConcentrationRisk(cards);
   if (concentration.maxPercentage > 30) {
     recommendations.push({
@@ -1033,11 +1086,11 @@ function generateRiskRecommendations(cards: Card[], riskMetrics: any[]) {
       actions: [
         `Reduce ${concentration.category} allocation to under 25%`,
         'Diversify into at least 2-3 other categories',
-        'Set position limits for future purchases'
-      ]
+        'Set position limits for future purchases',
+      ],
     });
   }
-  
+
   return recommendations;
 }
 
@@ -1050,7 +1103,7 @@ function generateMarketOpportunities(_cards: Card[]) {
       confidence: 85,
       potentialROI: '45-65',
       investmentRange: '$500-$2,000',
-      timeHorizon: '6-12 months'
+      timeHorizon: '6-12 months',
     },
     {
       category: 'Pokemon',
@@ -1059,7 +1112,7 @@ function generateMarketOpportunities(_cards: Card[]) {
       confidence: 75,
       potentialROI: '30-40',
       investmentRange: '$1,000-$5,000',
-      timeHorizon: '12-18 months'
+      timeHorizon: '12-18 months',
     },
     {
       category: 'Football',
@@ -1068,8 +1121,8 @@ function generateMarketOpportunities(_cards: Card[]) {
       confidence: 90,
       potentialROI: '20-30',
       investmentRange: '$300-$1,500',
-      timeHorizon: '3-6 months'
-    }
+      timeHorizon: '3-6 months',
+    },
   ];
 }
 
@@ -1078,40 +1131,40 @@ function generateOptimizationPlan(_cards: Card[]) {
     {
       title: 'Rebalance Portfolio Allocation',
       description: 'Adjust category weights to optimal targets based on risk-return analysis.',
-      impact: '+5-8% expected annual return'
+      impact: '+5-8% expected annual return',
     },
     {
       title: 'Grade High-Value Raw Cards',
       description: 'Submit top 10% of raw cards for professional grading to improve liquidity.',
-      impact: '+15-25% immediate value increase'
+      impact: '+15-25% immediate value increase',
     },
     {
       title: 'Implement Dollar-Cost Averaging',
       description: 'Set monthly investment budget for consistent portfolio growth.',
-      impact: 'Reduce timing risk by 40%'
+      impact: 'Reduce timing risk by 40%',
     },
     {
       title: 'Establish Exit Strategy',
       description: 'Set target prices for top performers to lock in gains systematically.',
-      impact: 'Capture 80% of upside potential'
-    }
+      impact: 'Capture 80% of upside potential',
+    },
   ];
 }
 
 function generateGrowthProjections(cards: Card[]) {
   const currentValue = cards.reduce((sum, c) => sum + c.currentValue, 0);
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  
+
   return months.map((month, index) => {
-    const conservativeGrowth = 1 + (index * 0.01);
-    const moderateGrowth = 1 + (index * 0.02);
-    const aggressiveGrowth = 1 + (index * 0.035);
-    
+    const conservativeGrowth = 1 + index * 0.01;
+    const moderateGrowth = 1 + index * 0.02;
+    const aggressiveGrowth = 1 + index * 0.035;
+
     return {
       month,
       conservative: currentValue * conservativeGrowth,
       moderate: currentValue * moderateGrowth,
-      aggressive: currentValue * aggressiveGrowth
+      aggressive: currentValue * aggressiveGrowth,
     };
   });
 }

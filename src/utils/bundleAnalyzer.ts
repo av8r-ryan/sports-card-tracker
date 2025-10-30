@@ -60,7 +60,7 @@ class BundleAnalyzer {
     const chunks = await this.analyzeChunks();
     const dependencies = await this.analyzeDependencies();
     const totalSize = chunks.reduce((sum, chunk) => sum + chunk.size, 0);
-    
+
     const recommendations = this.generateRecommendations(chunks, dependencies);
     const warnings = this.generateWarnings(chunks, dependencies);
 
@@ -69,7 +69,7 @@ class BundleAnalyzer {
       chunks,
       dependencies,
       recommendations,
-      warnings
+      warnings,
     };
   }
 
@@ -84,15 +84,15 @@ class BundleAnalyzer {
           const response = await fetch(script.src);
           const blob = await response.blob();
           const size = blob.size;
-          
+
           // Estimate gzipped size (rough approximation)
           const gzippedSize = Math.round(size * 0.3);
-          
+
           chunks.push({
             name: this.extractChunkName(script.src),
             size,
             gzippedSize,
-            modules: [] // Would need source map analysis for detailed module info
+            modules: [], // Would need source map analysis for detailed module info
           });
         } catch (error) {
           console.warn(`Failed to analyze chunk ${script.src}:`, error);
@@ -114,13 +114,13 @@ class BundleAnalyzer {
       if (resource.name.includes('node_modules') || resource.name.includes('chunk')) {
         const name = this.extractDependencyName(resource.name);
         const size = resource.transferSize || 0;
-        
+
         dependencies.push({
           name,
           version: 'unknown',
           size,
           percentage: 0, // Will be calculated later
-          isDevDependency: false
+          isDevDependency: false,
         });
       }
     }
@@ -134,30 +134,25 @@ class BundleAnalyzer {
     const totalSize = chunks.reduce((sum, chunk) => sum + chunk.size, 0);
 
     // Large chunk recommendations
-    const largeChunks = chunks.filter(chunk => chunk.size > 500000); // 500KB
+    const largeChunks = chunks.filter((chunk) => chunk.size > 500000); // 500KB
     if (largeChunks.length > 0) {
-      recommendations.push(
-        `Consider code splitting for large chunks: ${largeChunks.map(c => c.name).join(', ')}`
-      );
+      recommendations.push(`Consider code splitting for large chunks: ${largeChunks.map((c) => c.name).join(', ')}`);
     }
 
     // Duplicate dependencies
     const duplicateDeps = this.findDuplicateDependencies(dependencies);
     if (duplicateDeps.length > 0) {
-      recommendations.push(
-        `Remove duplicate dependencies: ${duplicateDeps.join(', ')}`
-      );
+      recommendations.push(`Remove duplicate dependencies: ${duplicateDeps.join(', ')}`);
     }
 
     // Unused dependencies (would need static analysis)
-    if (totalSize > 2000000) { // 2MB
+    if (totalSize > 2000000) {
+      // 2MB
       recommendations.push('Bundle size is large. Consider tree shaking and removing unused code.');
     }
 
     // Image optimization
-    const imageResources = this.resourceTimings.filter(r => 
-      r.name.match(/\.(jpg|jpeg|png|gif|svg)$/i)
-    );
+    const imageResources = this.resourceTimings.filter((r) => r.name.match(/\.(jpg|jpeg|png|gif|svg)$/i));
     if (imageResources.length > 0) {
       recommendations.push('Consider optimizing images and using WebP format.');
     }
@@ -170,8 +165,9 @@ class BundleAnalyzer {
     const warnings: string[] = [];
 
     // Large individual chunks
-    chunks.forEach(chunk => {
-      if (chunk.size > 1000000) { // 1MB
+    chunks.forEach((chunk) => {
+      if (chunk.size > 1000000) {
+        // 1MB
         warnings.push(`Chunk ${chunk.name} is very large (${this.formatBytes(chunk.size)})`);
       }
     });
@@ -182,7 +178,7 @@ class BundleAnalyzer {
     }
 
     // Slow loading resources
-    const slowResources = this.resourceTimings.filter(r => r.duration > 1000);
+    const slowResources = this.resourceTimings.filter((r) => r.duration > 1000);
     if (slowResources.length > 0) {
       warnings.push(`${slowResources.length} resources took longer than 1s to load`);
     }
@@ -203,10 +199,10 @@ class BundleAnalyzer {
 
   private findDuplicateDependencies(dependencies: DependencyInfo[]): string[] {
     const nameCount = new Map<string, number>();
-    dependencies.forEach(dep => {
+    dependencies.forEach((dep) => {
       nameCount.set(dep.name, (nameCount.get(dep.name) || 0) + 1);
     });
-    
+
     return Array.from(nameCount.entries())
       .filter(([_, count]) => count > 1)
       .map(([name, _]) => name);
@@ -217,7 +213,7 @@ class BundleAnalyzer {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   }
 
   // Get performance metrics
@@ -230,13 +226,13 @@ class BundleAnalyzer {
   } {
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     const paint = performance.getEntriesByType('paint');
-    
+
     return {
       loadTime: navigation.loadEventEnd - navigation.loadEventStart,
       domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
-      firstPaint: paint.find(p => p.name === 'first-paint')?.startTime || 0,
-      firstContentfulPaint: paint.find(p => p.name === 'first-contentful-paint')?.startTime || 0,
-      largestContentfulPaint: 0 // Would need LCP observer
+      firstPaint: paint.find((p) => p.name === 'first-paint')?.startTime || 0,
+      firstContentfulPaint: paint.find((p) => p.name === 'first-contentful-paint')?.startTime || 0,
+      largestContentfulPaint: 0, // Would need LCP observer
     };
   }
 
@@ -265,7 +261,7 @@ export const formatBytes = (bytes: number): string => {
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
 
 // React hook for bundle analysis
@@ -297,7 +293,7 @@ export const useBundleAnalysis = () => {
     analysis,
     isAnalyzing,
     error,
-    runAnalysis
+    runAnalysis,
   };
 };
 

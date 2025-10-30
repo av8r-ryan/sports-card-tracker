@@ -26,11 +26,11 @@ export const exportCardsAsCSV = (cards: Card[]): string => {
     'Sell Date',
     'Notes',
     'Created At',
-    'Updated At'
+    'Updated At',
   ];
 
   // Convert cards to CSV rows
-  const rows = cards.map(card => [
+  const rows = cards.map((card) => [
     card.id,
     card.player,
     card.team,
@@ -48,22 +48,24 @@ export const exportCardsAsCSV = (cards: Card[]): string => {
     card.sellDate ? (card.sellDate instanceof Date ? card.sellDate.toISOString().split('T')[0] : card.sellDate) : '',
     card.notes.replace(/"/g, '""'), // Escape quotes in notes
     card.createdAt instanceof Date ? card.createdAt.toISOString() : card.createdAt,
-    card.updatedAt instanceof Date ? card.updatedAt.toISOString() : card.updatedAt
+    card.updatedAt instanceof Date ? card.updatedAt.toISOString() : card.updatedAt,
   ]);
 
   // Combine headers and rows
   const csvContent = [
     headers.join(','),
-    ...rows.map(row => 
-      row.map(cell => {
-        // Wrap in quotes if contains comma or newline
-        const cellStr = String(cell);
-        if (cellStr.includes(',') || cellStr.includes('\n') || cellStr.includes('"')) {
-          return `"${cellStr}"`;
-        }
-        return cellStr;
-      }).join(',')
-    )
+    ...rows.map((row) =>
+      row
+        .map((cell) => {
+          // Wrap in quotes if contains comma or newline
+          const cellStr = String(cell);
+          if (cellStr.includes(',') || cellStr.includes('\n') || cellStr.includes('"')) {
+            return `"${cellStr}"`;
+          }
+          return cellStr;
+        })
+        .join(',')
+    ),
   ].join('\n');
 
   return csvContent;

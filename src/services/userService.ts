@@ -18,7 +18,7 @@ const DEFAULT_ADMIN: UserData = {
   isActive: true,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
-  password: 'admin123' // In production, this would be hashed
+  password: 'admin123', // In production, this would be hashed
 };
 
 class UserService {
@@ -62,9 +62,9 @@ class UserService {
 
   // Get all users (admin only)
   getAllUsers(): UserData[] {
-    return Array.from(this.users.values()).map(user => ({
+    return Array.from(this.users.values()).map((user) => ({
       ...user,
-      password: undefined // Don't expose passwords
+      password: undefined, // Don't expose passwords
     }));
   }
 
@@ -74,7 +74,7 @@ class UserService {
     if (!user) return null;
     return {
       ...user,
-      password: undefined // Don't expose password
+      password: undefined, // Don't expose password
     };
   }
 
@@ -84,15 +84,15 @@ class UserService {
       ...userData,
       id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
-    
+
     this.users.set(newUser.id, newUser);
     this.saveUsers();
-    
+
     return {
       ...newUser,
-      password: undefined // Don't expose password
+      password: undefined, // Don't expose password
     };
   }
 
@@ -106,7 +106,7 @@ class UserService {
       ...updates,
       id: user.id, // Prevent ID changes
       createdAt: user.createdAt, // Preserve creation date
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.users.set(id, updatedUser);
@@ -114,7 +114,7 @@ class UserService {
 
     return {
       ...updatedUser,
-      password: undefined // Don't expose password
+      password: undefined, // Don't expose password
     };
   }
 
@@ -125,8 +125,7 @@ class UserService {
 
     // Check if this is the last admin
     if (user.role === 'admin') {
-      const adminCount = Array.from(this.users.values())
-        .filter(u => u.role === 'admin' && u.isActive).length;
+      const adminCount = Array.from(this.users.values()).filter((u) => u.role === 'admin' && u.isActive).length;
       if (adminCount <= 1) {
         throw new Error('Cannot delete the last active admin user');
       }
@@ -144,8 +143,7 @@ class UserService {
 
     // Check if this is the last active admin
     if (user.role === 'admin' && user.isActive) {
-      const activeAdminCount = Array.from(this.users.values())
-        .filter(u => u.role === 'admin' && u.isActive).length;
+      const activeAdminCount = Array.from(this.users.values()).filter((u) => u.role === 'admin' && u.isActive).length;
       if (activeAdminCount <= 1) {
         throw new Error('Cannot disable the last active admin user');
       }
@@ -161,8 +159,7 @@ class UserService {
 
     // Check if this is the last admin being demoted
     if (user.role === 'admin' && newRole === 'user') {
-      const adminCount = Array.from(this.users.values())
-        .filter(u => u.role === 'admin' && u.isActive).length;
+      const adminCount = Array.from(this.users.values()).filter((u) => u.role === 'admin' && u.isActive).length;
       if (adminCount <= 1) {
         throw new Error('Cannot demote the last active admin user');
       }
@@ -179,23 +176,24 @@ class UserService {
     this.users.set(id, {
       ...user,
       password: newPassword,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
-    
+
     this.saveUsers();
     return true;
   }
 
   // Authenticate user (for local demo)
   authenticateUser(email: string, password: string): UserData | null {
-    const user = Array.from(this.users.values())
-      .find(u => u.email === email && u.password === password && u.isActive);
-    
+    const user = Array.from(this.users.values()).find(
+      (u) => u.email === email && u.password === password && u.isActive
+    );
+
     if (!user) return null;
-    
+
     return {
       ...user,
-      password: undefined // Don't expose password
+      password: undefined, // Don't expose password
     };
   }
 
@@ -204,10 +202,10 @@ class UserService {
     const users = Array.from(this.users.values());
     return {
       totalUsers: users.length,
-      activeUsers: users.filter(u => u.isActive).length,
-      adminUsers: users.filter(u => u.role === 'admin').length,
-      regularUsers: users.filter(u => u.role === 'user').length,
-      disabledUsers: users.filter(u => !u.isActive).length
+      activeUsers: users.filter((u) => u.isActive).length,
+      adminUsers: users.filter((u) => u.role === 'admin').length,
+      regularUsers: users.filter((u) => u.role === 'user').length,
+      disabledUsers: users.filter((u) => !u.isActive).length,
     };
   }
 }

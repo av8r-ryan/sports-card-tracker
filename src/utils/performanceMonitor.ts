@@ -34,9 +34,9 @@ class PerformanceMonitor {
         'largest-contentful-paint': 2500,
         'first-input-delay': 100,
         'cumulative-layout-shift': 0.1,
-        'total-blocking-time': 300
+        'total-blocking-time': 300,
       },
-      ...config
+      ...config,
     };
 
     if (this.config.enabled) {
@@ -84,8 +84,8 @@ class PerformanceMonitor {
                 dns: navEntry.domainLookupEnd - navEntry.domainLookupStart,
                 tcp: navEntry.connectEnd - navEntry.connectStart,
                 request: navEntry.responseEnd - navEntry.requestStart,
-                response: navEntry.responseEnd - navEntry.responseStart
-              }
+                response: navEntry.responseEnd - navEntry.responseStart,
+              },
             });
           }
         });
@@ -110,7 +110,7 @@ class PerformanceMonitor {
               name: entry.name,
               value: entry.startTime,
               timestamp: Date.now(),
-              type: 'paint'
+              type: 'paint',
             });
           }
         });
@@ -139,8 +139,8 @@ class PerformanceMonitor {
             metadata: {
               element: (lastEntry as any).element?.tagName,
               url: (lastEntry as any).url,
-              size: (lastEntry as any).size
-            }
+              size: (lastEntry as any).size,
+            },
           });
         }
       });
@@ -168,8 +168,8 @@ class PerformanceMonitor {
               type: 'measure',
               metadata: {
                 eventType: fidEntry.name,
-                target: (fidEntry.target as any)?.tagName
-              }
+                target: (fidEntry.target as any)?.tagName,
+              },
             });
           }
         });
@@ -199,7 +199,7 @@ class PerformanceMonitor {
           name: 'cumulative-layout-shift',
           value: clsValue,
           timestamp: Date.now(),
-          type: 'measure'
+          type: 'measure',
         });
       });
 
@@ -225,8 +225,8 @@ class PerformanceMonitor {
               type: 'measure',
               metadata: {
                 startTime: entry.startTime,
-                name: entry.name
-              }
+                name: entry.name,
+              },
             });
           }
         });
@@ -257,8 +257,8 @@ class PerformanceMonitor {
                 url: resourceEntry.name,
                 type: resourceEntry.initiatorType,
                 size: resourceEntry.transferSize,
-                cached: resourceEntry.transferSize === 0
-              }
+                cached: resourceEntry.transferSize === 0,
+              },
             });
           }
         });
@@ -286,8 +286,8 @@ class PerformanceMonitor {
             type: 'custom',
             metadata: {
               total: memory.totalJSHeapSize,
-              limit: memory.jsHeapSizeLimit
-            }
+              limit: memory.jsHeapSizeLimit,
+            },
           });
         }
       };
@@ -322,7 +322,7 @@ class PerformanceMonitor {
       console.warn(`[PerformanceMonitor] Threshold exceeded for ${metric.name}:`, {
         value: metric.value,
         threshold,
-        metadata: metric.metadata
+        metadata: metric.metadata,
       });
     }
   }
@@ -351,7 +351,7 @@ class PerformanceMonitor {
       name,
       value: end - start,
       timestamp: Date.now(),
-      type: 'measure'
+      type: 'measure',
     });
   }
 
@@ -364,26 +364,26 @@ class PerformanceMonitor {
     try {
       const result = await fn();
       const end = performance.now();
-      
+
       this.recordMetric({
         name,
         value: end - start,
         timestamp: Date.now(),
-        type: 'measure'
+        type: 'measure',
       });
-      
+
       return result;
     } catch (error) {
       const end = performance.now();
-      
+
       this.recordMetric({
         name: `${name}-error`,
         value: end - start,
         timestamp: Date.now(),
         type: 'measure',
-        metadata: { error: (error as Error).message }
+        metadata: { error: (error as Error).message },
       });
-      
+
       throw error;
     }
   }
@@ -398,7 +398,7 @@ class PerformanceMonitor {
     if (typeof performance !== 'undefined' && performance.measure) {
       try {
         performance.measure(name, mark1, mark2);
-        
+
         const entries = performance.getEntriesByName(name, 'measure');
         if (entries.length > 0) {
           const entry = entries[0];
@@ -406,7 +406,7 @@ class PerformanceMonitor {
             name,
             value: entry.duration,
             timestamp: Date.now(),
-            type: 'measure'
+            type: 'measure',
           });
         }
       } catch (error) {
@@ -417,7 +417,7 @@ class PerformanceMonitor {
 
   public getMetrics(name?: string): PerformanceMetric[] {
     if (name) {
-      return this.metrics.filter(metric => metric.name === name);
+      return this.metrics.filter((metric) => metric.name === name);
     }
     return [...this.metrics];
   }
@@ -425,7 +425,7 @@ class PerformanceMonitor {
   public getAverageMetric(name: string): number | null {
     const metrics = this.getMetrics(name);
     if (metrics.length === 0) return null;
-    
+
     const sum = metrics.reduce((acc, metric) => acc + metric.value, 0);
     return sum / metrics.length;
   }
@@ -441,17 +441,19 @@ class PerformanceMonitor {
     const report = {
       timestamp: Date.now(),
       userAgent: navigator.userAgent,
-      connection: (navigator as any).connection ? {
-        effectiveType: (navigator as any).connection.effectiveType,
-        downlink: (navigator as any).connection.downlink,
-        rtt: (navigator as any).connection.rtt
-      } : null,
-      metrics: this.getMetricsSummary()
+      connection: (navigator as any).connection
+        ? {
+            effectiveType: (navigator as any).connection.effectiveType,
+            downlink: (navigator as any).connection.downlink,
+            rtt: (navigator as any).connection.rtt,
+          }
+        : null,
+      metrics: this.getMetricsSummary(),
     };
 
     // Send to analytics service
     this.sendToAnalytics(report);
-    
+
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
       console.log('[PerformanceMonitor] Metrics Report:', report);
@@ -460,10 +462,10 @@ class PerformanceMonitor {
 
   private getMetricsSummary(): Record<string, any> {
     const summary: Record<string, any> = {};
-    const metricNames = [...new Set(this.metrics.map(m => m.name))];
+    const metricNames = [...new Set(this.metrics.map((m) => m.name))];
 
-    metricNames.forEach(name => {
-      const values = this.getMetrics(name).map(m => m.value);
+    metricNames.forEach((name) => {
+      const values = this.getMetrics(name).map((m) => m.value);
       summary[name] = {
         count: values.length,
         average: values.reduce((a, b) => a + b, 0) / values.length,
@@ -471,7 +473,7 @@ class PerformanceMonitor {
         max: Math.max(...values),
         p50: this.percentile(values, 0.5),
         p95: this.percentile(values, 0.95),
-        p99: this.percentile(values, 0.99)
+        p99: this.percentile(values, 0.99),
       };
     });
 
@@ -490,20 +492,20 @@ class PerformanceMonitor {
     if (typeof (window as any).gtag !== 'undefined') {
       (window as any).gtag('event', 'performance_metrics', {
         custom_parameter_1: report.metrics,
-        custom_parameter_2: report.connection
+        custom_parameter_2: report.connection,
       });
     }
   }
 
   public destroy(): void {
-    this.observers.forEach(observer => observer.disconnect());
+    this.observers.forEach((observer) => observer.disconnect());
     this.observers.clear();
-    
+
     if (this.reportTimer) {
       clearInterval(this.reportTimer);
       this.reportTimer = null;
     }
-    
+
     this.metrics = [];
   }
 }
@@ -511,7 +513,7 @@ class PerformanceMonitor {
 // Create singleton instance
 export const performanceMonitor = new PerformanceMonitor({
   enabled: process.env.NODE_ENV === 'production' || process.env.REACT_APP_PERFORMANCE_MONITORING === 'true',
-  sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0
+  sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 });
 
 // Export types and utilities
@@ -553,5 +555,5 @@ export const performanceUtils = {
     else if (cls && cls.value > 0.1) score -= 15;
 
     return Math.max(0, score);
-  }
+  },
 };

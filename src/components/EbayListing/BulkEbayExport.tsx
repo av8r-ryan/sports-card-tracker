@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Card } from '../../types';
+
 import { ebayListingService, EbayListingOptions } from '../../services/ebayListingService';
+import { Card } from '../../types';
 import './BulkEbayExport.css';
 
 interface BulkEbayExportProps {
@@ -17,12 +18,12 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
     returnPolicy: true,
     watermarkImages: false,
     includeGradingDetails: true,
-    includeMarketData: true
+    includeMarketData: true,
   });
 
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set(cards.map(c => c.id)));
+  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set(cards.map((c) => c.id)));
 
   const toggleCardSelection = (cardId: string) => {
     const newSelection = new Set(selectedCards);
@@ -35,7 +36,7 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
   };
 
   const selectAll = () => {
-    setSelectedCards(new Set(cards.map(c => c.id)));
+    setSelectedCards(new Set(cards.map((c) => c.id)));
   };
 
   const deselectAll = () => {
@@ -46,12 +47,12 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
     setProcessing(true);
     setProgress(0);
 
-    const selectedCardsList = cards.filter(card => selectedCards.has(card.id));
+    const selectedCardsList = cards.filter((card) => selectedCards.has(card.id));
     const listings = ebayListingService.generateBulkListings(selectedCardsList, options);
-    
+
     // Simulate processing time
     for (let i = 0; i < listings.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       setProgress(((i + 1) / listings.length) * 100);
     }
 
@@ -68,7 +69,7 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
     URL.revokeObjectURL(url);
 
     setProcessing(false);
-    
+
     // Show success message briefly before closing
     setTimeout(() => {
       onClose();
@@ -78,7 +79,7 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
   };
 
@@ -87,7 +88,9 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
       <div className="bulk-ebay-container">
         <div className="bulk-ebay-header">
           <h2>Bulk eBay Export</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
         </div>
 
         {!processing ? (
@@ -95,15 +98,21 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
             <div className="bulk-ebay-content">
               <div className="card-selection">
                 <div className="selection-header">
-                  <h3>Select Cards ({selectedCards.size} of {cards.length})</h3>
+                  <h3>
+                    Select Cards ({selectedCards.size} of {cards.length})
+                  </h3>
                   <div className="selection-actions">
-                    <button onClick={selectAll} className="select-btn">Select All</button>
-                    <button onClick={deselectAll} className="select-btn">Deselect All</button>
+                    <button onClick={selectAll} className="select-btn">
+                      Select All
+                    </button>
+                    <button onClick={deselectAll} className="select-btn">
+                      Deselect All
+                    </button>
                   </div>
                 </div>
 
                 <div className="cards-list">
-                  {cards.map(card => (
+                  {cards.map((card) => (
                     <label key={card.id} className="card-item">
                       <input
                         type="checkbox"
@@ -125,12 +134,12 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
 
               <div className="export-options">
                 <h3>Export Options</h3>
-                
+
                 <div className="option-group">
                   <label>Listing Format</label>
-                  <select 
-                    value={options.listingFormat} 
-                    onChange={(e) => setOptions({...options, listingFormat: e.target.value as any})}
+                  <select
+                    value={options.listingFormat}
+                    onChange={(e) => setOptions({ ...options, listingFormat: e.target.value as any })}
                   >
                     <option value="auction">Auction Only</option>
                     <option value="buyItNow">Buy It Now Only</option>
@@ -140,9 +149,9 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
 
                 <div className="option-group">
                   <label>Duration</label>
-                  <select 
-                    value={options.duration} 
-                    onChange={(e) => setOptions({...options, duration: parseInt(e.target.value) as any})}
+                  <select
+                    value={options.duration}
+                    onChange={(e) => setOptions({ ...options, duration: parseInt(e.target.value) as any })}
                   >
                     <option value="3">3 Days</option>
                     <option value="5">5 Days</option>
@@ -153,9 +162,9 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
 
                 <div className="option-group">
                   <label>Shipping Type</label>
-                  <select 
-                    value={options.shippingType} 
-                    onChange={(e) => setOptions({...options, shippingType: e.target.value as any})}
+                  <select
+                    value={options.shippingType}
+                    onChange={(e) => setOptions({ ...options, shippingType: e.target.value as any })}
                   >
                     <option value="standard">Standard</option>
                     <option value="expedited">Expedited</option>
@@ -165,26 +174,26 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
 
                 <div className="checkbox-options">
                   <label>
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={options.returnPolicy}
-                      onChange={(e) => setOptions({...options, returnPolicy: e.target.checked})}
+                      onChange={(e) => setOptions({ ...options, returnPolicy: e.target.checked })}
                     />
                     Accept Returns
                   </label>
                   <label>
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={options.includeGradingDetails}
-                      onChange={(e) => setOptions({...options, includeGradingDetails: e.target.checked})}
+                      onChange={(e) => setOptions({ ...options, includeGradingDetails: e.target.checked })}
                     />
                     Include Grading Details
                   </label>
                   <label>
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={options.includeMarketData}
-                      onChange={(e) => setOptions({...options, includeMarketData: e.target.checked})}
+                      onChange={(e) => setOptions({ ...options, includeMarketData: e.target.checked })}
                     />
                     Include Market Data
                   </label>
@@ -198,11 +207,7 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
                 <span>•</span>
                 <span>CSV format for eBay File Exchange</span>
               </div>
-              <button 
-                className="export-button" 
-                onClick={exportListings}
-                disabled={selectedCards.size === 0}
-              >
+              <button className="export-button" onClick={exportListings} disabled={selectedCards.size === 0}>
                 Export to CSV
               </button>
             </div>
@@ -211,15 +216,10 @@ export const BulkEbayExport: React.FC<BulkEbayExportProps> = ({ cards, onClose }
           <div className="processing-view">
             <h3>Generating eBay Listings...</h3>
             <div className="progress-bar">
-              <div 
-                className="progress-fill" 
-                style={{ width: `${progress}%` }}
-              />
+              <div className="progress-fill" style={{ width: `${progress}%` }} />
             </div>
             <p>{Math.round(progress)}% Complete</p>
-            {progress === 100 && (
-              <p className="success-message">✓ Export complete! Download starting...</p>
-            )}
+            {progress === 100 && <p className="success-message">✓ Export complete! Download starting...</p>}
           </div>
         )}
       </div>

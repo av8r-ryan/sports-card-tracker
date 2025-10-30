@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, memo } from 'react';
+
 import { validateImageFile, compressImage } from '../../utils/imageUtils';
 import './ImageUpload.css';
 
@@ -9,12 +10,7 @@ interface ImageUploadProps {
   disabled?: boolean;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ 
-  images, 
-  onImagesChange, 
-  maxImages = 5,
-  disabled = false 
-}) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ images, onImagesChange, maxImages = 5, disabled = false }) => {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,32 +26,33 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     return compressedImage;
   }, []);
 
-  const handleFiles = useCallback(async (files: FileList) => {
-    if (disabled) return;
-    
-    setError(null);
-    setUploading(true);
-    
-    try {
-      const fileArray = Array.from(files);
-      const remainingSlots = maxImages - images.length;
-      const filesToProcess = fileArray.slice(0, remainingSlots);
-      
-      if (fileArray.length > remainingSlots) {
-        setError(`Only ${remainingSlots} more image(s) can be added`);
+  const handleFiles = useCallback(
+    async (files: FileList) => {
+      if (disabled) return;
+
+      setError(null);
+      setUploading(true);
+
+      try {
+        const fileArray = Array.from(files);
+        const remainingSlots = maxImages - images.length;
+        const filesToProcess = fileArray.slice(0, remainingSlots);
+
+        if (fileArray.length > remainingSlots) {
+          setError(`Only ${remainingSlots} more image(s) can be added`);
+        }
+
+        const processedImages = await Promise.all(filesToProcess.map((file) => processImage(file)));
+
+        onImagesChange([...images, ...processedImages]);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to upload image');
+      } finally {
+        setUploading(false);
       }
-      
-      const processedImages = await Promise.all(
-        filesToProcess.map(file => processImage(file))
-      );
-      
-      onImagesChange([...images, ...processedImages]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload image');
-    } finally {
-      setUploading(false);
-    }
-  }, [images, maxImages, disabled, onImagesChange, processImage]);
+    },
+    [images, maxImages, disabled, onImagesChange, processImage]
+  );
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -67,28 +64,37 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFiles(e.dataTransfer.files);
-    }
-  }, [handleFiles]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files);
-    }
-    // Reset input value to allow same file to be selected again
-    e.target.value = '';
-  }, [handleFiles]);
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFiles(e.dataTransfer.files);
+      }
+    },
+    [handleFiles]
+  );
 
-  const handleRemoveImage = useCallback((index: number) => {
-    const newImages = images.filter((_, i) => i !== index);
-    onImagesChange(newImages);
-  }, [images, onImagesChange]);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleFiles(e.target.files);
+      }
+      // Reset input value to allow same file to be selected again
+      e.target.value = '';
+    },
+    [handleFiles]
+  );
+
+  const handleRemoveImage = useCallback(
+    (index: number) => {
+      const newImages = images.filter((_, i) => i !== index);
+      onImagesChange(newImages);
+    },
+    [images, onImagesChange]
+  );
 
   const openFileDialog = () => {
     if (!disabled && fileInputRef.current) {
@@ -109,7 +115,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             </div>
           </div>
         )}
-        
+
         {images.map((image, index) => (
           <div key={index} className="uploaded-image">
             <img src={image} alt={`Card ${index + 1}`} />
@@ -123,7 +129,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             </button>
           </div>
         ))}
-        
+
         {canAddMore && (
           <div
             className={`upload-area ${dragActive ? 'drag-active' : ''} ${uploading ? 'uploading' : ''}`}
@@ -135,7 +141,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           >
             {uploading ? (
               <div className="upload-spinner">
-                <div className="spinner"></div>
+                <div className="spinner" />
                 <p>Processing image...</p>
               </div>
             ) : (
@@ -148,7 +154,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           </div>
         )}
       </div>
-      
+
       <input
         ref={fileInputRef}
         type="file"
@@ -158,13 +164,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         style={{ display: 'none' }}
         disabled={disabled}
       />
-      
-      {error && (
-        <div className="upload-error">
-          {error}
-        </div>
-      )}
-      
+
+      {error && <div className="upload-error">{error}</div>}
+
       <div className="upload-info">
         {images.length} of {maxImages} images uploaded
       </div>

@@ -21,7 +21,7 @@ class ServiceWorkerManager {
 
     try {
       this.registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+        scope: '/',
       });
 
       console.log('Service Worker registered successfully:', this.registration);
@@ -109,7 +109,7 @@ const serviceWorkerManager = new ServiceWorkerManager({
   },
   onOfflineReady: () => {
     console.log('App is ready for offline use');
-  }
+  },
 });
 
 // Utility functions
@@ -141,9 +141,7 @@ export const isServiceWorkerRegistered = (): boolean => {
 export const clearCache = async (): Promise<void> => {
   if ('caches' in window) {
     const cacheNames = await caches.keys();
-    await Promise.all(
-      cacheNames.map(cacheName => caches.delete(cacheName))
-    );
+    await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
     console.log('All caches cleared');
   }
 };
@@ -155,11 +153,11 @@ export const getCacheSize = async (): Promise<number> => {
 
   let totalSize = 0;
   const cacheNames = await caches.keys();
-  
+
   for (const cacheName of cacheNames) {
     const cache = await caches.open(cacheName);
     const requests = await cache.keys();
-    
+
     for (const request of requests) {
       const response = await cache.match(request);
       if (response) {
@@ -168,7 +166,7 @@ export const getCacheSize = async (): Promise<number> => {
       }
     }
   }
-  
+
   return totalSize;
 };
 
@@ -196,7 +194,7 @@ export const getCacheInfo = async (): Promise<{ name: string; size: number; coun
     cacheInfo.push({
       name: cacheName,
       size,
-      count: requests.length
+      count: requests.length,
     });
   }
 
@@ -209,12 +207,7 @@ export const preloadCriticalResources = async (): Promise<void> => {
     return;
   }
 
-  const criticalResources = [
-    '/',
-    '/static/css/main.css',
-    '/static/js/main.js',
-    '/manifest.json'
-  ];
+  const criticalResources = ['/', '/static/css/main.css', '/static/js/main.js', '/manifest.json'];
 
   try {
     const cache = await caches.open('sports-card-tracker-static-v1');
@@ -274,7 +267,7 @@ export const measureServiceWorkerPerformance = (): void => {
         console.log('Service Worker performance:', {
           name: entry.name,
           duration: entry.duration,
-          startTime: entry.startTime
+          startTime: entry.startTime,
         });
       }
     }

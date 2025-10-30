@@ -5,11 +5,11 @@ import { useState, useCallback } from 'react';
  * @param initialValue - Initial boolean value
  * @returns [value, toggle, setValue] tuple
  */
-export function useToggle(initialValue: boolean = false) {
+export function useToggle(initialValue = false) {
   const [value, setValue] = useState(initialValue);
 
   const toggle = useCallback(() => {
-    setValue(prev => !prev);
+    setValue((prev) => !prev);
   }, []);
 
   const setTrue = useCallback(() => {

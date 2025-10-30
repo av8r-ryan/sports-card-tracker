@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import { Card } from '../../types';
 import { generateEbayFileExchange } from '../../utils/ebayExport';
 import './AutoExportAllCards.css';
@@ -36,7 +37,7 @@ const AutoExportAllCards: React.FC<Props> = ({ cards, autoStart = true, onComple
 
     try {
       // Filter unsold cards
-      const unsoldCards = cards.filter(card => !card.sellDate);
+      const unsoldCards = cards.filter((card) => !card.sellDate);
       setProgress(20);
       setStatus(`Found ${unsoldCards.length} unsold cards`);
 
@@ -45,7 +46,7 @@ const AutoExportAllCards: React.FC<Props> = ({ cards, autoStart = true, onComple
       }
 
       // Simulate processing time for visual feedback
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       setProgress(40);
       setStatus('Generating eBay listings...');
 
@@ -56,49 +57,49 @@ const AutoExportAllCards: React.FC<Props> = ({ cards, autoStart = true, onComple
         duration: '7',
         location: 'United States',
         paypalEmail: 'seller@example.com',
-        dispatchTime: 1
+        dispatchTime: 1,
       };
 
       const fileContent = generateEbayFileExchange(unsoldCards, exportOptions);
       setProgress(60);
       setStatus('Creating export file...');
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       // Create and download file
       const timestamp = new Date().toISOString().split('T')[0];
       const filename = `ebay-all-cards-${timestamp}.csv`;
-      
+
       const blob = new Blob([fileContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = filename;
-      
+
       setProgress(80);
       setStatus('Downloading file...');
-      
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       setProgress(100);
       setStatus('Export complete!');
 
       // Calculate summary
-      const totalValue = unsoldCards.reduce((sum, card) => sum + (card.currentValue * 0.9), 0);
+      const totalValue = unsoldCards.reduce((sum, card) => sum + card.currentValue * 0.9, 0);
 
       const exportResult: ExportResult = {
         success: true,
         totalCards: unsoldCards.length,
         totalValue,
-        filename
+        filename,
       };
 
       setResult(exportResult);
-      
+
       if (onComplete) {
         onComplete(exportResult);
       }
@@ -107,22 +108,21 @@ const AutoExportAllCards: React.FC<Props> = ({ cards, autoStart = true, onComple
       setTimeout(() => {
         setIsExporting(false);
       }, 3000);
-
     } catch (error) {
       console.error('Export error:', error);
       setStatus('Export failed!');
       setProgress(0);
-      
+
       const exportResult: ExportResult = {
         success: false,
         totalCards: 0,
         totalValue: 0,
         filename: '',
-        errors: [error instanceof Error ? error.message : 'Unknown error']
+        errors: [error instanceof Error ? error.message : 'Unknown error'],
       };
-      
+
       setResult(exportResult);
-      
+
       if (onComplete) {
         onComplete(exportResult);
       }
@@ -132,10 +132,7 @@ const AutoExportAllCards: React.FC<Props> = ({ cards, autoStart = true, onComple
   if (!isExporting && !result) {
     return (
       <div className="auto-export-container">
-        <button 
-          className="auto-export-button"
-          onClick={startExport}
-        >
+        <button className="auto-export-button" onClick={startExport}>
           🚀 Export All Unsold Cards Now
         </button>
       </div>
@@ -158,10 +155,12 @@ const AutoExportAllCards: React.FC<Props> = ({ cards, autoStart = true, onComple
             <p>{result.errors?.join(', ')}</p>
           </>
         )}
-        <button onClick={() => {
-          setResult(null);
-          startExport();
-        }}>
+        <button
+          onClick={() => {
+            setResult(null);
+            startExport();
+          }}
+        >
           Export Again
         </button>
       </div>
@@ -175,14 +174,9 @@ const AutoExportAllCards: React.FC<Props> = ({ cards, autoStart = true, onComple
         <p>{status}</p>
       </div>
       <div className="progress-bar">
-        <div 
-          className="progress-fill"
-          style={{ width: `${progress}%` }}
-        />
+        <div className="progress-fill" style={{ width: `${progress}%` }} />
       </div>
-      <div className="progress-text">
-        {progress}% Complete
-      </div>
+      <div className="progress-text">{progress}% Complete</div>
     </div>
   );
 };

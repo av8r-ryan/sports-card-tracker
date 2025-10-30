@@ -1,4 +1,5 @@
 import React, { useState, memo, useCallback } from 'react';
+
 import { Card } from '../../types';
 import { exportDetailedCardReport } from '../../utils/pdfExport';
 import { EbayListingPreview } from '../EbayListing/EbayListingPreview';
@@ -17,7 +18,7 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
   };
 
@@ -25,7 +26,7 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     }).format(date);
   };
 
@@ -58,7 +59,9 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
     <div className="card-detail-overlay" onClick={onClose}>
       <div className="card-detail" onClick={(e) => e.stopPropagation()}>
         <div className="card-detail-header">
-          <h2>{card.year} {card.brand} {card.player}</h2>
+          <h2>
+            {card.year} {card.brand} {card.player}
+          </h2>
           <div className="card-detail-actions">
             <button onClick={handleExportPDF} className="export-pdf-btn" title="Export to PDF">
               📄 PDF
@@ -88,11 +91,15 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
                 />
                 {card.images && card.images.length > 1 && (
                   <div className="image-controls">
-                    <button onClick={prevImage} className="image-nav prev">‹</button>
+                    <button onClick={prevImage} className="image-nav prev">
+                      ‹
+                    </button>
                     <span className="image-counter">
                       {imageIndex + 1} of {card.images.length}
                     </span>
-                    <button onClick={nextImage} className="image-nav next">›</button>
+                    <button onClick={nextImage} className="image-nav next">
+                      ›
+                    </button>
                   </div>
                 )}
                 {card.images && card.images.length > 1 && (
@@ -177,7 +184,8 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
                 <div className="financial-item">
                   <label>Profit/Loss</label>
                   <span className={`profit-loss ${profit >= 0 ? 'profit' : 'loss'}`}>
-                    {formatCurrency(profit)} ({profit > 0 ? '+' : ''}{profitPercent.toFixed(1)}%)
+                    {formatCurrency(profit)} ({profit > 0 ? '+' : ''}
+                    {profitPercent.toFixed(1)}%)
                   </span>
                 </div>
                 {isSold && (
@@ -198,9 +206,7 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
             {card.notes && (
               <div className="notes-section">
                 <h3>Notes</h3>
-                <div className="notes-content">
-                  {card.notes}
-                </div>
+                <div className="notes-content">{card.notes}</div>
               </div>
             )}
 
@@ -220,13 +226,8 @@ const CardDetail: React.FC<CardDetailProps> = ({ card, onEdit, onClose }) => {
           </div>
         </div>
       </div>
-      
-      {showEbayListing && (
-        <EbayListingPreview 
-          card={card} 
-          onClose={() => setShowEbayListing(false)} 
-        />
-      )}
+
+      {showEbayListing && <EbayListingPreview card={card} onClose={() => setShowEbayListing(false)} />}
     </div>
   );
 };

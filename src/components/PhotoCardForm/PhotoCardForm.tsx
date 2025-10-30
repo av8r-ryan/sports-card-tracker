@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
+
 import { useCards } from '../../context/DexieCardContext';
-import { Card } from '../../types/index';
 import { cardDetectionService } from '../../services/cardDetectionService';
 import { ExtractedCardData } from '../../types/detection';
+import { Card } from '../../types/index';
 import './PhotoCardForm.css';
 
 interface PhotoCardFormProps {
@@ -51,11 +52,14 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
   }, []);
 
   // Handle image upload from input
-  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>, side: 'front' | 'back') => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    processFile(file, side);
-  }, [processFile]);
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, side: 'front' | 'back') => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      processFile(file, side);
+    },
+    [processFile]
+  );
 
   // Handle drag and drop
   const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -83,21 +87,24 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
     }
   }, []);
 
-  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>, side: 'front' | 'back') => {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    if (side === 'front') {
-      setIsDraggingFront(false);
-    } else {
-      setIsDraggingBack(false);
-    }
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>, side: 'front' | 'back') => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    const files = event.dataTransfer.files;
-    if (files && files.length > 0) {
-      processFile(files[0], side);
-    }
-  }, [processFile]);
+      if (side === 'front') {
+        setIsDraggingFront(false);
+      } else {
+        setIsDraggingBack(false);
+      }
+
+      const files = event.dataTransfer.files;
+      if (files && files.length > 0) {
+        processFile(files[0], side);
+      }
+    },
+    [processFile]
+  );
 
   // Process images and extract card data
   const processImages = async () => {
@@ -112,7 +119,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
     try {
       const extracted = await cardDetectionService.detectCard(frontImage, backImage);
       setExtractedData(extracted);
-      
+
       // Convert extracted data to card format
       const cardData: Partial<Card> = {
         player: extracted.player || '',
@@ -125,7 +132,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
         notes: extracted.confidence ? `Detected with ${extracted.confidence.score}% confidence` : '',
         images: frontImage ? [frontImage] : [],
         parallel: extracted.parallel,
-        gradingCompany: extracted.gradingCompany
+        gradingCompany: extracted.gradingCompany,
       };
 
       // Add special features to notes
@@ -136,7 +143,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
         if (extracted.features.isRelic) features.push('Relic/Patch');
         if (extracted.features.isNumbered) features.push(`Numbered ${extracted.serialNumber || ''}`);
         if (extracted.features.isGraded) features.push(`${extracted.gradingCompany} ${extracted.grade}`);
-        
+
         if (features.length > 0) {
           cardData.notes = `${cardData.notes}\nSpecial Features: ${features.join(', ')}`;
         }
@@ -154,9 +161,9 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
 
   // Handle form field changes
   const handleFieldChange = (field: keyof Card, value: any) => {
-    setEditedData(prev => ({
+    setEditedData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -187,17 +194,19 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
       images: frontImage ? (backImage ? [frontImage, backImage] : [frontImage]) : [],
       gradingCompany: editedData.gradingCompany,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
-    addCard(newCard).then(() => {
-      if (onSuccess) {
-        onSuccess();
-      }
-    }).catch((error) => {
-      setError('Failed to save card. Please try again.');
-      console.error('Error saving card:', error);
-    });
+    addCard(newCard)
+      .then(() => {
+        if (onSuccess) {
+          onSuccess();
+        }
+      })
+      .catch((error) => {
+        setError('Failed to save card. Please try again.');
+        console.error('Error saving card:', error);
+      });
   };
 
   // Reset form
@@ -215,7 +224,9 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
       <div className="form-header">
         <h2>📸 Add Card from Photos</h2>
         <p>Upload photos of your card and we'll extract the information automatically</p>
-        <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+        <div
+          style={{ marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
+        >
           <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
             <input
               type="checkbox"
@@ -231,10 +242,9 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
           </label>
         </div>
         <p style={{ fontSize: '12px', opacity: 0.7, marginTop: '8px' }}>
-          {useRealOCR 
+          {useRealOCR
             ? 'Using Tesseract.js for real text extraction (may take longer)'
-            : 'Using simulated OCR for demo purposes'
-          }
+            : 'Using simulated OCR for demo purposes'}
         </p>
       </div>
 
@@ -243,7 +253,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
           {/* Front Image Upload */}
           <div className="image-upload-container">
             <h3>Card Front (Required)</h3>
-            <div 
+            <div
               className={`image-upload-box ${frontImage ? 'has-image' : ''} ${isDraggingFront ? 'dragging' : ''}`}
               onDragOver={handleDragOver}
               onDragEnter={(e) => handleDragEnter(e, 'front')}
@@ -253,10 +263,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
               {frontImage ? (
                 <div className="image-preview">
                   <img src={frontImage} alt="Card front" />
-                  <button 
-                    className="remove-image"
-                    onClick={() => setFrontImage(null)}
-                  >
+                  <button className="remove-image" onClick={() => setFrontImage(null)}>
                     ✕
                   </button>
                 </div>
@@ -281,7 +288,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
           {/* Back Image Upload */}
           <div className="image-upload-container">
             <h3>Card Back (Optional)</h3>
-            <div 
+            <div
               className={`image-upload-box ${backImage ? 'has-image' : ''} ${isDraggingBack ? 'dragging' : ''}`}
               onDragOver={handleDragOver}
               onDragEnter={(e) => handleDragEnter(e, 'back')}
@@ -291,10 +298,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
               {backImage ? (
                 <div className="image-preview">
                   <img src={backImage} alt="Card back" />
-                  <button 
-                    className="remove-image"
-                    onClick={() => setBackImage(null)}
-                  >
+                  <button className="remove-image" onClick={() => setBackImage(null)}>
                     ✕
                   </button>
                 </div>
@@ -326,11 +330,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
 
           {/* Process Button */}
           <div className="action-buttons">
-            <button 
-              className="process-button"
-              onClick={processImages}
-              disabled={!frontImage || isProcessing}
-            >
+            <button className="process-button" onClick={processImages} disabled={!frontImage || isProcessing}>
               {isProcessing ? (
                 <>
                   <span className="spinner">⏳</span>
@@ -407,7 +407,7 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Warnings */}
                 {extractedData.confidence.warnings && (
                   <div className="detection-warnings">
@@ -419,14 +419,12 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
                     ))}
                   </div>
                 )}
-                
+
                 {/* Missing Fields */}
                 {extractedData.confidence.missingFields && (
                   <div className="missing-fields">
                     <span className="missing-label">Missing fields:</span>
-                    <span className="missing-list">
-                      {extractedData.confidence.missingFields.join(', ')}
-                    </span>
+                    <span className="missing-list">{extractedData.confidence.missingFields.join(', ')}</span>
                   </div>
                 )}
               </div>
@@ -537,11 +535,13 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
                 <label>Purchase Date</label>
                 <input
                   type="date"
-                  value={editedData.purchaseDate 
-                    ? (typeof editedData.purchaseDate === 'string' 
-                        ? editedData.purchaseDate 
-                        : new Date(editedData.purchaseDate).toISOString().split('T')[0])
-                    : ''}
+                  value={
+                    editedData.purchaseDate
+                      ? typeof editedData.purchaseDate === 'string'
+                        ? editedData.purchaseDate
+                        : new Date(editedData.purchaseDate).toISOString().split('T')[0]
+                      : ''
+                  }
                   onChange={(e) => handleFieldChange('purchaseDate', e.target.value)}
                 />
               </div>
@@ -555,9 +555,17 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
                   {extractedData.features.isRookie && <span className="feature-badge rookie">Rookie Card</span>}
                   {extractedData.features.isAutograph && <span className="feature-badge auto">Autograph</span>}
                   {extractedData.features.isRelic && <span className="feature-badge relic">Relic/Patch</span>}
-                  {extractedData.features.isNumbered && <span className="feature-badge numbered">Numbered {extractedData.serialNumber}</span>}
-                  {extractedData.features.isParallel && <span className="feature-badge parallel">{extractedData.parallel || 'Parallel'}</span>}
-                  {extractedData.features.isGraded && <span className="feature-badge graded">{extractedData.gradingCompany} {extractedData.grade}</span>}
+                  {extractedData.features.isNumbered && (
+                    <span className="feature-badge numbered">Numbered {extractedData.serialNumber}</span>
+                  )}
+                  {extractedData.features.isParallel && (
+                    <span className="feature-badge parallel">{extractedData.parallel || 'Parallel'}</span>
+                  )}
+                  {extractedData.features.isGraded && (
+                    <span className="feature-badge graded">
+                      {extractedData.gradingCompany} {extractedData.grade}
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -575,18 +583,14 @@ const PhotoCardForm: React.FC<PhotoCardFormProps> = ({ onSuccess }) => {
             {/* Advanced Detection Info */}
             {extractedData?.rawText && (
               <div className="advanced-section">
-                <button 
-                  type="button" 
-                  className="toggle-advanced"
-                  onClick={() => setShowAdvanced(!showAdvanced)}
-                >
+                <button type="button" className="toggle-advanced" onClick={() => setShowAdvanced(!showAdvanced)}>
                   {showAdvanced ? '🔽' : '▶️'} Advanced Detection Info
                 </button>
                 {showAdvanced && (
                   <div className="raw-text">
                     <h5>Raw Detected Text:</h5>
                     <pre>{extractedData.rawText}</pre>
-                    
+
                     {extractedData.extractionErrors && (
                       <div className="extraction-errors">
                         <h5>Validation Errors:</h5>

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import InvestmentInsightsReport from './InvestmentInsightsReport';
 
 interface Props {

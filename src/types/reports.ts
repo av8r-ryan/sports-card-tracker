@@ -240,7 +240,7 @@ export interface ComparisonData {
 }
 
 // Report Templates
-export type ReportTemplate = 
+export type ReportTemplate =
   | 'portfolio-summary'
   | 'financial-performance'
   | 'collection-analytics'

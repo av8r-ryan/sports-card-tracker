@@ -1,7 +1,4 @@
 import React, { useMemo, useCallback, memo } from 'react';
-import { useCards } from '../../context/DexieCardContext';
-import { ReportingService } from '../../services/reportingService';
-import { ReportTemplate } from '../../types/reports';
 import {
   BarChart,
   Bar,
@@ -14,8 +11,12 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
+
+import { useCards } from '../../context/DexieCardContext';
+import { ReportingService } from '../../services/reportingService';
+import { ReportTemplate } from '../../types/reports';
 import './ReportsDashboard.css';
 
 interface Props {
@@ -32,7 +33,7 @@ const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   }, []);
 
@@ -54,82 +55,100 @@ const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
   }, [reportingService]);
 
   // Chart data preparation - memoized for performance
-  const portfolioChartData = useMemo(() => [
-    { name: 'Total Investment', value: metrics.totalCost, color: '#8884d8' },
-    { name: 'Current Value', value: metrics.totalValue, color: '#82ca9d' },
-    { name: 'Profit/Loss', value: metrics.totalProfit, color: metrics.totalProfit >= 0 ? '#00C49F' : '#FF8042' }
-  ], [metrics.totalCost, metrics.totalValue, metrics.totalProfit]);
+  const portfolioChartData = useMemo(
+    () => [
+      { name: 'Total Investment', value: metrics.totalCost, color: '#8884d8' },
+      { name: 'Current Value', value: metrics.totalValue, color: '#82ca9d' },
+      { name: 'Profit/Loss', value: metrics.totalProfit, color: metrics.totalProfit >= 0 ? '#00C49F' : '#FF8042' },
+    ],
+    [metrics.totalCost, metrics.totalValue, metrics.totalProfit]
+  );
 
-  const categoryChartData = useMemo(() => 
-    analyticsData.categoryDistribution.slice(0, 5).map(cat => ({
-      name: cat.category,
-      value: cat.totalValue,
-      count: cat.count
-    })), [analyticsData.categoryDistribution]);
+  const categoryChartData = useMemo(
+    () =>
+      analyticsData.categoryDistribution.slice(0, 5).map((cat) => ({
+        name: cat.category,
+        value: cat.totalValue,
+        count: cat.count,
+      })),
+    [analyticsData.categoryDistribution]
+  );
 
-  const performanceChartData = useMemo(() => 
-    portfolioData.monthlyReturns.slice(-6).map(month => ({
-      month: month.month,
-      return: month.return,
-      value: month.value
-    })), [portfolioData.monthlyReturns]);
+  const performanceChartData = useMemo(
+    () =>
+      portfolioData.monthlyReturns.slice(-6).map((month) => ({
+        month: month.month,
+        return: month.return,
+        value: month.value,
+      })),
+    [portfolioData.monthlyReturns]
+  );
 
-  const reportCards = useMemo(() => [
-    {
-      id: 'portfolio-summary' as ReportTemplate,
-      title: 'Portfolio Overview',
-      icon: '📊',
-      description: 'Complete portfolio performance and ROI analysis',
-      keyMetric: `${metrics.roi.toFixed(1)}% ROI`,
-      trend: metrics.totalProfit >= 0 ? 'up' : 'down',
-      color: '#007bff'
-    },
-    {
-      id: 'collection-analytics' as ReportTemplate,
-      title: 'Collection Analytics',
-      icon: '📈',
-      description: 'Distribution analysis and collection insights',
-      keyMetric: `${state.cards.length} Cards`,
-      trend: 'up',
-      color: '#28a745'
-    },
-    {
-      id: 'market-analysis' as ReportTemplate,
-      title: 'Market Analysis',
-      icon: '📉',
-      description: 'Market performance and comparison analysis',
-      keyMetric: `${marketData.marketComparison.outperformance.toFixed(1)}% vs Market`,
-      trend: marketData.marketComparison.outperformance >= 0 ? 'up' : 'down',
-      color: '#dc3545'
-    },
-    {
-      id: 'financial-performance' as ReportTemplate,
-      title: 'Financial Performance',
-      icon: '💰',
-      description: 'Detailed financial metrics and gains analysis',
-      keyMetric: formatCurrency(metrics.totalProfit),
-      trend: metrics.totalProfit >= 0 ? 'up' : 'down',
-      color: '#ffc107'
-    },
-    {
-      id: 'tax-summary' as ReportTemplate,
-      title: 'Tax Report',
-      icon: '📋',
-      description: 'Capital gains/losses for tax reporting',
-      keyMetric: 'Tax Ready',
-      trend: 'neutral',
-      color: '#6c757d'
-    },
-    {
-      id: 'insurance-appraisal' as ReportTemplate,
-      title: 'Insurance Appraisal',
-      icon: '🛡️',
-      description: 'Collection valuation for insurance purposes',
-      keyMetric: formatCurrency(metrics.totalValue),
-      trend: 'up',
-      color: '#6f42c1'
-    }
-  ], [metrics.roi, metrics.totalProfit, metrics.totalValue, state.cards.length, marketData.marketComparison.outperformance]);
+  const reportCards = useMemo(
+    () => [
+      {
+        id: 'portfolio-summary' as ReportTemplate,
+        title: 'Portfolio Overview',
+        icon: '📊',
+        description: 'Complete portfolio performance and ROI analysis',
+        keyMetric: `${metrics.roi.toFixed(1)}% ROI`,
+        trend: metrics.totalProfit >= 0 ? 'up' : 'down',
+        color: '#007bff',
+      },
+      {
+        id: 'collection-analytics' as ReportTemplate,
+        title: 'Collection Analytics',
+        icon: '📈',
+        description: 'Distribution analysis and collection insights',
+        keyMetric: `${state.cards.length} Cards`,
+        trend: 'up',
+        color: '#28a745',
+      },
+      {
+        id: 'market-analysis' as ReportTemplate,
+        title: 'Market Analysis',
+        icon: '📉',
+        description: 'Market performance and comparison analysis',
+        keyMetric: `${marketData.marketComparison.outperformance.toFixed(1)}% vs Market`,
+        trend: marketData.marketComparison.outperformance >= 0 ? 'up' : 'down',
+        color: '#dc3545',
+      },
+      {
+        id: 'financial-performance' as ReportTemplate,
+        title: 'Financial Performance',
+        icon: '💰',
+        description: 'Detailed financial metrics and gains analysis',
+        keyMetric: formatCurrency(metrics.totalProfit),
+        trend: metrics.totalProfit >= 0 ? 'up' : 'down',
+        color: '#ffc107',
+      },
+      {
+        id: 'tax-summary' as ReportTemplate,
+        title: 'Tax Report',
+        icon: '📋',
+        description: 'Capital gains/losses for tax reporting',
+        keyMetric: 'Tax Ready',
+        trend: 'neutral',
+        color: '#6c757d',
+      },
+      {
+        id: 'insurance-appraisal' as ReportTemplate,
+        title: 'Insurance Appraisal',
+        icon: '🛡️',
+        description: 'Collection valuation for insurance purposes',
+        keyMetric: formatCurrency(metrics.totalValue),
+        trend: 'up',
+        color: '#6f42c1',
+      },
+    ],
+    [
+      metrics.roi,
+      metrics.totalProfit,
+      metrics.totalValue,
+      state.cards.length,
+      marketData.marketComparison.outperformance,
+    ]
+  );
 
   return (
     <div className="reports-dashboard">
@@ -147,7 +166,8 @@ const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
             <h3>Total Portfolio Value</h3>
             <div className="metric-value">{formatCurrency(metrics.totalValue)}</div>
             <div className={`metric-change ${metrics.totalProfit >= 0 ? 'positive' : 'negative'}`}>
-              {metrics.totalProfit >= 0 ? '+' : ''}{formatCurrency(metrics.totalProfit)} ({metrics.roi.toFixed(1)}%)
+              {metrics.totalProfit >= 0 ? '+' : ''}
+              {formatCurrency(metrics.totalProfit)} ({metrics.roi.toFixed(1)}%)
             </div>
           </div>
         </div>
@@ -176,10 +196,12 @@ const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
             <h3>Top Performer</h3>
             <div className="metric-value">{portfolioData.bestPerformers[0]?.player || 'N/A'}</div>
             <div className="metric-subtitle">
-              {portfolioData.bestPerformers[0] ? 
-                formatCurrency((portfolioData.bestPerformers[0].currentValue || 0) - (portfolioData.bestPerformers[0].purchasePrice || 0)) : 
-                'No data'
-              }
+              {portfolioData.bestPerformers[0]
+                ? formatCurrency(
+                    (portfolioData.bestPerformers[0].currentValue || 0) -
+                      (portfolioData.bestPerformers[0].purchasePrice || 0)
+                  )
+                : 'No data'}
             </div>
           </div>
         </div>
@@ -227,7 +249,10 @@ const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
                 label={({ name, count }) => `${name} (${count})`}
               >
                 {categoryChartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'][index % 5]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'][index % 5]}
+                  />
                 ))}
               </Pie>
               <Tooltip formatter={(value: number) => formatCurrency(value)} />
@@ -240,8 +265,8 @@ const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
       <div className="reports-grid">
         <h2>Available Reports</h2>
         <div className="report-cards">
-          {reportCards.map(report => (
-            <div 
+          {reportCards.map((report) => (
+            <div
               key={report.id}
               className="report-card"
               onClick={() => onSelectReport(report.id)}
@@ -268,28 +293,16 @@ const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
       <div className="quick-actions">
         <h3>Quick Actions</h3>
         <div className="action-buttons">
-          <button 
-            className="action-btn primary"
-            onClick={() => onSelectReport('portfolio-summary')}
-          >
+          <button className="action-btn primary" onClick={() => onSelectReport('portfolio-summary')}>
             📊 Generate Portfolio Report
           </button>
-          <button 
-            className="action-btn"
-            onClick={() => onSelectReport('tax-summary')}
-          >
+          <button className="action-btn" onClick={() => onSelectReport('tax-summary')}>
             📋 Tax Summary Report
           </button>
-          <button 
-            className="action-btn"
-            onClick={() => onSelectReport('insurance-appraisal')}
-          >
+          <button className="action-btn" onClick={() => onSelectReport('insurance-appraisal')}>
             🛡️ Insurance Appraisal
           </button>
-          <button 
-            className="action-btn"
-            onClick={() => onSelectReport('collection-analytics')}
-          >
+          <button className="action-btn" onClick={() => onSelectReport('collection-analytics')}>
             📈 Collection Analytics
           </button>
         </div>
@@ -302,28 +315,31 @@ const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
           <div className="insight-item">
             <span className="insight-icon">🎯</span>
             <span className="insight-text">
-              Your top performing category is {analyticsData.categoryDistribution[0]?.category} with {analyticsData.categoryDistribution[0]?.count} cards
+              Your top performing category is {analyticsData.categoryDistribution[0]?.category} with{' '}
+              {analyticsData.categoryDistribution[0]?.count} cards
             </span>
           </div>
           <div className="insight-item">
             <span className="insight-icon">📈</span>
             <span className="insight-text">
-              Portfolio ROI of {metrics.roi.toFixed(1)}% {metrics.roi >= 0 ? 'outperforming' : 'underperforming'} the market
+              Portfolio ROI of {metrics.roi.toFixed(1)}% {metrics.roi >= 0 ? 'outperforming' : 'underperforming'} the
+              market
             </span>
           </div>
           <div className="insight-item">
             <span className="insight-icon">💰</span>
             <span className="insight-text">
-              Average card value: {formatCurrency(metrics.averageValue)} vs purchase price: {formatCurrency(metrics.averageCost)}
+              Average card value: {formatCurrency(metrics.averageValue)} vs purchase price:{' '}
+              {formatCurrency(metrics.averageCost)}
             </span>
           </div>
           <div className="insight-item">
             <span className="insight-icon">🏆</span>
             <span className="insight-text">
-              Top performer: {portfolioData.bestPerformers[0]?.player || 'No data'} with {portfolioData.bestPerformers[0] ? 
-                `${(((portfolioData.bestPerformers[0].currentValue || 0) - (portfolioData.bestPerformers[0].purchasePrice || 0)) / (portfolioData.bestPerformers[0].purchasePrice || 1) * 100).toFixed(1)}% return` : 
-                'no gains data'
-              }
+              Top performer: {portfolioData.bestPerformers[0]?.player || 'No data'} with{' '}
+              {portfolioData.bestPerformers[0]
+                ? `${((((portfolioData.bestPerformers[0].currentValue || 0) - (portfolioData.bestPerformers[0].purchasePrice || 0)) / (portfolioData.bestPerformers[0].purchasePrice || 1)) * 100).toFixed(1)}% return`
+                : 'no gains data'}
             </span>
           </div>
         </div>

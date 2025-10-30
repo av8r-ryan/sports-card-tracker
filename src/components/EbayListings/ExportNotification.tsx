@@ -14,7 +14,7 @@ const ExportNotification: React.FC<Props> = ({ show, message, type, onClose }) =
   useEffect(() => {
     setIsVisible(show);
     if (!show) return;
-    
+
     const timer = setTimeout(() => {
       setIsVisible(false);
       setTimeout(onClose, 300); // Wait for animation to finish
@@ -34,10 +34,13 @@ const ExportNotification: React.FC<Props> = ({ show, message, type, onClose }) =
       <div className="notification-content">
         <p>{message}</p>
       </div>
-      <button className="notification-close" onClick={() => {
-        setIsVisible(false);
-        setTimeout(onClose, 300);
-      }}>
+      <button
+        className="notification-close"
+        onClick={() => {
+          setIsVisible(false);
+          setTimeout(onClose, 300);
+        }}
+      >
         ×
       </button>
     </div>

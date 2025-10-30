@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+
 import { useCards } from '../../context/DexieCardContext';
 
 const AutoExportTrigger: React.FC = () => {
@@ -6,8 +7,8 @@ const AutoExportTrigger: React.FC = () => {
 
   useEffect(() => {
     // Export all unsold cards immediately
-    const unsoldCards = state.cards.filter(card => !('sellDate' in card) || !card.sellDate);
-    
+    const unsoldCards = state.cards.filter((card) => !('sellDate' in card) || !card.sellDate);
+
     if (unsoldCards.length === 0) {
       console.log('No unsold cards to export');
       return;
@@ -34,37 +35,32 @@ const AutoExportTrigger: React.FC = () => {
       '*ReturnsAcceptedOption',
       'ShippingType',
       'ShippingService-1:Option',
-      'ShippingService-1:Cost'
+      'ShippingService-1:Cost',
     ];
 
     const rows = [headers];
 
-    unsoldCards.forEach(card => {
+    unsoldCards.forEach((card) => {
       // Title
-      const titleParts = [
-        card.year,
-        card.brand,
-        card.player,
-        `#${card.cardNumber}`
-      ];
+      const titleParts = [card.year, card.brand, card.player, `#${card.cardNumber}`];
       if (card.parallel) titleParts.push(card.parallel);
       if (card.gradingCompany) titleParts.push(`${card.gradingCompany} ${card.condition}`);
       titleParts.push(card.category);
-      
+
       let title = titleParts.join(' ');
-      if (title.length > 80) title = title.substring(0, 77) + '...';
+      if (title.length > 80) title = `${title.substring(0, 77)}...`;
 
       // Description
       const desc = `${card.year} ${card.brand} ${card.player} #${card.cardNumber} ${card.team} ${card.category}. Condition: ${card.condition}. ${card.notes || ''} Ships fast with tracking!`;
 
       // Category
       const categoryMap: Record<string, string> = {
-        'Baseball': '261328',
-        'Basketball': '261329',
-        'Football': '261330',
-        'Hockey': '261331',
-        'Soccer': '261333',
-        'Pokemon': '183454'
+        Baseball: '261328',
+        Basketball: '261329',
+        Football: '261330',
+        Hockey: '261331',
+        Soccer: '261333',
+        Pokemon: '183454',
       };
 
       // Condition
@@ -81,7 +77,7 @@ const AutoExportTrigger: React.FC = () => {
         '', // PicURL
         '1',
         'FixedPrice',
-        (card.currentValue * 0.90).toFixed(2),
+        (card.currentValue * 0.9).toFixed(2),
         (card.currentValue * 0.95).toFixed(2),
         'Days_7',
         'USA',
@@ -90,21 +86,23 @@ const AutoExportTrigger: React.FC = () => {
         'ReturnsAccepted',
         'Flat',
         'USPSFirstClass',
-        '4.99'
+        '4.99',
       ];
 
       rows.push(row);
     });
 
     // Create CSV
-    const csvContent = rows.map(row => 
-      row.map(cell => {
-        const str = String(cell);
-        return str.includes(',') || str.includes('"') 
-          ? `"${str.replace(/"/g, '""')}"` 
-          : str;
-      }).join(',')
-    ).join('\n');
+    const csvContent = rows
+      .map((row) =>
+        row
+          .map((cell) => {
+            const str = String(cell);
+            return str.includes(',') || str.includes('"') ? `"${str.replace(/"/g, '""')}"` : str;
+          })
+          .join(',')
+      )
+      .join('\n');
 
     // Download
     const blob = new Blob([csvContent], { type: 'text/csv' });

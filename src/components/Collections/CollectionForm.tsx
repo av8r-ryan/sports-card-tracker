@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { Collection } from '../../types/collection';
 import './CollectionForm.css';
 
@@ -22,8 +23,26 @@ const PRESET_COLORS = [
 ];
 
 const PRESET_ICONS = [
-  '📦', '🏆', '⭐', '💎', '🔥', '⚡', '🎯', '🏅', '🎨', '🎪',
-  '🌟', '💰', '👑', '🏒', '🎮', '🎸', '🏀', '⚾', '🏈', '⚽'
+  '📦',
+  '🏆',
+  '⭐',
+  '💎',
+  '🔥',
+  '⚡',
+  '🎯',
+  '🏅',
+  '🎨',
+  '🎪',
+  '🌟',
+  '💰',
+  '👑',
+  '🏒',
+  '🎮',
+  '🎸',
+  '🏀',
+  '⚾',
+  '🏈',
+  '⚽',
 ];
 
 const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onSubmit, onCancel }) => {
@@ -32,13 +51,13 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onSubmit, o
     description: collection?.description || '',
     color: collection?.color || PRESET_COLORS[0],
     icon: collection?.icon || PRESET_ICONS[0],
-    visibility: collection?.visibility || 'private' as 'private' | 'public' | 'shared',
-    tags: collection?.tags?.join(', ') || ''
+    visibility: collection?.visibility || ('private' as 'private' | 'public' | 'shared'),
+    tags: collection?.tags?.join(', ') || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       alert('Collection name is required');
       return;
@@ -52,8 +71,8 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onSubmit, o
       visibility: formData.visibility,
       tags: formData.tags
         .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0)
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0),
     };
 
     // Only include isDefault when editing an existing collection
@@ -68,7 +87,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onSubmit, o
     <div className="collection-form-overlay">
       <div className="collection-form">
         <h2>{collection ? 'Edit Collection' : 'Create New Collection'}</h2>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Collection Name *</label>
@@ -97,7 +116,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onSubmit, o
             <div className="form-group">
               <label>Icon</label>
               <div className="icon-picker">
-                {PRESET_ICONS.map(icon => (
+                {PRESET_ICONS.map((icon) => (
                   <button
                     key={icon}
                     type="button"
@@ -113,7 +132,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onSubmit, o
             <div className="form-group">
               <label>Color</label>
               <div className="color-picker">
-                {PRESET_COLORS.map(color => (
+                {PRESET_COLORS.map((color) => (
                   <button
                     key={color}
                     type="button"
@@ -150,9 +169,9 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ collection, onSubmit, o
 
           <div className="form-preview">
             <h4>Preview:</h4>
-            <div 
+            <div
               className="collection-preview"
-              style={{ backgroundColor: formData.color + '20', borderColor: formData.color }}
+              style={{ backgroundColor: `${formData.color}20`, borderColor: formData.color }}
             >
               <span className="preview-icon">{formData.icon}</span>
               <span className="preview-name">{formData.name || 'Collection Name'}</span>

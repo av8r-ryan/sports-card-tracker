@@ -1,7 +1,8 @@
+import { format } from 'date-fns';
 import React, { useMemo, useState } from 'react';
+
 import { ReportingService } from '../../services/reportingService';
 import { ReportFilter } from '../../types/reports';
-import { format } from 'date-fns';
 import './InsuranceReport.css';
 
 interface Props {
@@ -11,18 +12,15 @@ interface Props {
 
 const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
   const [activeView, setActiveView] = useState<'overview' | 'details' | 'documentation'>('overview');
-  
-  const insuranceData = useMemo(() => 
-    reportingService.generateInsuranceReport(filters), 
-    [reportingService, filters]
-  );
+
+  const insuranceData = useMemo(() => reportingService.generateInsuranceReport(filters), [reportingService, filters]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   };
 
@@ -30,11 +28,9 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
   const totalCards = insuranceData.categoryBreakdown.reduce((sum, cat) => sum + cat.cardCount, 0);
   const averageCardValue = insuranceData.totalReplacementValue / totalCards;
   const highValuePercentage = (insuranceData.highValueCards.length / totalCards) * 100;
-  
+
   // Get top categories by value
-  const topCategories = [...insuranceData.categoryBreakdown]
-    .sort((a, b) => b.totalValue - a.totalValue)
-    .slice(0, 5);
+  const topCategories = [...insuranceData.categoryBreakdown].sort((a, b) => b.totalValue - a.totalValue).slice(0, 5);
 
   return (
     <div className="insurance-report">
@@ -45,28 +41,23 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
           Insurance Appraisal Report
         </h1>
         <p>Professional collection valuation for insurance coverage</p>
-        <div className="header-date">
-          Generated on {format(insuranceData.lastUpdated, 'MMMM d, yyyy')}
-        </div>
+        <div className="header-date">Generated on {format(insuranceData.lastUpdated, 'MMMM d, yyyy')}</div>
       </div>
 
       {/* View Tabs */}
       <div className="view-tabs">
-        <button 
+        <button
           className={`tab ${activeView === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveView('overview')}
         >
           <span className="tab-icon">📊</span>
           Overview
         </button>
-        <button 
-          className={`tab ${activeView === 'details' ? 'active' : ''}`}
-          onClick={() => setActiveView('details')}
-        >
+        <button className={`tab ${activeView === 'details' ? 'active' : ''}`} onClick={() => setActiveView('details')}>
           <span className="tab-icon">📋</span>
           Detailed Inventory
         </button>
-        <button 
+        <button
           className={`tab ${activeView === 'documentation' ? 'active' : ''}`}
           onClick={() => setActiveView('documentation')}
         >
@@ -85,14 +76,14 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
               <div className="card-value">{formatCurrency(insuranceData.totalReplacementValue)}</div>
               <div className="card-subtitle">Current market valuation</div>
             </div>
-            
+
             <div className="summary-card secondary">
               <div className="card-icon">🔒</div>
               <div className="card-label">Recommended Coverage</div>
               <div className="card-value">{formatCurrency(insuranceData.recommendedCoverage)}</div>
               <div className="card-subtitle">Includes 20% buffer</div>
             </div>
-            
+
             <div className="summary-card tertiary">
               <div className="card-icon">⭐</div>
               <div className="card-label">High-Value Items</div>
@@ -132,7 +123,7 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
                 <div className="analysis-icon">🏆</div>
                 <div className="analysis-title">Graded Cards</div>
                 <div className="analysis-value">
-                  {insuranceData.highValueCards.filter(c => c.gradingCompany).length}
+                  {insuranceData.highValueCards.filter((c) => c.gradingCompany).length}
                 </div>
                 <div className="analysis-description">Professionally graded</div>
               </div>
@@ -193,9 +184,7 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
                     </div>
                     <div className="item-badges">
                       <span className="badge condition">{card.condition}</span>
-                      {card.gradingCompany && (
-                        <span className="badge graded">{card.gradingCompany}</span>
-                      )}
+                      {card.gradingCompany && <span className="badge graded">{card.gradingCompany}</span>}
                     </div>
                   </div>
                   <div className="item-value-box">
@@ -308,8 +297,8 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
                 <div className="rec-content">
                   <div className="rec-title">Annual Appraisal Updates</div>
                   <div className="rec-description">
-                    Update your collection appraisal annually to reflect market changes. 
-                    Sports card values can fluctuate significantly based on player performance and market trends.
+                    Update your collection appraisal annually to reflect market changes. Sports card values can
+                    fluctuate significantly based on player performance and market trends.
                   </div>
                 </div>
               </div>
@@ -318,7 +307,7 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
                 <div className="rec-content">
                   <div className="rec-title">Comprehensive Documentation</div>
                   <div className="rec-description">
-                    Photograph all cards valued over $100. Include close-ups of any defects or unique characteristics. 
+                    Photograph all cards valued over $100. Include close-ups of any defects or unique characteristics.
                     This documentation is crucial for claims processing.
                   </div>
                 </div>
@@ -328,7 +317,7 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
                 <div className="rec-content">
                   <div className="rec-title">Specialized Insurance Providers</div>
                   <div className="rec-description">
-                    Consider collectibles-specific insurance providers who understand the unique nature of sports cards 
+                    Consider collectibles-specific insurance providers who understand the unique nature of sports cards
                     and can offer better coverage terms than standard homeowners policies.
                   </div>
                 </div>
@@ -338,8 +327,8 @@ const InsuranceReport: React.FC<Props> = ({ reportingService, filters }) => {
                 <div className="rec-content">
                   <div className="rec-title">Security Measures</div>
                   <div className="rec-description">
-                    Implement proper security including safes, alarm systems, and restricted access. 
-                    Many insurers offer discounts for documented security measures.
+                    Implement proper security including safes, alarm systems, and restricted access. Many insurers offer
+                    discounts for documented security measures.
                   </div>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+
 import OptimizedImage from '../OptimizedImage/OptimizedImage';
 import './LazyImage.css';
 
@@ -33,7 +34,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   maxHeight = 1080,
   enableWebP = true,
   enableResponsive = true,
-  onOptimizationComplete
+  onOptimizationComplete,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
@@ -57,7 +58,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
       },
       {
         threshold,
-        rootMargin
+        rootMargin,
       }
     );
 
@@ -103,12 +104,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
           className="lazy-image"
         />
       ) : (
-        <img
-          src={placeholder}
-          alt={alt}
-          className="lazy-image placeholder"
-          loading="lazy"
-        />
+        <img src={placeholder} alt={alt} className="lazy-image placeholder" loading="lazy" />
       )}
     </div>
   );

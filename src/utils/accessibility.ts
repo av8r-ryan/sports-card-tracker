@@ -32,7 +32,7 @@ class AccessibilityManager {
       enableHighContrast: false,
       enableReducedMotion: false,
       announceTimeout: 5000,
-      ...config
+      ...config,
     };
 
     this.initialize();
@@ -148,7 +148,7 @@ class AccessibilityManager {
   private handleEscapeKey(event: KeyboardEvent): void {
     // Close modals, dropdowns, etc.
     const modals = document.querySelectorAll('[role="dialog"]');
-    modals.forEach(modal => {
+    modals.forEach((modal) => {
       if (modal.getAttribute('aria-hidden') !== 'true') {
         const closeButton = modal.querySelector('[aria-label*="close"], [aria-label*="Close"]');
         if (closeButton) {
@@ -160,13 +160,13 @@ class AccessibilityManager {
 
   private handleActivation(event: KeyboardEvent): void {
     const target = event.target as HTMLElement;
-    
+
     // Handle button activation
     if (target.tagName === 'BUTTON' || target.getAttribute('role') === 'button') {
       event.preventDefault();
       target.click();
     }
-    
+
     // Handle link activation
     if (target.tagName === 'A') {
       event.preventDefault();
@@ -203,7 +203,7 @@ class AccessibilityManager {
   private handleHomeKey(event: KeyboardEvent): void {
     const target = event.target as HTMLElement;
     const container = target.closest('[role="menu"], [role="menubar"], [role="tablist"]');
-    
+
     if (container) {
       event.preventDefault();
       const firstItem = container.querySelector('[role="menuitem"], [role="tab"]') as HTMLElement;
@@ -216,7 +216,7 @@ class AccessibilityManager {
   private handleEndKey(event: KeyboardEvent): void {
     const target = event.target as HTMLElement;
     const container = target.closest('[role="menu"], [role="menubar"], [role="tablist"]');
-    
+
     if (container) {
       event.preventDefault();
       const items = container.querySelectorAll('[role="menuitem"], [role="tab"]');
@@ -230,15 +230,15 @@ class AccessibilityManager {
   private navigateMenu(menu: HTMLElement, currentItem: HTMLElement, direction: string): void {
     const items = Array.from(menu.querySelectorAll('[role="menuitem"]')) as HTMLElement[];
     const currentIndex = items.indexOf(currentItem);
-    
+
     let nextIndex = currentIndex;
-    
+
     if (direction === 'ArrowDown' || direction === 'ArrowRight') {
       nextIndex = (currentIndex + 1) % items.length;
     } else if (direction === 'ArrowUp' || direction === 'ArrowLeft') {
       nextIndex = currentIndex === 0 ? items.length - 1 : currentIndex - 1;
     }
-    
+
     if (nextIndex !== currentIndex) {
       items[nextIndex].focus();
     }
@@ -247,15 +247,15 @@ class AccessibilityManager {
   private navigateTabs(tablist: HTMLElement, currentTab: HTMLElement, direction: string): void {
     const tabs = Array.from(tablist.querySelectorAll('[role="tab"]')) as HTMLElement[];
     const currentIndex = tabs.indexOf(currentTab);
-    
+
     let nextIndex = currentIndex;
-    
+
     if (direction === 'ArrowRight') {
       nextIndex = (currentIndex + 1) % tabs.length;
     } else if (direction === 'ArrowLeft') {
       nextIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
     }
-    
+
     if (nextIndex !== currentIndex) {
       tabs[nextIndex].focus();
       tabs[nextIndex].click();
@@ -266,9 +266,9 @@ class AccessibilityManager {
     const cells = Array.from(grid.querySelectorAll('[role="gridcell"]')) as HTMLElement[];
     const currentIndex = cells.indexOf(currentCell);
     const columns = this.getGridColumns(grid);
-    
+
     let nextIndex = currentIndex;
-    
+
     switch (direction) {
       case 'ArrowRight':
         nextIndex = currentIndex + 1;
@@ -283,7 +283,7 @@ class AccessibilityManager {
         nextIndex = currentIndex - columns;
         break;
     }
-    
+
     if (nextIndex >= 0 && nextIndex < cells.length && nextIndex !== currentIndex) {
       cells[nextIndex].focus();
     }
@@ -321,7 +321,7 @@ class AccessibilityManager {
   private handleFocusIn(event: FocusEvent): void {
     const target = event.target as HTMLElement;
     this.focusHistory.push(target);
-    
+
     // Limit focus history
     if (this.focusHistory.length > 10) {
       this.focusHistory = this.focusHistory.slice(-10);
@@ -343,7 +343,7 @@ class AccessibilityManager {
       '[role="button"]:not([disabled])',
       '[role="menuitem"]',
       '[role="tab"]',
-      '[role="gridcell"]'
+      '[role="gridcell"]',
     ];
 
     return Array.from(container.querySelectorAll(focusableSelectors.join(', '))) as HTMLElement[];
@@ -365,7 +365,7 @@ class AccessibilityManager {
 
   public setFocusTrap(options: FocusTrapOptions): void {
     this.currentFocusTrap = options;
-    
+
     if (options.initialFocus) {
       options.initialFocus.focus();
     } else {
@@ -403,7 +403,7 @@ class AccessibilityManager {
 
   public validateAccessibility(): AccessibilityReport {
     const issues: AccessibilityIssue[] = [];
-    
+
     // Check for missing alt text
     const images = document.querySelectorAll('img');
     images.forEach((img, index) => {
@@ -413,7 +413,7 @@ class AccessibilityManager {
           element: img,
           severity: 'error',
           message: `Image ${index + 1} is missing alt text`,
-          fix: 'Add alt attribute or aria-label'
+          fix: 'Add alt attribute or aria-label',
         });
       }
     });
@@ -425,14 +425,14 @@ class AccessibilityManager {
       const label = id ? document.querySelector(`label[for="${id}"]`) : null;
       const ariaLabel = input.getAttribute('aria-label');
       const ariaLabelledBy = input.getAttribute('aria-labelledby');
-      
+
       if (!label && !ariaLabel && !ariaLabelledBy) {
         issues.push({
           type: 'missing-label',
           element: input,
           severity: 'error',
           message: `Form control ${index + 1} is missing a label`,
-          fix: 'Add label element or aria-label attribute'
+          fix: 'Add label element or aria-label attribute',
         });
       }
     });
@@ -448,7 +448,7 @@ class AccessibilityManager {
           element: heading,
           severity: 'warning',
           message: `Heading ${heading.tagName} skips level ${lastLevel + 1}`,
-          fix: 'Use proper heading hierarchy'
+          fix: 'Use proper heading hierarchy',
         });
       }
       lastLevel = level;
@@ -457,36 +457,36 @@ class AccessibilityManager {
     return {
       issues,
       score: this.calculateAccessibilityScore(issues),
-      recommendations: this.generateRecommendations(issues)
+      recommendations: this.generateRecommendations(issues),
     };
   }
 
   private calculateAccessibilityScore(issues: AccessibilityIssue[]): number {
-    const errorCount = issues.filter(i => i.severity === 'error').length;
-    const warningCount = issues.filter(i => i.severity === 'warning').length;
-    
+    const errorCount = issues.filter((i) => i.severity === 'error').length;
+    const warningCount = issues.filter((i) => i.severity === 'warning').length;
+
     const maxScore = 100;
     const errorPenalty = 10;
     const warningPenalty = 5;
-    
-    return Math.max(0, maxScore - (errorCount * errorPenalty) - (warningCount * warningPenalty));
+
+    return Math.max(0, maxScore - errorCount * errorPenalty - warningCount * warningPenalty);
   }
 
   private generateRecommendations(issues: AccessibilityIssue[]): string[] {
     const recommendations: string[] = [];
-    
-    if (issues.some(i => i.type === 'missing-alt-text')) {
+
+    if (issues.some((i) => i.type === 'missing-alt-text')) {
       recommendations.push('Add descriptive alt text to all images');
     }
-    
-    if (issues.some(i => i.type === 'missing-label')) {
+
+    if (issues.some((i) => i.type === 'missing-label')) {
       recommendations.push('Ensure all form controls have associated labels');
     }
-    
-    if (issues.some(i => i.type === 'heading-hierarchy')) {
+
+    if (issues.some((i) => i.type === 'heading-hierarchy')) {
       recommendations.push('Use proper heading hierarchy (h1 > h2 > h3, etc.)');
     }
-    
+
     return recommendations;
   }
 }
@@ -518,20 +518,22 @@ export const accessibilityUtils = {
       'select:not([disabled])',
       'textarea:not([disabled])',
       'a[href]',
-      '[tabindex]:not([tabindex="-1"])'
+      '[tabindex]:not([tabindex="-1"])',
     ];
-    
-    return focusableSelectors.some(selector => element.matches(selector));
+
+    return focusableSelectors.some((selector) => element.matches(selector));
   },
 
   // Get accessible name
   getAccessibleName: (element: HTMLElement): string => {
-    return element.getAttribute('aria-label') ||
-           element.getAttribute('aria-labelledby') ||
-           element.textContent?.trim() ||
-           element.getAttribute('alt') ||
-           element.getAttribute('title') ||
-           '';
+    return (
+      element.getAttribute('aria-label') ||
+      element.getAttribute('aria-labelledby') ||
+      element.textContent?.trim() ||
+      element.getAttribute('alt') ||
+      element.getAttribute('title') ||
+      ''
+    );
   },
 
   // Check color contrast
@@ -542,9 +544,9 @@ export const accessibilityUtils = {
   },
 
   // Generate accessible ID
-  generateId: (prefix: string = 'element'): string => {
+  generateId: (prefix = 'element'): string => {
     return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
-  }
+  },
 };
 
 export type { AccessibilityConfig, FocusTrapOptions, AccessibilityIssue, AccessibilityReport };

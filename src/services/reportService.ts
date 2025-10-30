@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+
 import 'jspdf-autotable';
 import { Card } from '../types';
 
@@ -15,16 +16,16 @@ export const exportToPDF = (reportType: string, data: any) => {
   const doc = new jsPDF() as ExtendedJsPDF;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  
+
   // Add header
   doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
   doc.text(data.title || reportType, pageWidth / 2, 20, { align: 'center' });
-  
+
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
   doc.text(`Generated on: ${data.date || new Date().toLocaleDateString()}`, pageWidth / 2, 30, { align: 'center' });
-  
+
   let yPosition = 50;
 
   if (reportType === 'inventory-report' && data.stats) {
@@ -36,19 +37,19 @@ export const exportToPDF = (reportType: string, data: any) => {
 
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    
+
     const stats = [
       ['Total Cards:', data.stats.totalCards.toString()],
       ['Total Value:', formatCurrency(data.stats.totalValue)],
       ['Average Value:', formatCurrency(data.stats.averageValue)],
       ['Unique Players:', data.stats.uniquePlayers.toString()],
       ['Unique Brands:', data.stats.uniqueBrands.toString()],
-      ['Graded Cards:', data.stats.gradedCards.toString()]
+      ['Graded Cards:', data.stats.gradedCards.toString()],
     ];
 
     stats.forEach((stat, index) => {
-      doc.text(stat[0], 20, yPosition + (index * 7));
-      doc.text(stat[1], 80, yPosition + (index * 7));
+      doc.text(stat[0], 20, yPosition + index * 7);
+      doc.text(stat[1], 80, yPosition + index * 7);
     });
 
     yPosition += stats.length * 7 + 10;
@@ -72,7 +73,7 @@ export const exportToPDF = (reportType: string, data: any) => {
       yPosition += 10;
 
       const tableData = data.cards.map((card: Card) => {
-        const roi = ((card.currentValue - card.purchasePrice) / card.purchasePrice * 100).toFixed(1);
+        const roi = (((card.currentValue - card.purchasePrice) / card.purchasePrice) * 100).toFixed(1);
         return [
           card.player,
           card.year,
@@ -82,7 +83,7 @@ export const exportToPDF = (reportType: string, data: any) => {
           card.condition,
           formatCurrency(card.purchasePrice),
           formatCurrency(card.currentValue),
-          `${roi}%`
+          `${roi}%`,
         ];
       });
 
@@ -95,11 +96,11 @@ export const exportToPDF = (reportType: string, data: any) => {
           fillColor: [74, 85, 104],
           textColor: [255, 255, 255],
           fontSize: 10,
-          fontStyle: 'bold'
+          fontStyle: 'bold',
         },
         bodyStyles: {
           fontSize: 9,
-          cellPadding: 2
+          cellPadding: 2,
         },
         columnStyles: {
           0: { cellWidth: 35 },
@@ -110,20 +111,15 @@ export const exportToPDF = (reportType: string, data: any) => {
           5: { cellWidth: 20 },
           6: { cellWidth: 20, halign: 'right' },
           7: { cellWidth: 20, halign: 'right' },
-          8: { cellWidth: 15, halign: 'right' }
+          8: { cellWidth: 15, halign: 'right' },
         },
-        didDrawPage: function(data: any) {
+        didDrawPage: function (data: any) {
           // Footer
           doc.setFontSize(10);
           doc.setTextColor(100);
           const pageCount = doc.internal.getNumberOfPages();
-          doc.text(
-            `Page ${data.pageNumber} of ${pageCount}`,
-            pageWidth / 2,
-            pageHeight - 10,
-            { align: 'center' }
-          );
-        }
+          doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        },
       });
     }
   } else {
@@ -142,6 +138,6 @@ function formatCurrency(amount: number): string {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(amount);
 }

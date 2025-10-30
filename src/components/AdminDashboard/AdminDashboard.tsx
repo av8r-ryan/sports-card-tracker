@@ -1,10 +1,11 @@
+import { motion } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { useAuth } from '../../context/AuthContext';
 import { useCards } from '../../context/DexieCardContext';
+import { backupDatabase } from '../../db/backupDatabase';
 import { cardDatabase } from '../../db/simpleDatabase';
 import { getAutoBackups } from '../../utils/backupRestore';
-import { backupDatabase } from '../../db/backupDatabase';
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import CollapsibleMenu from '../UI/CollapsibleMenu';
 import './AdminDashboard.css';
@@ -69,39 +70,40 @@ const AdminDashboard: React.FC = () => {
       const allCards = await cardDatabase.getAllCardsAdmin();
       const userStatistics = await cardDatabase.getUserStatistics();
       const autoBackups = await getAutoBackups();
-      
+
       // Get all backups from IndexedDB
       const allBackups = await backupDatabase.getAllBackups();
-      const backupInfos: BackupInfo[] = allBackups.map(b => ({
+      const backupInfos: BackupInfo[] = allBackups.map((b) => ({
         id: b.id,
         timestamp: b.timestamp,
         type: b.type,
         sizeInMB: b.sizeInMB,
         totalCards: b.backup.metadata.totalCards,
         totalValue: b.backup.metadata.totalValue,
-        userName: b.backup.metadata.userName
+        userName: b.backup.metadata.userName,
       }));
 
       // Calculate statistics
       const totalCards = allCards.length;
-      const totalUsers = new Set(allCards.map(card => card.userId)).size;
+      const totalUsers = new Set(allCards.map((card) => card.userId)).size;
       const totalValue = allCards.reduce((sum, card) => sum + card.currentValue, 0);
       const averageCardValue = totalCards > 0 ? totalValue / totalCards : 0;
 
       // Find most valuable card
-      const mostValuableCard = allCards.reduce((prev, current) => 
-        current.currentValue > (prev?.currentValue || 0) ? current : prev
-      , allCards[0]);
+      const mostValuableCard = allCards.reduce(
+        (prev, current) => (current.currentValue > (prev?.currentValue || 0) ? current : prev),
+        allCards[0]
+      );
 
       // Category breakdown
       const categoriesBreakdown: { [key: string]: number } = {};
-      allCards.forEach(card => {
+      allCards.forEach((card) => {
         categoriesBreakdown[card.category] = (categoriesBreakdown[card.category] || 0) + 1;
       });
 
       // Year breakdown
       const yearBreakdown: { [key: string]: number } = {};
-      allCards.forEach(card => {
+      allCards.forEach((card) => {
         yearBreakdown[card.year] = (yearBreakdown[card.year] || 0) + 1;
       });
 
@@ -117,7 +119,7 @@ const AdminDashboard: React.FC = () => {
         totalBackups: allBackups.length,
         lastBackupDate: lastBackup ? new Date(lastBackup.timestamp).toLocaleString() : null,
         categoriesBreakdown,
-        yearBreakdown
+        yearBreakdown,
       });
 
       setUserStats(userStatistics);
@@ -134,7 +136,7 @@ const AdminDashboard: React.FC = () => {
       if (selectedUserId) {
         // Clear specific user's cards
         const allCards = await cardDatabase.getAllCardsAdmin();
-        const userCards = allCards.filter(card => card.userId === selectedUserId);
+        const userCards = allCards.filter((card) => card.userId === selectedUserId);
         for (const card of userCards) {
           await cardDatabase.deleteCard(card.id);
         }
@@ -164,8 +166,8 @@ const AdminDashboard: React.FC = () => {
       browserInfo: {
         userAgent: navigator.userAgent,
         platform: navigator.platform,
-        language: navigator.language
-      }
+        language: navigator.language,
+      },
     };
 
     const json = JSON.stringify(dbInfo, null, 2);
@@ -223,7 +225,7 @@ const AdminDashboard: React.FC = () => {
         <>
           <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.2}>
             <div className="admin-stats">
-              <motion.div 
+              <motion.div
                 className="stat-card card-glass hover-lift"
                 whileHover={{ scale: 1.05, rotateY: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -231,7 +233,7 @@ const AdminDashboard: React.FC = () => {
                 <h3>Total Users</h3>
                 <p className="stat-value animate-pulse">{stats.totalUsers.toLocaleString()}</p>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="stat-card card-glass hover-lift"
                 whileHover={{ scale: 1.05, rotateY: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -239,7 +241,7 @@ const AdminDashboard: React.FC = () => {
                 <h3>Total Cards</h3>
                 <p className="stat-value animate-pulse">{stats.totalCards.toLocaleString()}</p>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="stat-card card-glass hover-lift"
                 whileHover={{ scale: 1.05, rotateY: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -247,7 +249,7 @@ const AdminDashboard: React.FC = () => {
                 <h3>Total Value</h3>
                 <p className="stat-value animate-pulse">${stats.totalValue.toLocaleString()}</p>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="stat-card card-glass hover-lift"
                 whileHover={{ scale: 1.05, rotateY: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -273,7 +275,7 @@ const AdminDashboard: React.FC = () => {
                   </thead>
                   <tbody>
                     {userStats.map((user, index) => (
-                      <motion.tr 
+                      <motion.tr
                         key={user.userId}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -284,7 +286,7 @@ const AdminDashboard: React.FC = () => {
                         <td>${user.totalValue.toLocaleString()}</td>
                         <td>${user.avgValue.toFixed(2)}</td>
                         <td>
-                          <motion.button 
+                          <motion.button
                             className="clear-user-btn"
                             onClick={() => {
                               setSelectedUserId(user.userId);
@@ -308,8 +310,8 @@ const AdminDashboard: React.FC = () => {
             <CollapsibleMenu title="Category Breakdown" icon="📊">
               <div className="breakdown-grid">
                 {Object.entries(stats.categoriesBreakdown).map(([category, count], index) => (
-                  <motion.div 
-                    key={category} 
+                  <motion.div
+                    key={category}
                     className="breakdown-item card-glass"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -318,9 +320,7 @@ const AdminDashboard: React.FC = () => {
                   >
                     <span className="category">{category}</span>
                     <span className="count">{count} cards</span>
-                    <span className="percentage">
-                      {((count / stats.totalCards) * 100).toFixed(1)}%
-                    </span>
+                    <span className="percentage">{((count / stats.totalCards) * 100).toFixed(1)}%</span>
                   </motion.div>
                 ))}
               </div>
@@ -334,8 +334,8 @@ const AdminDashboard: React.FC = () => {
                   .sort(([a], [b]) => Number(b) - Number(a))
                   .slice(0, 10)
                   .map(([year, count], index) => (
-                    <motion.div 
-                      key={year} 
+                    <motion.div
+                      key={year}
                       className="year-bar"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -343,8 +343,8 @@ const AdminDashboard: React.FC = () => {
                     >
                       <span className="year-label">{year}</span>
                       <div className="bar-container">
-                        <motion.div 
-                          className="bar" 
+                        <motion.div
+                          className="bar"
                           initial={{ width: 0 }}
                           animate={{ width: `${(count / stats.totalCards) * 100}%` }}
                           transition={{ duration: 0.8, delay: index * 0.1 }}
@@ -378,7 +378,7 @@ const AdminDashboard: React.FC = () => {
                     </thead>
                     <tbody>
                       {backups.map((backup, index) => (
-                        <motion.tr 
+                        <motion.tr
                           key={backup.id || index}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -399,8 +399,12 @@ const AdminDashboard: React.FC = () => {
                     </tbody>
                   </table>
                   <div className="backup-summary">
-                    <p><strong>Total Backups:</strong> {stats.totalBackups}</p>
-                    <p><strong>Total Size:</strong> {backups.reduce((sum, b) => sum + b.sizeInMB, 0).toFixed(2)} MB</p>
+                    <p>
+                      <strong>Total Backups:</strong> {stats.totalBackups}
+                    </p>
+                    <p>
+                      <strong>Total Size:</strong> {backups.reduce((sum, b) => sum + b.sizeInMB, 0).toFixed(2)} MB
+                    </p>
                   </div>
                 </div>
               )}
@@ -410,7 +414,7 @@ const AdminDashboard: React.FC = () => {
           <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={1.2}>
             <CollapsibleMenu title="Database Management" icon="⚙️">
               <div className="admin-actions">
-                <motion.button 
+                <motion.button
                   onClick={exportDatabaseInfo}
                   className="admin-btn export"
                   whileHover={{ scale: 1.05 }}
@@ -418,8 +422,8 @@ const AdminDashboard: React.FC = () => {
                 >
                   📊 Export Database Info
                 </motion.button>
-                
-                <motion.button 
+
+                <motion.button
                   onClick={() => {
                     setSelectedUserId(null);
                     setShowClearConfirm(true);
@@ -437,7 +441,7 @@ const AdminDashboard: React.FC = () => {
           <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={1.4}>
             <CollapsibleMenu title="System Information" icon="ℹ️">
               <div className="system-info">
-                <motion.div 
+                <motion.div
                   className="info-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -445,7 +449,7 @@ const AdminDashboard: React.FC = () => {
                 >
                   <strong>App Version:</strong> 1.0.0
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="info-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -453,7 +457,7 @@ const AdminDashboard: React.FC = () => {
                 >
                   <strong>Database:</strong> Dexie (IndexedDB)
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="info-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -461,15 +465,22 @@ const AdminDashboard: React.FC = () => {
                 >
                   <strong>Browser:</strong> {navigator.userAgent.split(' ').slice(-2).join(' ')}
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="info-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.4 }}
                 >
-                  <strong>Platform:</strong> {navigator.userAgent.includes('Mac') ? 'macOS' : navigator.userAgent.includes('Win') ? 'Windows' : navigator.userAgent.includes('Linux') ? 'Linux' : 'Unknown'}
+                  <strong>Platform:</strong>{' '}
+                  {navigator.userAgent.includes('Mac')
+                    ? 'macOS'
+                    : navigator.userAgent.includes('Win')
+                      ? 'Windows'
+                      : navigator.userAgent.includes('Linux')
+                        ? 'Linux'
+                        : 'Unknown'}
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="info-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -477,7 +488,7 @@ const AdminDashboard: React.FC = () => {
                 >
                   <strong>Language:</strong> {navigator.language}
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="info-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -485,7 +496,7 @@ const AdminDashboard: React.FC = () => {
                 >
                   <strong>Current User:</strong> {authState.user?.username} ({authState.user?.email})
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="info-item"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -504,18 +515,18 @@ const AdminDashboard: React.FC = () => {
           <div className="confirm-dialog">
             <h3>⚠️ Clear {selectedUserId ? `User ${selectedUserId}'s` : 'All'} Data?</h3>
             <p>
-              This will permanently delete {selectedUserId ? `all cards for user ${selectedUserId}` : 'all cards from all users'}. 
-              This action cannot be undone!
+              This will permanently delete{' '}
+              {selectedUserId ? `all cards for user ${selectedUserId}` : 'all cards from all users'}. This action cannot
+              be undone!
             </p>
-            <p><strong>Are you absolutely sure?</strong></p>
+            <p>
+              <strong>Are you absolutely sure?</strong>
+            </p>
             <div className="dialog-actions">
-              <button 
-                onClick={handleClearDatabase}
-                className="btn-confirm-danger"
-              >
+              <button onClick={handleClearDatabase} className="btn-confirm-danger">
                 Yes, Delete {selectedUserId ? 'User Data' : 'Everything'}
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setShowClearConfirm(false);
                   setSelectedUserId(null);

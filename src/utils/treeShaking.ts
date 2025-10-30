@@ -19,12 +19,14 @@ interface UnusedCodeReport {
 class TreeShakingAnalyzer {
   private config: TreeShakingConfig;
 
-  constructor(config: TreeShakingConfig = {
-    enableSideEffects: true,
-    optimizeImports: true,
-    removeUnusedExports: true,
-    analyzeBundle: true
-  }) {
+  constructor(
+    config: TreeShakingConfig = {
+      enableSideEffects: true,
+      optimizeImports: true,
+      removeUnusedExports: true,
+      analyzeBundle: true,
+    }
+  ) {
     this.config = config;
   }
 
@@ -41,14 +43,14 @@ class TreeShakingAnalyzer {
     const usedIdentifiers = this.extractUsedIdentifiers(code);
 
     // Find unused imports
-    imports.forEach(importItem => {
+    imports.forEach((importItem) => {
       if (!this.isImportUsed(importItem, usedIdentifiers)) {
         unusedImports.push(importItem.name);
       }
     });
 
     // Find unused exports
-    exports.forEach(exportItem => {
+    exports.forEach((exportItem) => {
       if (!this.isExportUsed(exportItem, usedIdentifiers)) {
         unusedExports.push(exportItem.name);
       }
@@ -79,17 +81,20 @@ class TreeShakingAnalyzer {
       unusedExports,
       deadCode,
       recommendations,
-      estimatedSavings
+      estimatedSavings,
     };
   }
 
   // Extract import statements from code
-  private extractImports(code: string): Array<{ name: string; source: string; type: 'default' | 'named' | 'namespace' }> {
+  private extractImports(
+    code: string
+  ): Array<{ name: string; source: string; type: 'default' | 'named' | 'namespace' }> {
     const imports: Array<{ name: string; source: string; type: 'default' | 'named' | 'namespace' }> = [];
-    
+
     // Match various import patterns
-    const importRegex = /import\s+(?:(\w+)\s+from\s+)?['"]([^'"]+)['"]|import\s*\{\s*([^}]+)\s*\}\s*from\s*['"]([^'"]+)['"]|import\s*\*\s*as\s+(\w+)\s+from\s*['"]([^'"]+)['"]/g;
-    
+    const importRegex =
+      /import\s+(?:(\w+)\s+from\s+)?['"]([^'"]+)['"]|import\s*\{\s*([^}]+)\s*\}\s*from\s*['"]([^'"]+)['"]|import\s*\*\s*as\s+(\w+)\s+from\s*['"]([^'"]+)['"]/g;
+
     let match: RegExpExecArray | null;
     while ((match = importRegex.exec(code)) !== null) {
       if (match[1] && match[2]) {
@@ -97,9 +102,10 @@ class TreeShakingAnalyzer {
         imports.push({ name: match[1], source: match[2], type: 'default' });
       } else if (match[3] && match[4]) {
         // Named imports: import { name1, name2 } from 'source'
-        const names = match[3].split(',').map(n => n.trim());
-        names.forEach(name => {
-          imports.push({ name, source: match[4] as string, type: 'named' });
+        const names = match[3].split(',').map((n) => n.trim());
+        const source = match[4];
+        names.forEach((name) => {
+          imports.push({ name, source, type: 'named' });
         });
       } else if (match[5] && match[6]) {
         // Namespace import: import * as name from 'source'
@@ -113,10 +119,11 @@ class TreeShakingAnalyzer {
   // Extract export statements from code
   private extractExports(code: string): Array<{ name: string; type: 'default' | 'named' | 'class' | 'function' }> {
     const exports: Array<{ name: string; type: 'default' | 'named' | 'class' | 'function' }> = [];
-    
+
     // Match various export patterns
-    const exportRegex = /export\s+(?:default\s+)?(?:const|let|var|function|class|interface|type)\s+(\w+)|export\s*\{\s*([^}]+)\s*\}|export\s+default\s+(\w+)/g;
-    
+    const exportRegex =
+      /export\s+(?:default\s+)?(?:const|let|var|function|class|interface|type)\s+(\w+)|export\s*\{\s*([^}]+)\s*\}|export\s+default\s+(\w+)/g;
+
     let match;
     while ((match = exportRegex.exec(code)) !== null) {
       if (match[1]) {
@@ -124,8 +131,8 @@ class TreeShakingAnalyzer {
         exports.push({ name: match[1], type: 'named' });
       } else if (match[2]) {
         // Named exports: export { name1, name2 }
-        const names = match[2].split(',').map(n => n.trim());
-        names.forEach(name => {
+        const names = match[2].split(',').map((n) => n.trim());
+        names.forEach((name) => {
           exports.push({ name, type: 'named' });
         });
       } else if (match[3]) {
@@ -140,7 +147,7 @@ class TreeShakingAnalyzer {
   // Extract used identifiers from code
   private extractUsedIdentifiers(code: string): Set<string> {
     const identifiers = new Set<string>();
-    
+
     // Match identifier usage patterns
     const identifierRegex = /\b[a-zA-Z_$][a-zA-Z0-9_$]*\b/g;
     let match;
@@ -152,7 +159,10 @@ class TreeShakingAnalyzer {
   }
 
   // Check if an import is used in the code
-  private isImportUsed(importItem: { name: string; source: string; type: string }, usedIdentifiers: Set<string>): boolean {
+  private isImportUsed(
+    importItem: { name: string; source: string; type: string },
+    usedIdentifiers: Set<string>
+  ): boolean {
     return usedIdentifiers.has(importItem.name);
   }
 
@@ -164,7 +174,7 @@ class TreeShakingAnalyzer {
   // Find dead code blocks
   private findDeadCode(code: string): string[] {
     const deadCode: string[] = [];
-    
+
     // Look for unreachable code after return statements
     const returnRegex = /return[^;]*;[\s\S]*?(?=function|class|const|let|var|$)/g;
     let match;
@@ -181,15 +191,15 @@ class TreeShakingAnalyzer {
   // Calculate estimated savings in bytes
   private calculateSavings(unusedImports: string[], unusedExports: string[], deadCode: string[]): number {
     let savings = 0;
-    
+
     // Estimate savings from unused imports (rough approximation)
     savings += unusedImports.length * 50; // ~50 bytes per unused import
-    
+
     // Estimate savings from unused exports
     savings += unusedExports.length * 30; // ~30 bytes per unused export
-    
+
     // Estimate savings from dead code
-    deadCode.forEach(block => {
+    deadCode.forEach((block) => {
       savings += block.length;
     });
 
@@ -217,37 +227,37 @@ class TreeShakingAnalyzer {
   // Convert namespace imports to named imports
   private convertNamespaceToNamedImports(code: string): string {
     // This is a simplified example - in practice, you'd need more sophisticated analysis
-    return code.replace(
-      /import\s+\*\s+as\s+(\w+)\s+from\s+['"]([^'"]+)['"]/g,
-      (match, namespaceName, source) => {
-        // Check if only specific properties are used
-        const usageRegex = new RegExp(`\\b${namespaceName}\\.(\\w+)`, 'g');
-        const usedProperties = new Set<string>();
-        let usageMatch;
-        while ((usageMatch = usageRegex.exec(code)) !== null) {
-          usedProperties.add(usageMatch[1]);
-        }
-
-        if (usedProperties.size > 0 && usedProperties.size < 5) {
-          // Convert to named imports
-          const properties = Array.from(usedProperties).join(', ');
-          return `import { ${properties} } from '${source}'`;
-        }
-
-        return match; // Keep namespace import if many properties are used
+    return code.replace(/import\s+\*\s+as\s+(\w+)\s+from\s+['"]([^'"]+)['"]/g, (match, namespaceName, source) => {
+      // Check if only specific properties are used
+      const usageRegex = new RegExp(`\\b${namespaceName}\\.(\\w+)`, 'g');
+      const usedProperties = new Set<string>();
+      let usageMatch;
+      while ((usageMatch = usageRegex.exec(code)) !== null) {
+        usedProperties.add(usageMatch[1]);
       }
-    );
+
+      if (usedProperties.size > 0 && usedProperties.size < 5) {
+        // Convert to named imports
+        const properties = Array.from(usedProperties).join(', ');
+        return `import { ${properties} } from '${source}'`;
+      }
+
+      return match; // Keep namespace import if many properties are used
+    });
   }
 
   // Remove unused imports from code
   private removeUnusedImports(code: string, unusedImports: string[]): string {
     let optimizedCode = code;
 
-    unusedImports.forEach(importName => {
+    unusedImports.forEach((importName) => {
       // Remove import lines that only contain unused imports
-      const importLineRegex = new RegExp(`import\\s+\\{[^}]*\\b${importName}\\b[^}]*\\}\\s+from\\s+['"][^'"]+['"];?\\s*`, 'g');
+      const importLineRegex = new RegExp(
+        `import\\s+\\{[^}]*\\b${importName}\\b[^}]*\\}\\s+from\\s+['"][^'"]+['"];?\\s*`,
+        'g'
+      );
       optimizedCode = optimizedCode.replace(importLineRegex, '');
-        });
+    });
 
     return optimizedCode;
   }
@@ -259,11 +269,11 @@ class TreeShakingAnalyzer {
         usedExports: true,
         sideEffects: this.config.enableSideEffects ? false : '*.css',
         providedExports: true,
-        concatenateModules: true
+        concatenateModules: true,
       },
       resolve: {
-        mainFields: ['browser', 'module', 'main']
-      }
+        mainFields: ['browser', 'module', 'main'],
+      },
     };
   }
 
@@ -305,7 +315,7 @@ export const useTreeShakingAnalysis = (code: string) => {
     if (!code) return;
 
     setIsAnalyzing(true);
-    
+
     // Simulate analysis (in real implementation, this would be more sophisticated)
     setTimeout(() => {
       const analysisReport = analyzeTreeShaking(code, '');
@@ -316,7 +326,7 @@ export const useTreeShakingAnalysis = (code: string) => {
 
   return {
     report,
-    isAnalyzing
+    isAnalyzing,
   };
 };
 

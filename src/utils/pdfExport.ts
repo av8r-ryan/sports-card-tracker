@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
 import { Card } from '../types';
 
 // Helper type for jsPDF with autoTable plugin
@@ -19,15 +20,12 @@ interface ExportOptions {
   includeStats?: boolean;
 }
 
-export const exportCardsToPDF = (
-  cards: Card[], 
-  options: ExportOptions = {}
-): void => {
+export const exportCardsToPDF = (cards: Card[], options: ExportOptions = {}): void => {
   const {
     // includeImages = false, // TODO: Implement image inclusion in future
     groupBy = 'none',
     sortBy = 'player',
-    includeStats = true
+    includeStats = true,
   } = options;
 
   const doc = new jsPDF() as ExtendedJsPDF;
@@ -53,7 +51,7 @@ export const exportCardsToPDF = (
     const totalCostBasis = cards.reduce((sum, card) => sum + (card.purchasePrice || 0), 0);
     const totalCurrentValue = cards.reduce((sum, card) => sum + (card.currentValue || 0), 0);
     const totalProfit = totalCurrentValue - totalCostBasis;
-    const soldCards = cards.filter(card => card.sellPrice && card.sellDate);
+    const soldCards = cards.filter((card) => card.sellPrice && card.sellDate);
     const totalSoldValue = soldCards.reduce((sum, card) => sum + (card.sellPrice || 0), 0);
 
     doc.setFontSize(14);
@@ -63,14 +61,14 @@ export const exportCardsToPDF = (
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    
+
     const stats = [
       ['Total Cards:', totalCards.toString()],
       ['Total Cost Basis:', `$${totalCostBasis.toFixed(2)}`],
       ['Current Value:', `$${totalCurrentValue.toFixed(2)}`],
       ['Total Profit/Loss:', `$${totalProfit.toFixed(2)}`],
       ['Cards Sold:', soldCards.length.toString()],
-      ['Sales Revenue:', `$${totalSoldValue.toFixed(2)}`]
+      ['Sales Revenue:', `$${totalSoldValue.toFixed(2)}`],
     ];
 
     autoTable(doc, {
@@ -84,8 +82,8 @@ export const exportCardsToPDF = (
       tableWidth: 'auto',
       columnStyles: {
         0: { cellWidth: 60 },
-        1: { cellWidth: 60, halign: 'right' }
-      }
+        1: { cellWidth: 60, halign: 'right' },
+      },
     });
 
     yPosition = doc.lastAutoTable.finalY + 20;
@@ -110,9 +108,7 @@ export const exportCardsToPDF = (
   });
 
   // Group cards if needed
-  const groupedCards = groupBy === 'none' 
-    ? { 'All Cards': sortedCards }
-    : groupCards(sortedCards, groupBy);
+  const groupedCards = groupBy === 'none' ? { 'All Cards': sortedCards } : groupCards(sortedCards, groupBy);
 
   // Generate table for each group
   Object.entries(groupedCards).forEach(([groupName, groupCards], index) => {
@@ -131,7 +127,7 @@ export const exportCardsToPDF = (
     // Prepare table data
     const tableHeaders = [
       'Player',
-      'Team', 
+      'Team',
       'Year',
       'Brand',
       'Category',
@@ -139,10 +135,10 @@ export const exportCardsToPDF = (
       'Condition',
       'Purchase Price',
       'Current Value',
-      'Profit/Loss'
+      'Profit/Loss',
     ];
 
-    const tableData = groupCards.map(card => {
+    const tableData = groupCards.map((card) => {
       const profit = (card.currentValue || 0) - (card.purchasePrice || 0);
       return [
         card.player || '',
@@ -154,7 +150,7 @@ export const exportCardsToPDF = (
         card.condition || '',
         `$${(card.purchasePrice || 0).toFixed(2)}`,
         `$${(card.currentValue || 0).toFixed(2)}`,
-        `$${profit.toFixed(2)}`
+        `$${profit.toFixed(2)}`,
       ];
     });
 
@@ -163,17 +159,17 @@ export const exportCardsToPDF = (
       head: [tableHeaders],
       body: tableData,
       theme: 'striped',
-      styles: { 
+      styles: {
         fontSize: 8,
-        cellPadding: 2
+        cellPadding: 2,
       },
-      headStyles: { 
+      headStyles: {
         fillColor: [52, 152, 219],
         fontSize: 9,
-        fontStyle: 'bold'
+        fontStyle: 'bold',
       },
       alternateRowStyles: {
-        fillColor: [245, 245, 245]
+        fillColor: [245, 245, 245],
       },
       margin: { left: margin, right: margin },
       columnStyles: {
@@ -186,11 +182,11 @@ export const exportCardsToPDF = (
         6: { cellWidth: 20 }, // Condition
         7: { cellWidth: 18, halign: 'right' }, // Purchase Price
         8: { cellWidth: 18, halign: 'right' }, // Current Value
-        9: { cellWidth: 18, halign: 'right' }  // Profit/Loss
+        9: { cellWidth: 18, halign: 'right' }, // Profit/Loss
       },
       didDrawPage: (data) => {
         // Add page number - we'll add this after the table is complete
-      }
+      },
     });
 
     yPosition = doc.lastAutoTable.finalY + 15;
@@ -202,11 +198,7 @@ export const exportCardsToPDF = (
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text(
-      `Page ${i} of ${totalPages}`,
-      pageWidth - margin - 30,
-      doc.internal.pageSize.height - 10
-    );
+    doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin - 30, doc.internal.pageSize.height - 10);
   }
 
   // Save the PDF
@@ -215,30 +207,33 @@ export const exportCardsToPDF = (
 };
 
 const groupCards = (cards: Card[], groupBy: string): Record<string, Card[]> => {
-  return cards.reduce((groups, card) => {
-    let key: string;
-    
-    switch (groupBy) {
-      case 'category':
-        key = card.category || 'Uncategorized';
-        break;
-      case 'team':
-        key = card.team || 'Unknown Team';
-        break;
-      case 'year':
-        key = card.year?.toString() || 'Unknown Year';
-        break;
-      default:
-        key = 'All Cards';
-    }
-    
-    if (!groups[key]) {
-      groups[key] = [];
-    }
-    groups[key].push(card);
-    
-    return groups;
-  }, {} as Record<string, Card[]>);
+  return cards.reduce(
+    (groups, card) => {
+      let key: string;
+
+      switch (groupBy) {
+        case 'category':
+          key = card.category || 'Uncategorized';
+          break;
+        case 'team':
+          key = card.team || 'Unknown Team';
+          break;
+        case 'year':
+          key = card.year?.toString() || 'Unknown Year';
+          break;
+        default:
+          key = 'All Cards';
+      }
+
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(card);
+
+      return groups;
+    },
+    {} as Record<string, Card[]>
+  );
 };
 
 export const exportDetailedCardReport = (card: Card): void => {
@@ -272,7 +267,7 @@ export const exportDetailedCardReport = (card: Card): void => {
     ['Purchase Price', `$${(card.purchasePrice || 0).toFixed(2)}`],
     ['Purchase Date', new Date(card.purchaseDate).toLocaleDateString()],
     ['Current Value', `$${(card.currentValue || 0).toFixed(2)}`],
-    ['Profit/Loss', `$${((card.currentValue || 0) - (card.purchasePrice || 0)).toFixed(2)}`]
+    ['Profit/Loss', `$${((card.currentValue || 0) - (card.purchasePrice || 0)).toFixed(2)}`],
   ];
 
   if (card.sellPrice && card.sellDate) {
@@ -292,8 +287,8 @@ export const exportDetailedCardReport = (card: Card): void => {
     margin: { left: margin, right: margin },
     columnStyles: {
       0: { cellWidth: 50, fontStyle: 'bold' },
-      1: { cellWidth: 80 }
-    }
+      1: { cellWidth: 80 },
+    },
   });
 
   yPosition = doc.lastAutoTable.finalY + 20;

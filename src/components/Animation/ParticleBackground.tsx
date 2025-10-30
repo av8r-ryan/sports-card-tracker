@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import './ParticleBackground.css';
 
 interface Particle {
@@ -28,7 +27,7 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
   speed = 1,
   size = { min: 2, max: 6 },
   className = '',
-  children
+  children,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
@@ -73,7 +72,7 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
         speedX: (Math.random() - 0.5) * speed,
         speedY: (Math.random() - 0.5) * speed,
         opacity: Math.random() * 0.8 + 0.2,
-        color: colors[Math.floor(Math.random() * colors.length)]
+        color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
     setParticles(newParticles);
@@ -103,11 +102,15 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
         // Draw particle
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = particle.color + Math.floor(particle.opacity * 255).toString(16).padStart(2, '0');
+        ctx.fillStyle =
+          particle.color +
+          Math.floor(particle.opacity * 255)
+            .toString(16)
+            .padStart(2, '0');
         ctx.fill();
 
         // Draw connections to nearby particles
-        particles.slice(index + 1).forEach(otherParticle => {
+        particles.slice(index + 1).forEach((otherParticle) => {
           const dx = particle.x - otherParticle.x;
           const dy = particle.y - otherParticle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
@@ -146,14 +149,10 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
           left: 0,
           width: '100%',
           height: '100%',
-          zIndex: -1
+          zIndex: -1,
         }}
       />
-      {children && (
-        <div className="particle-content">
-          {children}
-        </div>
-      )}
+      {children && <div className="particle-content">{children}</div>}
     </div>
   );
 };

@@ -9,22 +9,22 @@ export interface ExtractedCardData {
   cardNumber?: string;
   team?: string;
   category?: string;
-  
+
   // Card Details
   parallel?: string;
   variation?: string;
   serialNumber?: string;
   printRun?: number;
-  
+
   // Condition & Grading
   condition?: string;
   gradingCompany?: string;
   grade?: string;
   certNumber?: string;
-  
+
   // Special Features
   features?: CardFeatures;
-  
+
   // Metadata
   confidence?: DetectionConfidence;
   rawText?: string;

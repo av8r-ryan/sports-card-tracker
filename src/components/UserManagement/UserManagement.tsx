@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+
 import { useAuth } from '../../context/AuthContext';
-import { userService, UserData } from '../../services/userService';
 import { cardDatabase } from '../../db/simpleDatabase';
+import { userService, UserData } from '../../services/userService';
 import './UserManagement.css';
 
 interface EditingUser {
@@ -22,7 +23,7 @@ const UserManagement: React.FC = () => {
     username: '',
     email: '',
     password: '',
-    role: 'user' as 'admin' | 'user'
+    role: 'user' as 'admin' | 'user',
   });
 
   // Check if current user is admin
@@ -43,14 +44,14 @@ const UserManagement: React.FC = () => {
       // Load card statistics for each user
       const userStatsData = await cardDatabase.getUserStatistics();
       const stats: { [userId: string]: { cardCount: number; totalValue: number } } = {};
-      
-      userStatsData.forEach(stat => {
+
+      userStatsData.forEach((stat) => {
         stats[stat.userId] = {
           cardCount: stat.cardCount,
-          totalValue: stat.totalValue
+          totalValue: stat.totalValue,
         };
       });
-      
+
       setUserStats(stats);
     } catch (err) {
       setError('Failed to load users');
@@ -65,7 +66,7 @@ const UserManagement: React.FC = () => {
 
     try {
       const updates: Partial<UserData> = {
-        [editingUser.field]: editingUser.value
+        [editingUser.field]: editingUser.value,
       };
 
       if (editingUser.field === 'password') {
@@ -114,22 +115,22 @@ const UserManagement: React.FC = () => {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       userService.createUser({
         username: newUser.username,
         email: newUser.email,
         password: newUser.password,
         role: newUser.role,
-        isActive: true
+        isActive: true,
       });
-      
+
       setShowNewUserForm(false);
       setNewUser({
         username: '',
         email: '',
         password: '',
-        role: 'user'
+        role: 'user',
       });
       loadUsers();
     } catch (err) {
@@ -162,10 +163,7 @@ const UserManagement: React.FC = () => {
     <div className="user-management">
       <div className="user-management-header">
         <h1>👥 User Management</h1>
-        <button 
-          className="add-user-btn"
-          onClick={() => setShowNewUserForm(true)}
-        >
+        <button className="add-user-btn" onClick={() => setShowNewUserForm(true)}>
           ➕ Add New User
         </button>
       </div>
@@ -174,7 +172,9 @@ const UserManagement: React.FC = () => {
         <div className="error-message">
           <span className="error-icon">⚠️</span>
           {error}
-          <button onClick={() => setError(null)} className="dismiss-btn">✕</button>
+          <button onClick={() => setError(null)} className="dismiss-btn">
+            ✕
+          </button>
         </div>
       )}
 
@@ -248,7 +248,7 @@ const UserManagement: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
+            {users.map((user) => (
               <tr key={user.id} className={!user.isActive ? 'disabled' : ''}>
                 <td>
                   <span className={`status-badge ${user.isActive ? 'active' : 'inactive'}`}>
@@ -266,7 +266,7 @@ const UserManagement: React.FC = () => {
                       autoFocus
                     />
                   ) : (
-                    <span 
+                    <span
                       className="editable"
                       onClick={() => setEditingUser({ id: user.id, field: 'username', value: user.username })}
                     >
@@ -285,7 +285,7 @@ const UserManagement: React.FC = () => {
                       autoFocus
                     />
                   ) : (
-                    <span 
+                    <span
                       className="editable"
                       onClick={() => setEditingUser({ id: user.id, field: 'email', value: user.email })}
                     >
@@ -322,11 +322,7 @@ const UserManagement: React.FC = () => {
                     >
                       {user.isActive ? '🚫' : '✅'}
                     </button>
-                    <button
-                      className="action-btn delete"
-                      onClick={() => handleDeleteUser(user.id)}
-                      title="Delete User"
-                    >
+                    <button className="action-btn delete" onClick={() => handleDeleteUser(user.id)} title="Delete User">
                       🗑️
                     </button>
                   </div>
@@ -351,7 +347,7 @@ const UserManagement: React.FC = () => {
             />
             <div className="form-actions">
               <button onClick={() => setEditingUser(null)}>Cancel</button>
-              <button 
+              <button
                 onClick={() => handleUpdateUser(editingUser.id)}
                 disabled={!editingUser.value}
                 className="primary"

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useEffect, useState, ComponentType, Suspense, lazy } from 'react';
+import React, { useRef, useEffect, useState, Suspense } from 'react';
 
 // Simple performance monitoring (non-generic)
 export const performanceMonitor = {
@@ -20,10 +20,10 @@ export const performanceMonitor = {
         console.warn(`[Performance] Could not measure ${name}:`, error);
       }
     }
-  }
+  },
 };
 
-// Code splitting utilities  
+// Code splitting utilities
 export const withSuspense = <P extends object>(
   Component: React.ComponentType<P>,
   fallback?: React.ReactNode
@@ -40,11 +40,11 @@ export const withSuspense = <P extends object>(
 export class MemoryCache {
   private cache = new Map<string, { value: any; timestamp: number; ttl: number }>();
 
-  set(key: string, value: any, ttl: number = 300000): void {
+  set(key: string, value: any, ttl = 300000): void {
     this.cache.set(key, {
       value,
       timestamp: Date.now(),
-      ttl
+      ttl,
     });
   }
 
@@ -111,15 +111,12 @@ export const useLazyImage = (src: string, options: IntersectionObserverInit = {}
     const img = imgRef.current;
     if (!img) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      options
-    );
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsInView(true);
+        observer.disconnect();
+      }
+    }, options);
 
     observer.observe(img);
 

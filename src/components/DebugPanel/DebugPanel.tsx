@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { logger } from '../../utils/logger';
 import './DebugPanel.css';
 
@@ -8,14 +9,14 @@ const DebugPanel: React.FC = () => {
   const [filterComponent, setFilterComponent] = useState<string>('all');
 
   const logs = logger.getLogs();
-  
-  const filteredLogs = logs.filter(log => {
+
+  const filteredLogs = logs.filter((log) => {
     const levelMatch = filterLevel === 'all' || log.level === filterLevel;
     const componentMatch = filterComponent === 'all' || log.component === filterComponent;
     return levelMatch && componentMatch;
   });
 
-  const uniqueComponents = [...new Set(logs.map(log => log.component))];
+  const uniqueComponents = [...new Set(logs.map((log) => log.component))];
 
   const handleExportLogs = () => {
     const logData = logger.exportLogs();
@@ -43,11 +44,7 @@ const DebugPanel: React.FC = () => {
 
   return (
     <>
-      <button
-        className="debug-toggle"
-        onClick={() => setIsOpen(!isOpen)}
-        title="Toggle Debug Panel"
-      >
+      <button className="debug-toggle" onClick={() => setIsOpen(!isOpen)} title="Toggle Debug Panel">
         🐛
       </button>
 
@@ -55,15 +52,13 @@ const DebugPanel: React.FC = () => {
         <div className="debug-panel">
           <div className="debug-header">
             <h3>Debug Logs</h3>
-            <button className="close-btn" onClick={() => setIsOpen(false)}>×</button>
+            <button className="close-btn" onClick={() => setIsOpen(false)}>
+              ×
+            </button>
           </div>
 
           <div className="debug-controls">
-            <select 
-              value={filterLevel} 
-              onChange={(e) => setFilterLevel(e.target.value)}
-              className="filter-select"
-            >
+            <select value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)} className="filter-select">
               <option value="all">All Levels</option>
               <option value="debug">Debug</option>
               <option value="info">Info</option>
@@ -71,21 +66,23 @@ const DebugPanel: React.FC = () => {
               <option value="error">Error</option>
             </select>
 
-            <select 
-              value={filterComponent} 
+            <select
+              value={filterComponent}
               onChange={(e) => setFilterComponent(e.target.value)}
               className="filter-select"
             >
               <option value="all">All Components</option>
-              {uniqueComponents.map(comp => (
-                <option key={comp} value={comp}>{comp}</option>
+              {uniqueComponents.map((comp) => (
+                <option key={comp} value={comp}>
+                  {comp}
+                </option>
               ))}
             </select>
 
             <button onClick={handleExportLogs} className="action-btn">
               Export
             </button>
-            
+
             <button onClick={handleClearLogs} className="action-btn danger">
               Clear
             </button>
@@ -98,12 +95,8 @@ const DebugPanel: React.FC = () => {
               filteredLogs.map((log, index) => (
                 <div key={index} className={`log-entry ${log.level}`}>
                   <div className="log-header">
-                    <span className="log-time">
-                      {new Date(log.timestamp).toLocaleTimeString()}
-                    </span>
-                    <span className={`log-level ${log.level}`}>
-                      {log.level.toUpperCase()}
-                    </span>
+                    <span className="log-time">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                    <span className={`log-level ${log.level}`}>{log.level.toUpperCase()}</span>
                     <span className="log-component">{log.component}</span>
                   </div>
                   <div className="log-message">{log.message}</div>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+
 import { optimizeImage, isWebPSupported, generateSrcSet } from '../../utils/imageOptimization';
 import './OptimizedImage.css';
 
-interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface OptimizedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'onError'> {
   src: string;
   alt: string;
   fallbackSrc?: string;
@@ -15,8 +16,6 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   breakpoints?: number[];
   onOptimizationComplete?: (result: { size: number; originalSize: number; compressionRatio: number }) => void;
   onError?: (error: Error) => void;
-  // Remove the inherited onError from ImgHTMLAttributes
-  onErrorEvent?: React.ReactEventHandler<HTMLImageElement>;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -100,17 +99,14 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         maxWidth,
         maxHeight,
         format: enableWebP && webpSupported ? 'webp' : 'jpeg',
-        enableWebP
+        enableWebP,
       });
 
       setOptimizedSrc(optimized.url);
 
       // Generate responsive srcset if enabled
       if (enableResponsive) {
-        const { srcset: generatedSrcSet, sizes: generatedSizes } = await generateSrcSet(
-          blob,
-          breakpoints
-        );
+        const { srcset: generatedSrcSet, sizes: generatedSizes } = await generateSrcSet(blob, breakpoints);
         setSrcSet(generatedSrcSet);
         setSizes(generatedSizes);
       }
@@ -119,20 +115,31 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       onOptimizationComplete?.({
         size: optimized.size,
         originalSize: optimized.originalSize,
-        compressionRatio: optimized.compressionRatio
+        compressionRatio: optimized.compressionRatio,
       });
-
     } catch (error) {
       console.error('Image optimization failed:', error);
       setHasError(true);
       onError?.(error as Error);
-      
+
       // Fallback to original or provided fallback
       setOptimizedSrc(fallbackSrc || src);
     } finally {
       setIsLoading(false);
     }
-  }, [src, quality, maxWidth, maxHeight, enableWebP, webpSupported, enableResponsive, breakpoints, fallbackSrc, onOptimizationComplete, onError]);
+  }, [
+    src,
+    quality,
+    maxWidth,
+    maxHeight,
+    enableWebP,
+    webpSupported,
+    enableResponsive,
+    breakpoints,
+    fallbackSrc,
+    onOptimizationComplete,
+    onError,
+  ]);
 
   const handleImageLoad = useCallback(() => {
     setIsLoading(false);
@@ -141,7 +148,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const handleImageError = useCallback(() => {
     setHasError(true);
     setIsLoading(false);
-    
+
     if (fallbackSrc && optimizedSrc !== fallbackSrc) {
       setOptimizedSrc(fallbackSrc);
     }
@@ -156,20 +163,20 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     onError: handleImageError,
     ...(srcSet && { srcSet }),
     ...(sizes && { sizes }),
-    ...props
+    ...props,
   };
 
   return (
     <div className="optimized-image-container">
       {isLoading && (
         <div className="image-loading-placeholder">
-          <div className="loading-spinner"></div>
+          <div className="loading-spinner" />
           <span>Optimizing image...</span>
         </div>
       )}
-      
+
       <img {...imageProps} />
-      
+
       {hasError && (
         <div className="image-error-fallback">
           <span>⚠️ Failed to load image</span>

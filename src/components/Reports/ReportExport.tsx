@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { ReportingService } from '../../services/reportingService';
 import { ReportFilter, ReportTemplate } from '../../types/reports';
 import { exportAdvancedReportToPDF } from '../../utils/advancedPdfExport';
@@ -51,7 +52,7 @@ const ReportExport: React.FC<Props> = ({ reportingService, activeReport, filters
 
   const generateExportData = () => {
     const cards = reportingService.filterCards(filters);
-    return cards.map(card => ({
+    return cards.map((card) => ({
       Player: card.player,
       Team: card.team,
       Year: card.year,
@@ -62,26 +63,31 @@ const ReportExport: React.FC<Props> = ({ reportingService, activeReport, filters
       PurchasePrice: card.purchasePrice,
       CurrentValue: card.currentValue,
       ProfitLoss: (card.currentValue || 0) - (card.purchasePrice || 0),
-      ROI: (card.purchasePrice && card.purchasePrice > 0) ? (((card.currentValue || 0) - card.purchasePrice) / card.purchasePrice) * 100 : 0,
+      ROI:
+        card.purchasePrice && card.purchasePrice > 0
+          ? (((card.currentValue || 0) - card.purchasePrice) / card.purchasePrice) * 100
+          : 0,
       PurchaseDate: card.purchaseDate,
-      Notes: card.notes
+      Notes: card.notes,
     }));
   };
 
   const convertToCSV = (data: any[]) => {
     if (data.length === 0) return '';
-    
+
     const headers = Object.keys(data[0]);
     const csvRows = [
       headers.join(','),
-      ...data.map(row => 
-        headers.map(header => {
-          const value = row[header];
-          return typeof value === 'string' ? `"${value.replace(/"/g, '""')}"` : value;
-        }).join(',')
-      )
+      ...data.map((row) =>
+        headers
+          .map((header) => {
+            const value = row[header];
+            return typeof value === 'string' ? `"${value.replace(/"/g, '""')}"` : value;
+          })
+          .join(',')
+      ),
     ];
-    
+
     return csvRows.join('\n');
   };
 
@@ -99,16 +105,8 @@ const ReportExport: React.FC<Props> = ({ reportingService, activeReport, filters
 
   return (
     <div className="report-export">
-      <button 
-        className="export-btn"
-        onClick={() => setShowExportMenu(!showExportMenu)}
-        disabled={isExporting}
-      >
-        {isExporting ? (
-          <span>📤 Exporting...</span>
-        ) : (
-          <span>📤 Export</span>
-        )}
+      <button className="export-btn" onClick={() => setShowExportMenu(!showExportMenu)} disabled={isExporting}>
+        {isExporting ? <span>📤 Exporting...</span> : <span>📤 Export</span>}
       </button>
 
       {showExportMenu && (

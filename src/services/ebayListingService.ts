@@ -31,24 +31,24 @@ export interface EbayListing {
 
 // eBay category mappings for sports cards
 const EBAY_CATEGORIES = {
-  'Baseball': { name: 'Baseball Cards', id: 213 },
-  'Basketball': { name: 'Basketball Cards', id: 214 },
-  'Football': { name: 'Football Cards', id: 215 },
-  'Hockey': { name: 'Hockey Cards', id: 216 },
-  'Soccer': { name: 'Soccer Cards', id: 183435 },
-  'Pokemon': { name: 'Pokémon Individual Cards', id: 183454 },
-  'Other': { name: 'Other Sports Trading Cards', id: 212 }
+  Baseball: { name: 'Baseball Cards', id: 213 },
+  Basketball: { name: 'Basketball Cards', id: 214 },
+  Football: { name: 'Football Cards', id: 215 },
+  Hockey: { name: 'Hockey Cards', id: 216 },
+  Soccer: { name: 'Soccer Cards', id: 183435 },
+  Pokemon: { name: 'Pokémon Individual Cards', id: 183454 },
+  Other: { name: 'Other Sports Trading Cards', id: 212 },
 };
 
 // Condition mappings
 const CONDITION_MAP: Record<string, { name: string; id: number }> = {
-  'Mint': { name: 'Near Mint or Better', id: 4000 },
+  Mint: { name: 'Near Mint or Better', id: 4000 },
   'Near Mint': { name: 'Near Mint or Better', id: 4000 },
-  'Excellent': { name: 'Excellent', id: 3000 },
+  Excellent: { name: 'Excellent', id: 3000 },
   'Very Good': { name: 'Very Good', id: 2000 },
-  'Good': { name: 'Good', id: 1000 },
-  'Fair': { name: 'Acceptable', id: 500 },
-  'Poor': { name: 'Acceptable', id: 500 }
+  Good: { name: 'Good', id: 1000 },
+  Fair: { name: 'Acceptable', id: 500 },
+  Poor: { name: 'Acceptable', id: 500 },
 };
 
 export class EbayListingService {
@@ -63,7 +63,7 @@ export class EbayListingService {
     const itemSpecifics = this.generateItemSpecifics(card);
     const searchKeywords = this.generateSearchKeywords(card);
     const prices = this.suggestPricing(card, options);
-    
+
     return {
       title,
       description,
@@ -78,7 +78,7 @@ export class EbayListingService {
       returnPeriod: options.returnPolicy ? 30 : undefined,
       images: options.includeImages ? this.prepareImages(card, options.watermarkImages) : [],
       itemSpecifics,
-      searchKeywords
+      searchKeywords,
     };
   }
 
@@ -87,49 +87,49 @@ export class EbayListingService {
    */
   private generateTitle(card: Card): string {
     const parts: string[] = [];
-    
+
     // Add year
     if (card.year) {
       parts.push(card.year.toString());
     }
-    
+
     // Add brand/manufacturer
     if (card.brand) {
       parts.push(card.brand);
     }
-    
+
     // Add player name
     parts.push(card.player);
-    
+
     // Add card number
     if (card.cardNumber) {
       parts.push(`#${card.cardNumber}`);
     }
-    
+
     // Add special features
     const features: string[] = [];
     // Check for rookie cards based on card characteristics
     if (this.isLikelyRookie(card)) features.push('ROOKIE');
     if (card.parallel?.toLowerCase().includes('auto')) features.push('AUTO');
-    if (card.parallel?.match(/\d+\/\d+/)) features.push(`#'d`);
+    if (card.parallel?.match(/\d+\/\d+/)) features.push("#'d");
     if (card.gradingCompany) features.push(`${card.gradingCompany}`);
-    
+
     // Combine parts
     let title = parts.join(' ');
     if (features.length > 0) {
-      title += ' ' + features.join(' ');
+      title += ` ${features.join(' ')}`;
     }
-    
+
     // Add parallel/variation
     if (card.parallel && title.length + card.parallel.length + 1 <= 80) {
-      title += ' ' + card.parallel;
+      title += ` ${card.parallel}`;
     }
-    
+
     // Ensure title doesn't exceed 80 characters
     if (title.length > 80) {
-      title = title.substring(0, 77) + '...';
+      title = `${title.substring(0, 77)}...`;
     }
-    
+
     return title;
   }
 
@@ -138,7 +138,7 @@ export class EbayListingService {
    */
   private generateDescription(card: Card, options: EbayListingOptions): string {
     const sections: string[] = [];
-    
+
     // Header with title
     sections.push(`<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
 <h1 style="color: #333; border-bottom: 3px solid #0654ba; padding-bottom: 10px;">
@@ -147,38 +147,38 @@ export class EbayListingService {
 
     // Card details section
     sections.push(this.generateDetailsSection(card));
-    
+
     // Condition section
     sections.push(this.generateConditionSection(card));
-    
+
     // Features section
     if (this.hasSpecialFeatures(card)) {
       sections.push(this.generateFeaturesSection(card));
     }
-    
+
     // Grading section
     if (card.gradingCompany && options.includeGradingDetails) {
       sections.push(this.generateGradingSection(card));
     }
-    
+
     // Market data section
     if (options.includeMarketData && card.purchasePrice) {
       sections.push(this.generateMarketSection(card));
     }
-    
+
     // Shipping section
     sections.push(this.generateShippingSection(options));
-    
+
     // Returns section
     if (options.returnPolicy) {
       sections.push(this.generateReturnsSection());
     }
-    
+
     // Footer
     sections.push(this.generateFooter());
-    
+
     sections.push('</div>');
-    
+
     return sections.join('\n\n');
   }
 
@@ -208,16 +208,24 @@ export class EbayListingService {
       <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Category:</strong></td>
       <td style="padding: 8px; border-bottom: 1px solid #ddd;">${card.category}</td>
     </tr>
-    ${card.parallel ? `
+    ${
+      card.parallel
+        ? `
     <tr>
       <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Parallel:</strong></td>
       <td style="padding: 8px; border-bottom: 1px solid #ddd;" colspan="3">${card.parallel}</td>
-    </tr>` : ''}
-    ${card.parallel?.match(/\d+\/\d+/) ? `
+    </tr>`
+        : ''
+    }
+    ${
+      card.parallel?.match(/\d+\/\d+/)
+        ? `
     <tr>
       <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Serial #:</strong></td>
       <td style="padding: 8px; border-bottom: 1px solid #ddd;" colspan="3">${card.parallel.match(/\d+\/\d+/)?.[0]}</td>
-    </tr>` : ''}
+    </tr>`
+        : ''
+    }
   </table>
 </div>`;
   }
@@ -227,13 +235,13 @@ export class EbayListingService {
    */
   private generateConditionSection(card: Card): string {
     const conditionDescriptions: Record<string, string> = {
-      'Mint': 'Card is in perfect condition with no visible flaws.',
+      Mint: 'Card is in perfect condition with no visible flaws.',
       'Near Mint': 'Card shows minimal wear with sharp corners and clean surfaces.',
-      'Excellent': 'Card has light wear but remains in excellent collectible condition.',
+      Excellent: 'Card has light wear but remains in excellent collectible condition.',
       'Very Good': 'Card shows moderate wear but no major damage.',
-      'Good': 'Card has visible wear but all elements are intact.',
-      'Fair': 'Card shows significant wear but is complete.',
-      'Poor': 'Card has heavy wear or damage.'
+      Good: 'Card has visible wear but all elements are intact.',
+      Fair: 'Card shows significant wear but is complete.',
+      Poor: 'Card has heavy wear or damage.',
     };
 
     return `
@@ -249,20 +257,21 @@ export class EbayListingService {
    */
   private generateFeaturesSection(card: Card): string {
     const features: string[] = [];
-    
+
     if (this.isLikelyRookie(card)) features.push('🏆 Rookie Card');
     if (card.parallel?.toLowerCase().includes('auto')) features.push('✍️ Autographed');
     if (card.parallel?.match(/\d+\/\d+/)) features.push('🔢 Numbered');
     if (card.gradingCompany) features.push('💎 Professionally Graded');
     if (card.parallel?.toLowerCase().includes('refractor')) features.push('✨ Refractor');
     if (card.parallel?.toLowerCase().includes('patch')) features.push('🎯 Patch Card');
-    if (card.parallel?.toLowerCase().includes('relic') || card.parallel?.toLowerCase().includes('memorabilia')) features.push('👕 Relic/Memorabilia');
-    
+    if (card.parallel?.toLowerCase().includes('relic') || card.parallel?.toLowerCase().includes('memorabilia'))
+      features.push('👕 Relic/Memorabilia');
+
     return `
 <div style="background: #fff4e6; padding: 20px; border-radius: 8px; margin: 20px 0;">
   <h2 style="color: #333; margin-top: 0;">Special Features</h2>
   <ul style="list-style: none; padding: 0;">
-    ${features.map(f => `<li style="padding: 5px 0; font-size: 16px;">${f}</li>`).join('\n    ')}
+    ${features.map((f) => `<li style="padding: 5px 0; font-size: 16px;">${f}</li>`).join('\n    ')}
   </ul>
 </div>`;
   }
@@ -295,7 +304,7 @@ export class EbayListingService {
    */
   private generateMarketSection(card: Card): string {
     const marketValue = card.currentValue || card.purchasePrice || 0;
-    
+
     return `
 <div style="background: #f0fff0; padding: 20px; border-radius: 8px; margin: 20px 0;">
   <h2 style="color: #333; margin-top: 0;">Market Information</h2>
@@ -311,9 +320,9 @@ export class EbayListingService {
    */
   private generateShippingSection(options: EbayListingOptions): string {
     const shippingInfo: Record<string, string> = {
-      'standard': 'USPS First Class Mail with tracking (3-5 business days)',
-      'expedited': 'USPS Priority Mail (1-3 business days)',
-      'express': 'USPS Priority Mail Express (1-2 business days)'
+      standard: 'USPS First Class Mail with tracking (3-5 business days)',
+      expedited: 'USPS Priority Mail (1-3 business days)',
+      express: 'USPS Priority Mail Express (1-2 business days)',
     };
 
     return `
@@ -358,15 +367,15 @@ export class EbayListingService {
   private getCategory(card: Card): { name: string; id: number } {
     // Map card category to eBay category
     const categoryMap: Record<string, keyof typeof EBAY_CATEGORIES> = {
-      'Baseball': 'Baseball',
-      'Basketball': 'Basketball',
-      'Football': 'Football',
-      'Hockey': 'Hockey',
-      'Soccer': 'Soccer',
-      'Pokemon': 'Pokemon',
-      'TCG': 'Pokemon'
+      Baseball: 'Baseball',
+      Basketball: 'Basketball',
+      Football: 'Football',
+      Hockey: 'Hockey',
+      Soccer: 'Soccer',
+      Pokemon: 'Pokemon',
+      TCG: 'Pokemon',
     };
-    
+
     const ebayCategory = categoryMap[card.category] || 'Other';
     return EBAY_CATEGORIES[ebayCategory];
   }
@@ -387,7 +396,7 @@ export class EbayListingService {
    */
   private getConditionFromGrade(grade?: string): string | null {
     if (!grade) return null;
-    
+
     const numericGrade = parseFloat(grade);
     if (numericGrade >= 9.5) return 'Mint';
     if (numericGrade >= 8.5) return 'Near Mint';
@@ -402,10 +411,10 @@ export class EbayListingService {
    */
   private generateItemSpecifics(card: Card): Record<string, string> {
     const specifics: Record<string, string> = {
-      'Player': card.player,
-      'Year': card.year?.toString() || 'Unknown',
-      'Brand': card.brand || 'Unknown',
-      'Sport': card.category
+      Player: card.player,
+      Year: card.year?.toString() || 'Unknown',
+      Brand: card.brand || 'Unknown',
+      Sport: card.category,
     };
 
     if (card.team) specifics['Team'] = card.team;
@@ -419,7 +428,7 @@ export class EbayListingService {
       if (grade) specifics['Grade'] = grade;
     }
     if (card.parallel?.match(/\d+\/\d+/)) specifics['Serial Numbered'] = 'Yes';
-    
+
     return specifics;
   }
 
@@ -432,7 +441,7 @@ export class EbayListingService {
       card.category,
       card.year?.toString() || '',
       card.brand || '',
-      card.team || ''
+      card.team || '',
     ];
 
     if (this.isLikelyRookie(card)) keywords.push('rookie', 'rc');
@@ -440,13 +449,13 @@ export class EbayListingService {
     if (card.parallel) keywords.push(card.parallel);
     if (card.gradingCompany) keywords.push(card.gradingCompany, 'graded');
     if (card.parallel?.match(/\d+\/\d+/)) keywords.push('numbered', 'serial');
-    
+
     // Add common misspellings or variations
     if (card.player.includes('Jr.')) {
       keywords.push(card.player.replace('Jr.', 'Junior'));
     }
-    
-    return [...new Set(keywords.filter(k => k))]; // Remove duplicates and empty strings
+
+    return [...new Set(keywords.filter((k) => k))]; // Remove duplicates and empty strings
   }
 
   /**
@@ -454,22 +463,22 @@ export class EbayListingService {
    */
   private suggestPricing(card: Card, options: EbayListingOptions): { startingPrice?: number; buyItNowPrice?: number } {
     const baseValue = card.currentValue || card.purchasePrice || 10;
-    
+
     if (options.listingFormat === 'auction') {
       return {
         startingPrice: Math.max(0.99, baseValue * 0.5),
-        buyItNowPrice: undefined
+        buyItNowPrice: undefined,
       };
     } else if (options.listingFormat === 'buyItNow') {
       return {
         startingPrice: undefined,
-        buyItNowPrice: baseValue * 1.2
+        buyItNowPrice: baseValue * 1.2,
       };
     } else {
       // Both
       return {
         startingPrice: Math.max(0.99, baseValue * 0.5),
-        buyItNowPrice: baseValue * 1.3
+        buyItNowPrice: baseValue * 1.3,
       };
     }
   }
@@ -479,14 +488,14 @@ export class EbayListingService {
    */
   private calculateShipping(card: Card, shippingType: string): number {
     const shippingCosts: Record<string, number> = {
-      'standard': 4.99,
-      'expedited': 8.99,
-      'express': 14.99
+      standard: 4.99,
+      expedited: 8.99,
+      express: 14.99,
     };
 
     // Add extra for graded cards (larger package)
     const extra = card.gradingCompany ? 2 : 0;
-    
+
     return shippingCosts[shippingType] + extra;
   }
 
@@ -495,18 +504,18 @@ export class EbayListingService {
    */
   private prepareImages(card: Card, watermark: boolean): string[] {
     const images: string[] = [];
-    
+
     // Use the images array from the Card type
     if (card.images && card.images.length > 0) {
       images.push(...card.images);
     }
-    
+
     // In production, apply watermark if requested
     if (watermark) {
       // This would apply watermark to images
-      return images.map(img => this.applyWatermark(img));
+      return images.map((img) => this.applyWatermark(img));
     }
-    
+
     return images;
   }
 
@@ -522,11 +531,13 @@ export class EbayListingService {
    * Checks if card has special features
    */
   private hasSpecialFeatures(card: Card): boolean {
-    return !!(this.isLikelyRookie(card) || 
-             card.parallel?.toLowerCase().includes('auto') || 
-             card.parallel?.match(/\d+\/\d+/) || 
-             card.gradingCompany ||
-             card.parallel?.toLowerCase().match(/refractor|patch|relic|memorabilia/));
+    return !!(
+      this.isLikelyRookie(card) ||
+      card.parallel?.toLowerCase().includes('auto') ||
+      card.parallel?.match(/\d+\/\d+/) ||
+      card.gradingCompany ||
+      card.parallel?.toLowerCase().match(/refractor|patch|relic|memorabilia/)
+    );
   }
 
   /**
@@ -536,13 +547,13 @@ export class EbayListingService {
     switch (format) {
       case 'html':
         return listing.description;
-      
+
       case 'csv':
         return this.exportToCSV([listing]);
-      
+
       case 'json':
         return JSON.stringify(listing, null, 2);
-      
+
       default:
         return listing.description;
     }
@@ -560,10 +571,10 @@ export class EbayListingService {
       'Starting Price',
       'Buy It Now Price',
       'Shipping Cost',
-      'Keywords'
+      'Keywords',
     ];
 
-    const rows = listings.map(listing => [
+    const rows = listings.map((listing) => [
       `"${listing.title}"`,
       `"${listing.description.replace(/"/g, '""')}"`,
       `"${listing.category}"`,
@@ -571,17 +582,17 @@ export class EbayListingService {
       listing.startingPrice?.toFixed(2) || '',
       listing.buyItNowPrice?.toFixed(2) || '',
       listing.shippingCost.toFixed(2),
-      `"${listing.searchKeywords.join(', ')}"`
+      `"${listing.searchKeywords.join(', ')}"`,
     ]);
 
-    return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    return [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
   }
 
   /**
    * Generates bulk listings for multiple cards
    */
   generateBulkListings(cards: Card[], options: EbayListingOptions): EbayListing[] {
-    return cards.map(card => this.generateListing(card, options));
+    return cards.map((card) => this.generateListing(card, options));
   }
 
   /**
@@ -590,7 +601,7 @@ export class EbayListingService {
   private isLikelyRookie(card: Card): boolean {
     const rookieKeywords = ['rookie', 'rc', 'first year', 'debut', '1st'];
     const searchText = `${card.brand} ${card.parallel || ''} ${card.notes || ''}`.toLowerCase();
-    return rookieKeywords.some(keyword => searchText.includes(keyword));
+    return rookieKeywords.some((keyword) => searchText.includes(keyword));
   }
 
   /**
@@ -598,7 +609,7 @@ export class EbayListingService {
    */
   private extractGradeFromCondition(condition: string): string | null {
     // Check if condition contains a grade number
-    const gradeMatch = condition.match(/(\d+(?:\.\d+)?)/); 
+    const gradeMatch = condition.match(/(\d+(?:\.\d+)?)/);
     return gradeMatch ? gradeMatch[1] : null;
   }
 
@@ -607,7 +618,7 @@ export class EbayListingService {
    */
   private mapComplexCondition(condition: string): string {
     const conditionMap: Record<string, string> = {
-      'RAW': 'Near Mint',
+      RAW: 'Near Mint',
       '10: GEM MINT': 'Mint',
       '9.5: MINT+': 'Mint',
       '9: MINT': 'Mint',
@@ -626,9 +637,9 @@ export class EbayListingService {
       '2.5: GOOD+': 'Good',
       '2: GOOD': 'Good',
       '1.5: POOR+': 'Poor',
-      '1: POOR': 'Poor'
+      '1: POOR': 'Poor',
     };
-    
+
     return conditionMap[condition] || condition;
   }
 }

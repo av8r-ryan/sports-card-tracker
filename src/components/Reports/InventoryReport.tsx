@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
+
 import { useCards } from '../../context/DexieCardContext';
-import { Card } from '../../types';
 import { exportToPDF } from '../../services/reportService';
+import { Card } from '../../types';
 import './InventoryReport.css';
 
 interface InventoryStats {
@@ -29,9 +30,8 @@ const InventoryReport: React.FC = () => {
   const [showDetails, setShowDetails] = useState<boolean>(true);
 
   const stats = useMemo((): InventoryStats => {
-    const cards = filterCategory === 'all' 
-      ? state.cards 
-      : state.cards.filter(card => card.category === filterCategory);
+    const cards =
+      filterCategory === 'all' ? state.cards : state.cards.filter((card) => card.category === filterCategory);
 
     if (cards.length === 0) {
       return {
@@ -48,12 +48,12 @@ const InventoryReport: React.FC = () => {
         cardsByCategory: {},
         cardsByBrand: {},
         cardsByYear: {},
-        cardsByCondition: {}
+        cardsByCondition: {},
       };
     }
 
-    const uniquePlayers = new Set(cards.map(c => c.player)).size;
-    const uniqueBrands = new Set(cards.map(c => c.brand)).size;
+    const uniquePlayers = new Set(cards.map((c) => c.player)).size;
+    const uniqueBrands = new Set(cards.map((c) => c.brand)).size;
     const totalValue = cards.reduce((sum, card) => sum + card.currentValue, 0);
     const averageValue = totalValue / cards.length;
 
@@ -63,30 +63,42 @@ const InventoryReport: React.FC = () => {
 
     const mostValuableCard = [...cards].sort((a, b) => b.currentValue - a.currentValue)[0];
 
-    const gradedCards = cards.filter(c => c.gradingCompany).length;
-    const rawCards = cards.filter(c => !c.gradingCompany).length;
+    const gradedCards = cards.filter((c) => c.gradingCompany).length;
+    const rawCards = cards.filter((c) => !c.gradingCompany).length;
 
     // Group by various attributes
-    const cardsByCategory = cards.reduce((acc, card) => {
-      acc[card.category] = (acc[card.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const cardsByCategory = cards.reduce(
+      (acc, card) => {
+        acc[card.category] = (acc[card.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
-    const cardsByBrand = cards.reduce((acc, card) => {
-      acc[card.brand] = (acc[card.brand] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const cardsByBrand = cards.reduce(
+      (acc, card) => {
+        acc[card.brand] = (acc[card.brand] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
-    const cardsByYear = cards.reduce((acc, card) => {
-      acc[card.year] = (acc[card.year] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const cardsByYear = cards.reduce(
+      (acc, card) => {
+        acc[card.year] = (acc[card.year] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
-    const cardsByCondition = cards.reduce((acc, card) => {
-      const condition = card.gradingCompany ? `${card.gradingCompany} ${card.condition}` : card.condition;
-      acc[condition] = (acc[condition] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const cardsByCondition = cards.reduce(
+      (acc, card) => {
+        const condition = card.gradingCompany ? `${card.gradingCompany} ${card.condition}` : card.condition;
+        acc[condition] = (acc[condition] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     return {
       totalCards: cards.length,
@@ -102,14 +114,13 @@ const InventoryReport: React.FC = () => {
       cardsByCategory,
       cardsByBrand,
       cardsByYear,
-      cardsByCondition
+      cardsByCondition,
     };
   }, [state.cards, filterCategory]);
 
   const sortedCards = useMemo(() => {
-    const cards = filterCategory === 'all' 
-      ? state.cards 
-      : state.cards.filter(card => card.category === filterCategory);
+    const cards =
+      filterCategory === 'all' ? state.cards : state.cards.filter((card) => card.category === filterCategory);
 
     return [...cards].sort((a, b) => {
       switch (sortBy) {
@@ -130,29 +141,32 @@ const InventoryReport: React.FC = () => {
   const groupedCards = useMemo(() => {
     if (groupBy === 'none') return { 'All Cards': sortedCards };
 
-    return sortedCards.reduce((acc, card) => {
-      let key: string;
-      switch (groupBy) {
-        case 'category':
-          key = card.category;
-          break;
-        case 'brand':
-          key = card.brand;
-          break;
-        case 'year':
-          key = card.year.toString();
-          break;
-        case 'player':
-          key = card.player;
-          break;
-        default:
-          key = 'Unknown';
-      }
-      
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(card);
-      return acc;
-    }, {} as Record<string, Card[]>);
+    return sortedCards.reduce(
+      (acc, card) => {
+        let key: string;
+        switch (groupBy) {
+          case 'category':
+            key = card.category;
+            break;
+          case 'brand':
+            key = card.brand;
+            break;
+          case 'year':
+            key = card.year.toString();
+            break;
+          case 'player':
+            key = card.player;
+            break;
+          default:
+            key = 'Unknown';
+        }
+
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(card);
+        return acc;
+      },
+      {} as Record<string, Card[]>
+    );
   }, [sortedCards, groupBy]);
 
   const handleExportPDF = () => {
@@ -162,7 +176,7 @@ const InventoryReport: React.FC = () => {
       stats,
       cards: sortedCards,
       groupBy,
-      filterCategory
+      filterCategory,
     };
 
     exportToPDF('inventory-report', reportData);
@@ -173,11 +187,11 @@ const InventoryReport: React.FC = () => {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
-  const categories = ['all', ...Array.from(new Set(state.cards.map(card => card.category))).sort()];
+  const categories = ['all', ...Array.from(new Set(state.cards.map((card) => card.category))).sort()];
 
   return (
     <div className="inventory-report">
@@ -195,7 +209,7 @@ const InventoryReport: React.FC = () => {
         <div className="control-group">
           <label>Category Filter</label>
           <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-            {categories.map(cat => (
+            {categories.map((cat) => (
               <option key={cat} value={cat}>
                 {cat === 'all' ? 'All Categories' : cat}
               </option>
@@ -226,11 +240,7 @@ const InventoryReport: React.FC = () => {
 
         <div className="control-group">
           <label>
-            <input
-              type="checkbox"
-              checked={showDetails}
-              onChange={(e) => setShowDetails(e.target.checked)}
-            />
+            <input type="checkbox" checked={showDetails} onChange={(e) => setShowDetails(e.target.checked)} />
             Show Detailed View
           </label>
         </div>
@@ -269,19 +279,25 @@ const InventoryReport: React.FC = () => {
           <div className="highlight-cards">
             <div className="highlight-card">
               <h4>Most Valuable Card</h4>
-              <p>{stats.mostValuableCard.year} {stats.mostValuableCard.brand} {stats.mostValuableCard.player}</p>
+              <p>
+                {stats.mostValuableCard.year} {stats.mostValuableCard.brand} {stats.mostValuableCard.player}
+              </p>
               <p className="value">{formatCurrency(stats.mostValuableCard.currentValue)}</p>
             </div>
             {stats.oldestCard && (
               <div className="highlight-card">
                 <h4>Oldest Card</h4>
-                <p>{stats.oldestCard.year} {stats.oldestCard.brand} {stats.oldestCard.player}</p>
+                <p>
+                  {stats.oldestCard.year} {stats.oldestCard.brand} {stats.oldestCard.player}
+                </p>
               </div>
             )}
             {stats.newestCard && (
               <div className="highlight-card">
                 <h4>Newest Card</h4>
-                <p>{stats.newestCard.year} {stats.newestCard.brand} {stats.newestCard.player}</p>
+                <p>
+                  {stats.newestCard.year} {stats.newestCard.brand} {stats.newestCard.player}
+                </p>
               </div>
             )}
           </div>
@@ -338,7 +354,7 @@ const InventoryReport: React.FC = () => {
                 {groupName} ({cards.length} cards - {formatCurrency(cards.reduce((sum, c) => sum + c.currentValue, 0))})
               </h4>
             )}
-            
+
             {showDetails ? (
               <div className="inventory-table">
                 <table>
@@ -357,7 +373,7 @@ const InventoryReport: React.FC = () => {
                   </thead>
                   <tbody>
                     {cards.map((card) => {
-                      const roi = ((card.currentValue - card.purchasePrice) / card.purchasePrice * 100).toFixed(1);
+                      const roi = (((card.currentValue - card.purchasePrice) / card.purchasePrice) * 100).toFixed(1);
                       return (
                         <tr key={card.id}>
                           <td>{card.player}</td>
@@ -365,16 +381,10 @@ const InventoryReport: React.FC = () => {
                           <td>{card.brand}</td>
                           <td>{card.cardNumber}</td>
                           <td>{card.category}</td>
-                          <td>
-                            {card.gradingCompany 
-                              ? `${card.gradingCompany} ${card.condition}` 
-                              : card.condition}
-                          </td>
+                          <td>{card.gradingCompany ? `${card.gradingCompany} ${card.condition}` : card.condition}</td>
                           <td>{formatCurrency(card.purchasePrice)}</td>
                           <td>{formatCurrency(card.currentValue)}</td>
-                          <td className={parseFloat(roi) >= 0 ? 'positive' : 'negative'}>
-                            {roi}%
-                          </td>
+                          <td className={parseFloat(roi) >= 0 ? 'positive' : 'negative'}>{roi}%</td>
                         </tr>
                       );
                     })}
@@ -385,7 +395,9 @@ const InventoryReport: React.FC = () => {
               <div className="inventory-summary">
                 {cards.map((card) => (
                   <div key={card.id} className="summary-item">
-                    <span>{card.year} {card.brand} {card.player} #{card.cardNumber}</span>
+                    <span>
+                      {card.year} {card.brand} {card.player} #{card.cardNumber}
+                    </span>
                     <span>{formatCurrency(card.currentValue)}</span>
                   </div>
                 ))}

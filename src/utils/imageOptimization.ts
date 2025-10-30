@@ -33,7 +33,8 @@ class ImageOptimizer {
       webP.onload = webP.onerror = () => {
         resolve(webP.height === 2);
       };
-      webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+      webP.src =
+        'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
     });
   }
 
@@ -46,28 +47,14 @@ class ImageOptimizer {
   }
 
   // Optimize image with compression and format conversion
-  async optimizeImage(
-    file: File | Blob,
-    options: ImageOptimizationOptions = {}
-  ): Promise<OptimizedImageResult> {
-    const {
-      quality = 0.8,
-      maxWidth = 1920,
-      maxHeight = 1080,
-      format = 'webp',
-      enableWebP = true
-    } = options;
+  async optimizeImage(file: File | Blob, options: ImageOptimizationOptions = {}): Promise<OptimizedImageResult> {
+    const { quality = 0.8, maxWidth = 1920, maxHeight = 1080, format = 'webp', enableWebP = true } = options;
 
     const originalSize = file.size;
     const image = await this.loadImage(file);
-    
+
     // Calculate new dimensions while maintaining aspect ratio
-    const { width, height } = this.calculateDimensions(
-      image.width,
-      image.height,
-      maxWidth,
-      maxHeight
-    );
+    const { width, height } = this.calculateDimensions(image.width, image.height, maxWidth, maxHeight);
 
     // Set canvas dimensions
     this.canvas.width = width;
@@ -79,7 +66,7 @@ class ImageOptimizer {
 
     // Determine the best format to use
     const finalFormat = await this.getBestFormat(format, enableWebP);
-    
+
     // Convert to blob
     const blob = await this.canvasToBlob(finalFormat, quality);
     const url = URL.createObjectURL(blob);
@@ -91,7 +78,7 @@ class ImageOptimizer {
       size: blob.size,
       originalSize,
       compressionRatio,
-      format: finalFormat
+      format: finalFormat,
     };
   }
 
@@ -115,7 +102,7 @@ class ImageOptimizer {
           maxHeight: variant.maxHeight,
           quality: variant.quality,
           format: variant.format || 'webp',
-          enableWebP: true
+          enableWebP: true,
         });
         results[variant.name] = result;
       } catch (error) {
@@ -136,11 +123,11 @@ class ImageOptimizer {
       maxWidth: width,
       maxHeight: Math.round(width * 0.75), // 4:3 aspect ratio
       quality: Math.max(0.6, 0.9 - index * 0.05), // Decreasing quality for larger images
-      format: 'webp' as const
+      format: 'webp' as const,
     }));
 
     const results = await this.createImageVariants(file, variants);
-    
+
     const srcset = Object.entries(results)
       .map(([name, result]) => {
         const width = name.replace('w', '');
@@ -161,15 +148,12 @@ class ImageOptimizer {
   }
 
   // Compress image without format conversion
-  async compressImage(
-    file: File | Blob,
-    quality: number = 0.8
-  ): Promise<OptimizedImageResult> {
+  async compressImage(file: File | Blob, quality = 0.8): Promise<OptimizedImageResult> {
     const image = await this.loadImage(file);
-    
+
     this.canvas.width = image.width;
     this.canvas.height = image.height;
-    
+
     this.ctx.clearRect(0, 0, image.width, image.height);
     this.ctx.drawImage(image, 0, 0);
 
@@ -183,7 +167,7 @@ class ImageOptimizer {
       size: blob.size,
       originalSize: file.size,
       compressionRatio,
-      format: 'jpeg'
+      format: 'jpeg',
     };
   }
 
@@ -218,10 +202,7 @@ class ImageOptimizer {
     return { width: Math.round(width), height: Math.round(height) };
   }
 
-  private async getBestFormat(
-    requestedFormat: string,
-    enableWebP: boolean
-  ): Promise<string> {
+  private async getBestFormat(requestedFormat: string, enableWebP: boolean): Promise<string> {
     if (requestedFormat === 'webp' && enableWebP) {
       const webpSupported = await this.isWebPSupported();
       return webpSupported ? 'image/webp' : 'image/jpeg';
@@ -265,17 +246,11 @@ class ImageOptimizer {
 const imageOptimizer = new ImageOptimizer();
 
 // Utility functions
-export const optimizeImage = (
-  file: File | Blob,
-  options?: ImageOptimizationOptions
-): Promise<OptimizedImageResult> => {
+export const optimizeImage = (file: File | Blob, options?: ImageOptimizationOptions): Promise<OptimizedImageResult> => {
   return imageOptimizer.optimizeImage(file, options);
 };
 
-export const compressImage = (
-  file: File | Blob,
-  quality?: number
-): Promise<OptimizedImageResult> => {
+export const compressImage = (file: File | Blob, quality?: number): Promise<OptimizedImageResult> => {
   return imageOptimizer.compressImage(file, quality);
 };
 
@@ -312,10 +287,7 @@ export const useImageOptimization = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const optimize = useCallback(async (
-    file: File | Blob,
-    options?: ImageOptimizationOptions
-  ) => {
+  const optimize = useCallback(async (file: File | Blob, options?: ImageOptimizationOptions) => {
     setIsOptimizing(true);
     setError(null);
 
@@ -334,15 +306,12 @@ export const useImageOptimization = () => {
   return {
     optimize,
     isOptimizing,
-    error
+    error,
   };
 };
 
 // Preload images with optimization
-export const preloadOptimizedImage = async (
-  src: string,
-  options?: ImageOptimizationOptions
-): Promise<string> => {
+export const preloadOptimizedImage = async (src: string, options?: ImageOptimizationOptions): Promise<string> => {
   try {
     const response = await fetch(src);
     const blob = await response.blob();
@@ -360,7 +329,7 @@ export const batchOptimizeImages = async (
   options?: ImageOptimizationOptions
 ): Promise<OptimizedImageResult[]> => {
   const results: OptimizedImageResult[] = [];
-  
+
   for (const file of files) {
     try {
       const result = await optimizeImage(file, options);
@@ -369,7 +338,7 @@ export const batchOptimizeImages = async (
       console.error(`Failed to optimize ${file.name}:`, error);
     }
   }
-  
+
   return results;
 };
 

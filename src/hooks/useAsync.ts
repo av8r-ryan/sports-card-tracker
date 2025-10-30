@@ -16,12 +16,9 @@ interface UseAsyncOptions {
  * @param options - Configuration options
  * @returns [state, execute, reset] tuple
  */
-export function useAsync<T>(
-  asyncFunction: (...args: any[]) => Promise<T>,
-  options: UseAsyncOptions = {}
-) {
+export function useAsync<T>(asyncFunction: (...args: any[]) => Promise<T>, options: UseAsyncOptions = {}) {
   const { immediate = true } = options;
-  
+
   const [state, setState] = useState<AsyncState<T>>({
     data: null,
     loading: false,
@@ -30,8 +27,8 @@ export function useAsync<T>(
 
   const execute = useCallback(
     async (...args: any[]) => {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      
+      setState((prev) => ({ ...prev, loading: true, error: null }));
+
       try {
         const data = await asyncFunction(...args);
         setState({ data, loading: false, error: null });

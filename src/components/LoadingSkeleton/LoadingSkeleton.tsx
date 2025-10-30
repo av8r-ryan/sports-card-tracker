@@ -12,7 +12,7 @@ const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ count = 1, type = 'ca
   if (type === 'stat') {
     return (
       <div className="skeleton-stat-container">
-        {skeletons.map(i => (
+        {skeletons.map((i) => (
           <div key={i} className="skeleton-stat">
             <div className="skeleton-stat-label" />
             <div className="skeleton-stat-value" />
@@ -25,7 +25,7 @@ const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ count = 1, type = 'ca
   if (type === 'list') {
     return (
       <div className="skeleton-list-container">
-        {skeletons.map(i => (
+        {skeletons.map((i) => (
           <div key={i} className="skeleton-list-item">
             <div className="skeleton-list-content" />
           </div>
@@ -36,7 +36,7 @@ const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ count = 1, type = 'ca
 
   return (
     <div className="skeleton-card-container">
-      {skeletons.map(i => (
+      {skeletons.map((i) => (
         <div key={i} className="skeleton-card">
           <div className="skeleton-image" />
           <div className="skeleton-content">

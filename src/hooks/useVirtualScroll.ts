@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 interface VirtualScrollOptions {
   itemHeight: number;
@@ -17,20 +17,14 @@ interface VirtualScrollResult<T> {
   handleScroll: (event: React.UIEvent<HTMLDivElement>) => void;
 }
 
-export function useVirtualScroll<T>(
-  allItems: T[],
-  options: VirtualScrollOptions
-): VirtualScrollResult<T> {
+export function useVirtualScroll<T>(allItems: T[], options: VirtualScrollOptions): VirtualScrollResult<T> {
   const { itemHeight, containerHeight, overscan = 5 } = options;
   const [scrollTop, setScrollTop] = useState(0);
 
   const totalHeight = allItems.length * itemHeight;
   const visibleCount = Math.ceil(containerHeight / itemHeight);
   const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
-  const endIndex = Math.min(
-    allItems.length - 1,
-    startIndex + visibleCount + overscan * 2
-  );
+  const endIndex = Math.min(allItems.length - 1, startIndex + visibleCount + overscan * 2);
 
   const visibleItems = useMemo(() => {
     return allItems.slice(startIndex, endIndex + 1);

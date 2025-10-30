@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { accessibilityManager } from '../../utils/accessibility';
+import React, { useEffect, useRef, useState } from 'react';
+
 import './KeyboardNavigation.css';
 
 interface KeyboardNavigationProps {
@@ -41,7 +41,7 @@ const KeyboardNavigation: React.FC<KeyboardNavigationProps> = ({ children, class
 
   const handleShortcut = (event: KeyboardEvent) => {
     const { key, ctrlKey, altKey } = event;
-    
+
     // Prevent default browser shortcuts
     if (ctrlKey && ['s', 'p', 'a', 'f', 'h'].includes(key)) {
       event.preventDefault();
@@ -128,7 +128,9 @@ const KeyboardNavigation: React.FC<KeyboardNavigationProps> = ({ children, class
   };
 
   const focusFirstElement = () => {
-    const firstElement = containerRef.current?.querySelector('[tabindex]:not([tabindex="-1"]), button, input, select, textarea, a[href]') as HTMLElement;
+    const firstElement = containerRef.current?.querySelector(
+      '[tabindex]:not([tabindex="-1"]), button, input, select, textarea, a[href]'
+    ) as HTMLElement;
     if (firstElement) {
       firstElement.focus();
     }
@@ -211,7 +213,7 @@ const KeyboardNavigation: React.FC<KeyboardNavigationProps> = ({ children, class
     if (menu) {
       const isOpen = menu.getAttribute('aria-expanded') === 'true';
       menu.setAttribute('aria-expanded', (!isOpen).toString());
-      
+
       if (!isOpen) {
         const firstItem = menu.querySelector('[role="menuitem"], a, button') as HTMLElement;
         if (firstItem) {
@@ -223,7 +225,7 @@ const KeyboardNavigation: React.FC<KeyboardNavigationProps> = ({ children, class
 
   const closeModals = () => {
     const modals = document.querySelectorAll('[role="dialog"], .modal, .popup');
-    modals.forEach(modal => {
+    modals.forEach((modal) => {
       const closeButton = modal.querySelector('[aria-label*="close" i], [aria-label*="Close" i]') as HTMLElement;
       if (closeButton) {
         closeButton.click();
@@ -242,7 +244,7 @@ const KeyboardNavigation: React.FC<KeyboardNavigationProps> = ({ children, class
       '[role="button"]:not([disabled])',
       '[role="menuitem"]',
       '[role="tab"]',
-      '[role="gridcell"]'
+      '[role="gridcell"]',
     ];
 
     return Array.from(document.querySelectorAll(focusableSelectors.join(', '))) as HTMLElement[];
@@ -259,7 +261,7 @@ const KeyboardNavigation: React.FC<KeyboardNavigationProps> = ({ children, class
     { key: 'Ctrl + End', description: 'Focus last element' },
     { key: 'Ctrl + Space', description: 'Toggle menu' },
     { key: 'Ctrl + Escape', description: 'Close modals' },
-    { key: 'Escape', description: 'Close dialogs/shortcuts' }
+    { key: 'Escape', description: 'Close dialogs/shortcuts' },
   ];
 
   return (
@@ -301,15 +303,11 @@ const KeyboardNavigation: React.FC<KeyboardNavigationProps> = ({ children, class
             >
               <div className="shortcuts-header">
                 <h2>Keyboard Shortcuts</h2>
-                <button
-                  className="close-btn"
-                  onClick={() => setShowShortcuts(false)}
-                  aria-label="Close shortcuts"
-                >
+                <button className="close-btn" onClick={() => setShowShortcuts(false)} aria-label="Close shortcuts">
                   ×
                 </button>
               </div>
-              
+
               <div className="shortcuts-content">
                 <div className="shortcuts-section">
                   <h3>Navigation</h3>
@@ -349,7 +347,9 @@ const KeyboardNavigation: React.FC<KeyboardNavigationProps> = ({ children, class
               </div>
 
               <div className="shortcuts-footer">
-                <p>Press <kbd>Escape</kbd> to close this dialog</p>
+                <p>
+                  Press <kbd>Escape</kbd> to close this dialog
+                </p>
               </div>
             </motion.div>
           </motion.div>
