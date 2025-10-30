@@ -89,6 +89,9 @@ class LocalAuthService {
     logInfo('LocalAuthService', 'Starting login', { email });
 
     try {
+      // Ensure admin user exists
+      await this.createDefaultAdminUser();
+
       // Find user by email
       const localUser = await localAuthDb.users.where('email').equals(email.toLowerCase()).first();
 
@@ -140,14 +143,37 @@ class LocalAuthService {
 
         await localAuthDb.users.add(adminUser);
         logInfo('LocalAuthService', 'Default admin user created', { email: adminEmail });
+      } else {
+        logInfo('LocalAuthService', 'Default admin user already exists', { email: adminEmail });
       }
     } catch (error) {
       logError('LocalAuthService', 'Failed to create default admin user', error as Error);
     }
+  }
+
+  async getAllUsers(): Promise<LocalUser[]> {
+    return await localAuthDb.users.toArray();
+  }
+
+  async debugUserExists(email: string): Promise<boolean> {
+    const user = await localAuthDb.users.where('email').equals(email.toLowerCase()).first();
+    logInfo('LocalAuthService', 'Debug: User lookup', { email, found: !!user });
+    return !!user;
   }
 }
 
 export const localAuthService = new LocalAuthService();
 
 // Initialize default admin user on module load
-localAuthService.createDefaultAdminUser();
+localAuthService.createDefaultAdminUser().catch((error) => {
+  console.error('Failed to initialize default admin user:', error);
+});
+
+// Debug helpers - expose on window object in development
+if (process.env.NODE_ENV === 'development') {
+  (window as any).debugAuth = {
+    listUsers: () => localAuthService.getAllUsers(),
+    checkUser: (email: string) => localAuthService.debugUserExists(email),
+    createAdmin: () => localAuthService.createDefaultAdminUser(),
+  };
+}
