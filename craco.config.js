@@ -49,84 +49,18 @@ module.exports = {
         },
       };
 
-      // Add module rules for better tree shaking
-      webpackConfig.module.rules.push({
-        test: /\.(ts|tsx)$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-              compilerOptions: {
-                module: 'esnext',
-                target: 'es2015',
-                moduleResolution: 'node',
-                allowSyntheticDefaultImports: true,
-                esModuleInterop: true,
-                skipLibCheck: true,
-                strict: false,
-                forceConsistentCasingInFileNames: true,
-                resolveJsonModule: true,
-                isolatedModules: true,
-                noEmit: true,
-                jsx: 'react-jsx',
-              },
-            },
-          },
-        ],
-      });
-
       return webpackConfig;
     },
   },
   babel: {
     plugins: [
-      // Add Babel plugins for better tree shaking
-      ['@babel/plugin-transform-runtime', {
-        corejs: false,
-        helpers: true,
-        regenerator: true,
-        useESModules: true,
-      }],
       // Remove unused imports
       ['babel-plugin-transform-imports', {
         'lodash': {
           transform: 'lodash/${member}',
           preventFullImport: true,
         },
-        'react-bootstrap': {
-          transform: 'react-bootstrap/${member}',
-          preventFullImport: true,
-        },
-        'framer-motion': {
-          transform: 'framer-motion/dist/${member}',
-          preventFullImport: true,
-        },
       }],
-    ],
-  },
-  // Add optimization for production builds
-  optimization: {
-    minimize: true,
-    minimizer: [
-      // Add Terser plugin with tree shaking optimizations
-      new (require('terser-webpack-plugin'))({
-        terserOptions: {
-          compress: {
-            drop_console: true,
-            drop_debugger: true,
-            pure_funcs: ['console.log', 'console.info', 'console.debug'],
-          },
-          mangle: {
-            safari10: true,
-          },
-          output: {
-            comments: false,
-            ascii_only: true,
-          },
-        },
-        extractComments: false,
-      }),
     ],
   },
 };

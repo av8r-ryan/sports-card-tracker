@@ -15,6 +15,8 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   breakpoints?: number[];
   onOptimizationComplete?: (result: { size: number; originalSize: number; compressionRatio: number }) => void;
   onError?: (error: Error) => void;
+  // Remove the inherited onError from ImgHTMLAttributes
+  onErrorEvent?: React.ReactEventHandler<HTMLImageElement>;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({

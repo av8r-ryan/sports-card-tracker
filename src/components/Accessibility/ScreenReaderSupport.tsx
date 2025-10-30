@@ -11,40 +11,40 @@ const ScreenReaderSupport: React.FC<ScreenReaderSupportProps> = ({ children, cla
 
   useEffect(() => {
     // Add screen reader specific attributes
-    if (containerRef.current) {
-      const container = containerRef.current;
-      
-      // Add landmark roles
-      if (!container.getAttribute('role')) {
-        container.setAttribute('role', 'main');
-      }
-      
-      // Add aria-label if missing
-      if (!container.getAttribute('aria-label') && !container.getAttribute('aria-labelledby')) {
-        container.setAttribute('aria-label', 'Main content area');
-      }
-      
-      // Add live region for dynamic content
-      const liveRegion = document.createElement('div');
-      liveRegion.setAttribute('aria-live', 'polite');
-      liveRegion.setAttribute('aria-atomic', 'true');
-      liveRegion.className = 'sr-only';
-      liveRegion.style.cssText = `
-        position: absolute;
-        left: -10000px;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-      `;
-      container.appendChild(liveRegion);
-      
-      // Cleanup
-      return () => {
-        if (liveRegion.parentNode) {
-          liveRegion.parentNode.removeChild(liveRegion);
-        }
-      };
+    if (!containerRef.current) return;
+    
+    const container = containerRef.current;
+    
+    // Add landmark roles
+    if (!container.getAttribute('role')) {
+      container.setAttribute('role', 'main');
     }
+    
+    // Add aria-label if missing
+    if (!container.getAttribute('aria-label') && !container.getAttribute('aria-labelledby')) {
+      container.setAttribute('aria-label', 'Main content area');
+    }
+    
+    // Add live region for dynamic content
+    const liveRegion = document.createElement('div');
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.setAttribute('aria-atomic', 'true');
+    liveRegion.className = 'sr-only';
+    liveRegion.style.cssText = `
+      position: absolute;
+      left: -10000px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    `;
+    container.appendChild(liveRegion);
+    
+    // Cleanup
+    return () => {
+      if (liveRegion.parentNode) {
+        liveRegion.parentNode.removeChild(liveRegion);
+      }
+    };
   }, []);
 
   // Announce page changes

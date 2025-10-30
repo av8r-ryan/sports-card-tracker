@@ -108,10 +108,10 @@ const MobileOptimized: React.FC<MobileOptimizedProps> = ({
 
   // Touch feedback effect
   useEffect(() => {
-    if (enableTouchFeedback && containerRef.current) {
-      const cleanup = addTouchFeedback(containerRef.current);
-      return cleanup;
-    }
+    if (!enableTouchFeedback || !containerRef.current) return;
+    
+    const cleanup = addTouchFeedback(containerRef.current);
+    return cleanup;
   }, [enableTouchFeedback]);
 
   // Responsive adjustments

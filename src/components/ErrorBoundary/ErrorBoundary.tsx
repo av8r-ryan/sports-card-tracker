@@ -39,11 +39,9 @@ class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error details
-    logError('ErrorBoundary', 'Component caught an error', {
-      error: error.message,
-      stack: error.stack,
+    logError('ErrorBoundary', 'Component caught an error', error, {
       componentStack: errorInfo.componentStack,
       errorId: this.state.errorId
     });
@@ -62,7 +60,7 @@ class ErrorBoundary extends Component<Props, State> {
     this.reportError(error, errorInfo);
   }
 
-  componentDidUpdate(prevProps: Props) {
+  override componentDidUpdate(prevProps: Props) {
     const { resetKeys, resetOnPropsChange } = this.props;
     const { hasError } = this.state;
 
@@ -83,7 +81,7 @@ class ErrorBoundary extends Component<Props, State> {
     }
   }
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     if (this.resetTimeoutId) {
       clearTimeout(this.resetTimeoutId);
     }
@@ -152,7 +150,7 @@ class ErrorBoundary extends Component<Props, State> {
       });
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // Custom fallback UI
       if (this.props.fallback) {

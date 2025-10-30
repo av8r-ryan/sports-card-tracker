@@ -110,30 +110,30 @@ class PerformanceMonitor {
 
   private setupWebVitals(): void {
     // Core Web Vitals
-    getCLS((metric: Metric) => {
+    getCLS((metric) => {
       this.metrics.cls = metric.value;
-      this.reportMetric('cls', metric.value, metric.rating);
+      this.reportMetric('cls', metric.value, (metric as any).rating || 'good');
     });
 
-    getFID((metric: Metric) => {
+    getFID((metric) => {
       this.metrics.fid = metric.value;
-      this.reportMetric('fid', metric.value, metric.rating);
+      this.reportMetric('fid', metric.value, (metric as any).rating || 'good');
     });
 
-    getLCP((metric: Metric) => {
+    getLCP((metric) => {
       this.metrics.lcp = metric.value;
-      this.reportMetric('lcp', metric.value, metric.rating);
+      this.reportMetric('lcp', metric.value, (metric as any).rating || 'good');
     });
 
     // Additional metrics
-    getFCP((metric: Metric) => {
+    getFCP((metric) => {
       this.metrics.fcp = metric.value;
-      this.reportMetric('fcp', metric.value, metric.rating);
+      this.reportMetric('fcp', metric.value, (metric as any).rating || 'good');
     });
 
-    getTTFB((metric: Metric) => {
+    getTTFB((metric) => {
       this.metrics.ttfb = metric.value;
-      this.reportMetric('ttfb', metric.value, metric.rating);
+      this.reportMetric('ttfb', metric.value, (metric as any).rating || 'good');
     });
   }
 

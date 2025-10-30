@@ -90,7 +90,7 @@ class TreeShakingAnalyzer {
     // Match various import patterns
     const importRegex = /import\s+(?:(\w+)\s+from\s+)?['"]([^'"]+)['"]|import\s*\{\s*([^}]+)\s*\}\s*from\s*['"]([^'"]+)['"]|import\s*\*\s*as\s+(\w+)\s+from\s*['"]([^'"]+)['"]/g;
     
-    let match;
+    let match: RegExpExecArray | null;
     while ((match = importRegex.exec(code)) !== null) {
       if (match[1] && match[2]) {
         // Default import: import name from 'source'
@@ -99,7 +99,7 @@ class TreeShakingAnalyzer {
         // Named imports: import { name1, name2 } from 'source'
         const names = match[3].split(',').map(n => n.trim());
         names.forEach(name => {
-          imports.push({ name, source: match[4], type: 'named' });
+          imports.push({ name, source: match[4] as string, type: 'named' });
         });
       } else if (match[5] && match[6]) {
         // Namespace import: import * as name from 'source'

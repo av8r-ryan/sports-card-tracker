@@ -13,13 +13,13 @@ const ExportNotification: React.FC<Props> = ({ show, message, type, onClose }) =
 
   useEffect(() => {
     setIsVisible(show);
-    if (show) {
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        setTimeout(onClose, 300); // Wait for animation to finish
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
+    if (!show) return;
+    
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      setTimeout(onClose, 300); // Wait for animation to finish
+    }, 5000);
+    return () => clearTimeout(timer);
   }, [show, onClose]);
 
   if (!show && !isVisible) return null;
