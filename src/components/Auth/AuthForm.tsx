@@ -128,16 +128,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.8 }}
             >
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email / Username</label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 required
                 disabled={state.loading}
-                placeholder="Enter your email"
+                placeholder="Enter your email or username"
                 className="focus-ring"
               />
             </motion.div>
@@ -158,7 +158,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
                 required
                 disabled={state.loading}
                 placeholder="Enter your password"
-                minLength={6}
                 className="focus-ring"
               />
             </motion.div>
@@ -182,7 +181,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
                     required
                     disabled={state.loading}
                     placeholder="Confirm your password"
-                    minLength={6}
                     className="focus-ring"
                   />
                   <AnimatePresence>
