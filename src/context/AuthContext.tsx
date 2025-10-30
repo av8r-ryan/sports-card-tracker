@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
 import { collectionsDatabase } from '../db/collectionsDatabase';
-import { apiService } from '../services/api';
+import { localAuthService } from '../services/localAuthService';
 import { User } from '../types';
 import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
@@ -136,9 +136,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
 
     try {
-      // Use API authentication
-      logDebug('AuthContext', 'Authenticating user with API service');
-      const { user, token } = await apiService.login(email, password);
+      // Use local authentication
+      logDebug('AuthContext', 'Authenticating user with local auth service');
+      const { user, token } = await localAuthService.login(email, password);
       logDebug('AuthContext', 'Authentication result received', { userFound: !!user, userId: user?.id });
 
       dispatch({
@@ -166,9 +166,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
 
     try {
-      // Use API registration
-      logDebug('AuthContext', 'Registering user with API service');
-      const { user, token } = await apiService.register(username, email, password);
+      // Use local registration
+      logDebug('AuthContext', 'Registering user with local auth service');
+      const { user, token } = await localAuthService.register(username, email, password);
       logDebug('AuthContext', 'Registration result received', { userFound: !!user, userId: user?.id });
 
       dispatch({
