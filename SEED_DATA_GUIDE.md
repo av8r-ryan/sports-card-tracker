@@ -1,37 +1,30 @@
-# Seed Data Export Instructions
+# Seed Data Guide
 
-## Step 1: Export Your Current Database
+## ✅ Seed Data Already Configured!
 
-1. Open your app in the browser (locally)
-2. Login with your admin account
-3. Open the browser console (F12)
-4. Run this command to download your cards:
+Your app comes with 10 sample sports cards pre-configured in `public/seed-data/cards.json`. These cards will automatically import when users first log in or register.
 
-```javascript
-await window.seedData.download()
-```
+### Included Sample Cards:
 
-This will download a file called `cards-export-YYYY-MM-DD.json`
-
-## Step 2: Add Seed Data to Your Project
-
-1. Create the directory: `public/seed-data/`
-2. Rename the downloaded file to `cards.json`
-3. Move `cards.json` into `public/seed-data/`
-
-Your file should be at: `public/seed-data/cards.json`
-
-## Step 3: Deploy
-
-Once you commit and push, the seed data will be included in your Vercel deployment.
+1. **Baseball** - Mike Trout (2011 Topps Update RC)
+2. **Baseball** - Shohei Ohtani (2018 Topps Chrome)
+3. **Basketball** - Luka Dončić (2018 Panini Prizm)
+4. **Basketball** - Giannis Antetokounmpo (2013 Panini Prizm)
+5. **Football** - Patrick Mahomes (2017 Panini Prizm)
+6. **Football** - Justin Herbert (2020 Panini Select)
+7. **Hockey** - Connor McDavid (2015 Upper Deck)
+8. **Pokemon** - Charizard (1999 Base Set)
+9. **Pokemon** - Pikachu (2016 Evolutions)
+10. **Soccer** - Lionel Messi (2004 Panini Mega Cracks)
 
 ## How It Works
 
-- **First Login**: Automatically imports seed cards into IndexedDB
+- **First Login/Register**: Automatically imports 10 seed cards
 - **Subsequent Logins**: Skips import (cards already exist)
-- **New Users**: Each user gets their own copy of the seed data
+- **Per User**: Each user gets their own copy of the seed data
+- **Offline Ready**: Works without internet after first load
 
-## Development Console Commands
+## Updating Seed Data
 
 In development mode, you can use these commands in the browser console:
 
