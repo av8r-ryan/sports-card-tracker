@@ -1,166 +1,94 @@
 {
-  "name": "CardFlex™ - Collectors Playbook",
-  "short_name": "CardFlex™",
-  "description": "Track and manage your sports card collection with advanced analytics and eBay integration",
-  "version": "1.0.0",
-  "start_url": "/",
-  "display": "standalone",
-  "orientation": "portrait-primary",
-  "theme_color": "#667eea",
-  "background_color": "#1a1a2e",
-  "scope": "/",
-  "lang": "en-US",
-  "dir": "ltr",
-  "categories": ["productivity", "utilities", "lifestyle"],
+  "short_name": "CardFlex",
+  "name": "CardFlex - Sports Card Tracker",
+  "description": "Professional sports card collection management and tracking platform",
   "icons": [
     {
-      "src": "/logo-smp.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
     },
     {
-      "src": "/logo-smp.png",
-      "sizes": "512x512",
+      "src": "logo192.png",
       "type": "image/png",
-      "purpose": "any maskable"
+      "sizes": "192x192",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable any"
     }
   ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#3b82f6",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "categories": ["finance", "productivity", "utilities"],
   "screenshots": [
     {
-      "src": "/screenshots/dashboard.png",
+      "src": "screenshot-wide.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Dashboard view showing card collection overview"
+      "label": "CardFlex Dashboard View"
     },
     {
-      "src": "/screenshots/mobile-dashboard.png",
-      "sizes": "390x844",
+      "src": "screenshot-narrow.png",
+      "sizes": "750x1334",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobile dashboard view"
+      "label": "CardFlex Mobile View"
     }
   ],
   "shortcuts": [
     {
-      "name": "Add New Card",
-      "short_name": "Add Card",
-      "description": "Quickly add a new sports card to your collection",
-      "url": "/?view=add-card",
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your card collection dashboard",
+      "url": "/dashboard",
       "icons": [
         {
-          "src": "/icons/add-card.png",
-          "sizes": "96x96"
+          "src": "logo192.png",
+          "sizes": "192x192"
         }
       ]
     },
     {
-      "name": "View Collection",
-      "short_name": "Collection",
-      "description": "Browse your card collection",
-      "url": "/?view=inventory",
+      "name": "Add Card",
+      "short_name": "Add Card",
+      "description": "Add a new card to your collection",
+      "url": "/add-card",
       "icons": [
         {
-          "src": "/icons/collection.png",
-          "sizes": "96x96"
+          "src": "logo192.png",
+          "sizes": "192x192"
         }
       ]
     },
     {
       "name": "Reports",
       "short_name": "Reports",
-      "description": "View collection analytics and reports",
-      "url": "/?view=reports",
+      "description": "View collection reports and analytics",
+      "url": "/reports",
       "icons": [
         {
-          "src": "/icons/reports.png",
-          "sizes": "96x96"
+          "src": "logo192.png",
+          "sizes": "192x192"
         }
       ]
     }
   ],
-  "related_applications": [
-    {
-      "platform": "webapp",
-      "url": "https://sports-card-tracker.com/manifest.json"
-    }
-  ],
+  "related_applications": [],
   "prefer_related_applications": false,
   "edge_side_panel": {
     "preferred_width": 400
   },
   "launch_handler": {
-    "client_mode": "focus-existing"
-  },
-  "file_handlers": [
-    {
-      "action": "/import",
-      "accept": {
-        "text/csv": [".csv"],
-        "application/json": [".json"],
-        "application/vnd.ms-excel": [".xls", ".xlsx"]
-      }
-    }
-  ],
-  "protocol_handlers": [
-    {
-      "protocol": "web+cardtracker",
-      "url": "/card?id=%s"
-    }
-  ],
-  "share_target": {
-    "action": "/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url",
-      "files": [
-        {
-          "name": "image",
-          "accept": ["image/*"]
-        }
-      ]
-    }
-  },
-  "handle_links": "preferred",
-  "capture_links": "new-client",
-  "scope_extensions": [
-    {
-      "origin": "https://api.sports-card-tracker.com"
-    }
-  ],
-  "widgets": [
-    {
-      "name": "Collection Stats",
-      "short_name": "Stats",
-      "description": "Quick view of your collection statistics",
-      "tag": "collection-stats",
-      "template": "stats-template",
-      "ms_ac_template": "stats-template",
-      "data": {
-        "src": "/api/widgets/stats"
-      },
-      "type": "application/json",
-      "auth": true,
-      "update": 3600
-    }
-  ],
-  "permissions": [
-    "camera",
-    "microphone",
-    "geolocation"
-  ],
-  "features": [
-    "Cross Platform",
-    "Offline Support",
-    "Push Notifications",
-    "Background Sync",
-    "File Handling",
-    "Share Target",
-    "Shortcuts",
-    "Widgets"
-  ]
+    "client_mode": "navigate-existing"
+  }
 }

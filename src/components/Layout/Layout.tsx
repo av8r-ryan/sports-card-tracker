@@ -5,6 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { exportCardsAsJSON, exportCardsAsCSV } from '../../utils/exportUtils';
 import { exportCardsToPDF } from '../../utils/pdfExport';
 import './Layout.css';
+import PerformanceMonitoring from '../PerformanceMonitoring/PerformanceMonitoring';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -344,6 +345,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
           <p>&copy; 2025 Collectors Playbook.</p>
         </div>
       </footer>
+      {/* Performance monitor overlay */}
+      <PerformanceMonitoring showDetails={false} position="bottom-right" autoHide={true} />
     </div>
   );
 };

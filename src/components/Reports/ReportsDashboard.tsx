@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 import { useCards } from '../../context/DexieCardContext';
 import { ReportingService } from '../../services/reportingService';
 import { ReportTemplate } from '../../types/reports';
@@ -22,19 +22,19 @@ interface Props {
   onSelectReport: (reportType: ReportTemplate) => void;
 }
 
-const ReportsDashboard: React.FC<Props> = ({ onSelectReport }) => {
+const ReportsDashboard: React.FC<Props> = memo(({ onSelectReport }) => {
   const { state } = useCards();
   const reportingService = useMemo(() => new ReportingService(state.cards), [state.cards]);
 
-  // Format currency helper function
-  const formatCurrency = (value: number): string => {
+  // Format currency helper function - memoized for performance
+  const formatCurrency = useCallback((value: number): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);
-  };
+  }, []);
 
   // Generate key metrics for dashboard
   const metrics = useMemo(() => {
@@ -53,26 +53,28 @@ const ReportsDashboard: React.FC<Props> = ({ onSelectReport }) => {
     return reportingService.generateMarketAnalysis();
   }, [reportingService]);
 
-  // Chart data preparation
-  const portfolioChartData = [
+  // Chart data preparation - memoized for performance
+  const portfolioChartData = useMemo(() => [
     { name: 'Total Investment', value: metrics.totalCost, color: '#8884d8' },
     { name: 'Current Value', value: metrics.totalValue, color: '#82ca9d' },
     { name: 'Profit/Loss', value: metrics.totalProfit, color: metrics.totalProfit >= 0 ? '#00C49F' : '#FF8042' }
-  ];
+  ], [metrics.totalCost, metrics.totalValue, metrics.totalProfit]);
 
-  const categoryChartData = analyticsData.categoryDistribution.slice(0, 5).map(cat => ({
-    name: cat.category,
-    value: cat.totalValue,
-    count: cat.count
-  }));
+  const categoryChartData = useMemo(() => 
+    analyticsData.categoryDistribution.slice(0, 5).map(cat => ({
+      name: cat.category,
+      value: cat.totalValue,
+      count: cat.count
+    })), [analyticsData.categoryDistribution]);
 
-  const performanceChartData = portfolioData.monthlyReturns.slice(-6).map(month => ({
-    month: month.month,
-    return: month.return,
-    value: month.value
-  }));
+  const performanceChartData = useMemo(() => 
+    portfolioData.monthlyReturns.slice(-6).map(month => ({
+      month: month.month,
+      return: month.return,
+      value: month.value
+    })), [portfolioData.monthlyReturns]);
 
-  const reportCards = [
+  const reportCards = useMemo(() => [
     {
       id: 'portfolio-summary' as ReportTemplate,
       title: 'Portfolio Overview',
@@ -127,7 +129,7 @@ const ReportsDashboard: React.FC<Props> = ({ onSelectReport }) => {
       trend: 'up',
       color: '#6f42c1'
     }
-  ];
+  ], [metrics.roi, metrics.totalProfit, metrics.totalValue, state.cards.length, marketData.marketComparison.outperformance]);
 
   return (
     <div className="reports-dashboard">
@@ -328,6 +330,8 @@ const ReportsDashboard: React.FC<Props> = ({ onSelectReport }) => {
       </div>
     </div>
   );
-};
+});
+
+ReportsDashboard.displayName = 'ReportsDashboard';
 
 export default ReportsDashboard;

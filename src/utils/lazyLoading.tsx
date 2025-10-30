@@ -84,6 +84,55 @@ export const LazyReports = withLazyLoading(
   lazy(() => import('../components/Reports/Reports'))
 );
 
+// Individual Reports components for better code splitting
+export const LazyReportsDashboard = withLazyLoading(
+  lazy(() => import('../components/Reports/ReportsDashboard'))
+);
+
+export const LazyPortfolioPerformanceReport = withLazyLoading(
+  lazy(() => import('../components/Reports/PortfolioPerformanceReport'))
+);
+
+export const LazyCollectionAnalyticsReport = withLazyLoading(
+  lazy(() => import('../components/Reports/CollectionAnalyticsReport'))
+);
+
+export const LazyMarketAnalysisReport = withLazyLoading(
+  lazy(() => import('../components/Reports/MarketAnalysisReport'))
+);
+
+export const LazyTaxReport = withLazyLoading(
+  lazy(() => import('../components/Reports/TaxReport'))
+);
+
+export const LazyInsuranceReport = withLazyLoading(
+  lazy(() => import('../components/Reports/InsuranceReport'))
+);
+
+export const LazyInventoryReport = withLazyLoading(
+  lazy(() => import('../components/Reports/InventoryReport'))
+);
+
+export const LazyComparisonReport = withLazyLoading(
+  lazy(() => import('../components/Reports/ComparisonReport'))
+);
+
+export const LazyExecutiveDashboard = withLazyLoading(
+  lazy(() => import('../components/Reports/ExecutiveDashboard'))
+);
+
+export const LazyInvestmentInsightsReport = withLazyLoading(
+  lazy(() => import('../components/Reports/InvestmentInsightsReport'))
+);
+
+export const LazyReportFilters = withLazyLoading(
+  lazy(() => import('../components/Reports/ReportFilters'))
+);
+
+export const LazyReportExport = withLazyLoading(
+  lazy(() => import('../components/Reports/ReportExport'))
+);
+
 export const LazyEbayListings = withLazyLoading(
   lazy(() => import('../components/EbayListings/EbayListings'))
 );

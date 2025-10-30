@@ -1,21 +1,24 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCards } from '../../context/DexieCardContext';
 import { ReportingService } from '../../services/reportingService';
 import { ReportFilter, ReportTemplate } from '../../types/reports';
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import CollapsibleMenu from '../UI/CollapsibleMenu';
-import ReportsDashboard from './ReportsDashboard';
-import PortfolioPerformanceReport from './PortfolioPerformanceReport';
-import CollectionAnalyticsReport from './CollectionAnalyticsReport';
-import MarketAnalysisReport from './MarketAnalysisReport';
-import TaxReport from './TaxReport';
-import InsuranceReport from './InsuranceReport';
-import InventoryReport from './InventoryReport';
-import ComparisonReport from './ComparisonReport';
-import ExecutiveDashboard from './ExecutiveDashboard';
-import ReportFilters from './ReportFilters';
-import ReportExport from './ReportExport';
+import {
+  LazyReportsDashboard,
+  LazyPortfolioPerformanceReport,
+  LazyCollectionAnalyticsReport,
+  LazyMarketAnalysisReport,
+  LazyTaxReport,
+  LazyInsuranceReport,
+  LazyInventoryReport,
+  LazyComparisonReport,
+  LazyExecutiveDashboard,
+  LazyInvestmentInsightsReport,
+  LazyReportFilters,
+  LazyReportExport
+} from '../../utils/lazyLoading';
 import './Reports.css';
 
 const Reports: React.FC = () => {
@@ -49,62 +52,95 @@ const Reports: React.FC = () => {
   };
 
   const renderActiveReport = () => {
+    const LoadingFallback = () => (
+      <div className="report-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading report...</p>
+      </div>
+    );
+
     switch (activeReport) {
       case 'dashboard':
-        return <ReportsDashboard onSelectReport={handleSelectReport} />;
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyReportsDashboard onSelectReport={handleSelectReport} />
+          </Suspense>
+        );
       
       case 'portfolio-summary':
       case 'financial-performance':
         return (
-          <PortfolioPerformanceReport 
-            reportingService={reportingService} 
-            filters={filters}
-            detailed={activeReport === 'financial-performance'}
-          />
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyPortfolioPerformanceReport 
+              reportingService={reportingService} 
+              filters={filters}
+              detailed={activeReport === 'financial-performance'}
+            />
+          </Suspense>
         );
       
       case 'collection-analytics':
         return (
-          <CollectionAnalyticsReport 
-            reportingService={reportingService} 
-            filters={filters}
-          />
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyCollectionAnalyticsReport 
+              reportingService={reportingService} 
+              filters={filters}
+            />
+          </Suspense>
         );
       
       case 'market-analysis':
       case 'investment-insights':
         return (
-          <MarketAnalysisReport 
-            reportingService={reportingService} 
-            filters={filters}
-            detailed={activeReport === 'investment-insights'}
-          />
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyMarketAnalysisReport 
+              reportingService={reportingService} 
+              filters={filters}
+              detailed={activeReport === 'investment-insights'}
+            />
+          </Suspense>
         );
       
       case 'tax-summary':
         return (
-          <TaxReport 
-            reportingService={reportingService} 
-            filters={filters}
-          />
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyTaxReport 
+              reportingService={reportingService} 
+              filters={filters}
+            />
+          </Suspense>
         );
       
       case 'insurance-appraisal':
         return (
-          <InsuranceReport 
-            reportingService={reportingService} 
-            filters={filters}
-          />
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyInsuranceReport 
+              reportingService={reportingService} 
+              filters={filters}
+            />
+          </Suspense>
         );
       
       case 'detailed-inventory':
-        return <InventoryReport />;
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyInventoryReport />
+          </Suspense>
+        );
       
       case 'comparison-analysis':
-        return <ComparisonReport />;
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyComparisonReport />
+          </Suspense>
+        );
       
       case 'executive-dashboard':
-        return <ExecutiveDashboard />;
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyExecutiveDashboard />
+          </Suspense>
+        );
       
       default:
         return <div>Report not found</div>;
@@ -166,11 +202,13 @@ const Reports: React.FC = () => {
                   🔍 Filters
                 </motion.button>
                 
-                <ReportExport 
-                  reportingService={reportingService}
-                  activeReport={activeReport as ReportTemplate}
-                  filters={filters}
-                />
+                <Suspense fallback={null}>
+                  <LazyReportExport 
+                    reportingService={reportingService}
+                    activeReport={activeReport as ReportTemplate}
+                    filters={filters}
+                  />
+                </Suspense>
               </>
             )}
           </div>
@@ -185,11 +223,13 @@ const Reports: React.FC = () => {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <ReportFilters 
-              filters={filters}
-              onFiltersChange={setFilters}
-              cards={state.cards}
-            />
+            <Suspense fallback={null}>
+              <LazyReportFilters 
+                filters={filters}
+                onFiltersChange={setFilters}
+                cards={state.cards}
+              />
+            </Suspense>
           </motion.div>
         )}
       </AnimatePresence>

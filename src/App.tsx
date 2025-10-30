@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CardProvider, useCards } from './context/DexieCardContext'; // Use Dexie context
 import { ThemeProvider } from './context/ThemeContext';
 import { useApi } from './hooks/useApi';
+import { registerServiceWorker } from './utils/serviceWorker';
 import Layout from './components/Layout/Layout';
 import Dashboard from './components/Dashboard/Dashboard';
 import CardList from './components/CardList/CardList';
@@ -23,7 +25,6 @@ import About from './components/About/About';
 import Contact from './components/Contact/Contact';
 import Docs from './components/Docs/Docs';
 import NotFound from './components/NotFound/NotFound';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import DebugPanel from './components/DebugPanel/DebugPanel';
 import DevTools from './components/DevTools/DevTools';
 import { Card } from './types';
@@ -328,6 +329,24 @@ const AppRoutes: React.FC = () => {
 };
 
 function App() {
+  // Register service worker on app start
+  useEffect(() => {
+    registerServiceWorker({
+      onSuccess: (registration) => {
+        console.log('Service Worker registered successfully');
+      },
+      onUpdate: (registration) => {
+        console.log('New Service Worker available');
+        if (window.confirm('New version available! Reload to update?')) {
+          window.location.reload();
+        }
+      },
+      onOfflineReady: () => {
+        console.log('App is ready for offline use');
+      }
+    });
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider>

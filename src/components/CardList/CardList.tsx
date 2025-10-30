@@ -1,4 +1,5 @@
 import React, { useState, useMemo, memo, useCallback, useRef, useEffect } from 'react';
+import useVirtualScroll from '../../hooks/useVirtualScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCards } from '../../context/DexieCardContext';
 import { Card, FilterOptions, SortOption } from '../../types';
@@ -6,6 +7,7 @@ import { BulkEbayExport } from '../EbayListing/BulkEbayExport';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import MoveCardsModal from '../MoveCardsModal/MoveCardsModal';
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
+import LazyImage from '../LazyImage/LazyImage';
 import { collectionsDatabase } from '../../db/collectionsDatabase';
 import './CardList.css';
 
@@ -28,6 +30,11 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  
+  // Virtual scrolling setup
+  const itemHeight = viewMode === 'list' ? 100 : 300; // Adjust based on view mode
+  const containerHeight = 600; // Adjust based on your container height
+  
   const itemsPerPage = 12;
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -132,6 +139,13 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
   const paginatedCards = useMemo(() => {
     return filteredCards.slice(0, currentPage * itemsPerPage);
   }, [filteredCards, currentPage, itemsPerPage]);
+
+  // Virtual scrolling setup
+  const virtualScroll = useVirtualScroll(paginatedCards, {
+    itemHeight,
+    containerHeight,
+    overscan: 5
+  });
 
   // Card flip functionality
   const toggleCardFlip = useCallback((cardId: string) => {
@@ -388,14 +402,27 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
         </div>
       )}
 
-      <motion.div 
+      <div 
         className={`cards-container ${viewMode === 'list' ? 'list-view' : 'grid-view'}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
+        style={{ 
+          height: containerHeight, 
+          overflow: 'auto',
+          position: 'relative'
+        }}
+        onScroll={virtualScroll.handleScroll}
       >
-        <AnimatePresence mode="popLayout">
-          {paginatedCards.map((card, index) => (
+        <div style={{ height: virtualScroll.totalHeight, position: 'relative' }}>
+          <div 
+            style={{ 
+              transform: `translateY(${virtualScroll.startIndex * itemHeight}px)`,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0
+            }}
+          >
+            <AnimatePresence mode="popLayout">
+              {virtualScroll.visibleItems.map((card, index) => (
             <motion.div
               key={card.id}
               className={`card-item card-glass hover-lift ${card.sellDate ? 'sold' : ''} ${selectedCards.has(card.id) ? 'selected' : ''}`}
@@ -462,7 +489,7 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
                     )}
                     <div className="card-image-section">
                       <div className="card-image-container">
-                        <img 
+                        <LazyImage 
                           src={card.images && card.images.length > 0 ? card.images[0] : '/generic.png'} 
                           alt={`${card.player} card`} 
                           className="card-main-image" 
@@ -497,8 +524,10 @@ const CardList: React.FC<CardListProps> = ({ onCardSelect, onEditCard, selectedC
               </motion.div>
             </motion.div>
         ))}
-        </AnimatePresence>
-      </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
 
       {/* Infinite scroll loading indicator */}
       {isLoadingMore && (

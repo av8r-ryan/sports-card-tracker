@@ -1,296 +1,304 @@
-// Bundle analysis utilities
-interface BundleInfo {
+// Bundle analysis utilities for identifying large dependencies and optimization opportunities
+import { useState, useCallback, useEffect } from 'react';
+
+interface BundleAnalysisResult {
+  totalSize: number;
+  chunks: ChunkInfo[];
+  dependencies: DependencyInfo[];
+  recommendations: string[];
+  warnings: string[];
+}
+
+interface ChunkInfo {
   name: string;
   size: number;
   gzippedSize?: number;
-  dependencies: string[];
-  chunks: string[];
   modules: ModuleInfo[];
 }
 
 interface ModuleInfo {
   name: string;
   size: number;
-  gzippedSize?: number;
-  type: 'javascript' | 'css' | 'image' | 'font' | 'other';
+  percentage: number;
   isNodeModule: boolean;
-  isDuplicate: boolean;
-  duplicateOf?: string;
 }
 
-interface BundleAnalysis {
-  totalSize: number;
-  totalGzippedSize: number;
-  bundleCount: number;
-  moduleCount: number;
-  duplicateModules: ModuleInfo[];
-  largeModules: ModuleInfo[];
-  unusedModules: ModuleInfo[];
-  recommendations: string[];
-  treeShakingOpportunities: string[];
-  codeSplittingOpportunities: string[];
+interface DependencyInfo {
+  name: string;
+  version: string;
+  size: number;
+  percentage: number;
+  isDevDependency: boolean;
+  alternatives?: string[];
 }
 
 class BundleAnalyzer {
-  private bundleInfo: BundleInfo[] = [];
-  private analysis: BundleAnalysis | null = null;
+  private performanceObserver: PerformanceObserver | null = null;
+  private resourceTimings: PerformanceResourceTiming[] = [];
 
   constructor() {
-    this.analyzeBundles();
+    this.initializePerformanceObserver();
   }
 
-  private analyzeBundles(): void {
-    // This would typically read from webpack-bundle-analyzer output
-    // or webpack stats in a real implementation
-    this.bundleInfo = this.extractBundleInfo();
-    this.analysis = this.performAnalysis();
-  }
+  private initializePerformanceObserver(): void {
+    if ('PerformanceObserver' in window) {
+      this.performanceObserver = new PerformanceObserver((list) => {
+        const entries = list.getEntries() as PerformanceResourceTiming[];
+        this.resourceTimings.push(...entries);
+      });
 
-  private extractBundleInfo(): BundleInfo[] {
-    // In a real implementation, this would parse webpack stats
-    // For now, we'll return mock data structure
-    return [
-      {
-        name: 'main',
-        size: 1024 * 1024, // 1MB
-        gzippedSize: 256 * 1024, // 256KB
-        dependencies: ['react', 'react-dom', 'framer-motion'],
-        chunks: ['main', 'vendors'],
-        modules: [
-          {
-            name: 'react',
-            size: 128 * 1024,
-            gzippedSize: 32 * 1024,
-            type: 'javascript',
-            isNodeModule: true,
-            isDuplicate: false
-          },
-          {
-            name: 'framer-motion',
-            size: 256 * 1024,
-            gzippedSize: 64 * 1024,
-            type: 'javascript',
-            isNodeModule: true,
-            isDuplicate: false
-          }
-        ]
+      try {
+        this.performanceObserver.observe({ entryTypes: ['resource'] });
+      } catch (error) {
+        console.warn('Performance Observer not supported:', error);
       }
-    ];
+    }
   }
 
-  private performAnalysis(): BundleAnalysis {
-    const totalSize = this.bundleInfo.reduce((sum, bundle) => sum + bundle.size, 0);
-    const totalGzippedSize = this.bundleInfo.reduce((sum, bundle) => sum + (bundle.gzippedSize || 0), 0);
-    const allModules = this.bundleInfo.flatMap(bundle => bundle.modules);
+  // Analyze current bundle size and dependencies
+  async analyzeBundle(): Promise<BundleAnalysisResult> {
+    const chunks = await this.analyzeChunks();
+    const dependencies = await this.analyzeDependencies();
+    const totalSize = chunks.reduce((sum, chunk) => sum + chunk.size, 0);
     
-    const duplicateModules = allModules.filter(module => module.isDuplicate);
-    const largeModules = allModules.filter(module => module.size > 100 * 1024); // > 100KB
-    const unusedModules = this.detectUnusedModules(allModules);
-    
-    const recommendations = this.generateRecommendations(duplicateModules, largeModules, unusedModules);
-    const treeShakingOpportunities = this.findTreeShakingOpportunities(allModules);
-    const codeSplittingOpportunities = this.findCodeSplittingOpportunities(this.bundleInfo);
+    const recommendations = this.generateRecommendations(chunks, dependencies);
+    const warnings = this.generateWarnings(chunks, dependencies);
 
     return {
       totalSize,
-      totalGzippedSize,
-      bundleCount: this.bundleInfo.length,
-      moduleCount: allModules.length,
-      duplicateModules,
-      largeModules,
-      unusedModules,
+      chunks,
+      dependencies,
       recommendations,
-      treeShakingOpportunities,
-      codeSplittingOpportunities
+      warnings
     };
   }
 
-  private detectUnusedModules(modules: ModuleInfo[]): ModuleInfo[] {
-    // This would typically use webpack's unused exports analysis
-    // For now, return empty array
-    return [];
+  // Analyze JavaScript chunks
+  private async analyzeChunks(): Promise<ChunkInfo[]> {
+    const scripts = Array.from(document.querySelectorAll('script[src]')) as HTMLScriptElement[];
+    const chunks: ChunkInfo[] = [];
+
+    for (const script of scripts) {
+      if (script.src.includes('static/js/')) {
+        try {
+          const response = await fetch(script.src);
+          const blob = await response.blob();
+          const size = blob.size;
+          
+          // Estimate gzipped size (rough approximation)
+          const gzippedSize = Math.round(size * 0.3);
+          
+          chunks.push({
+            name: this.extractChunkName(script.src),
+            size,
+            gzippedSize,
+            modules: [] // Would need source map analysis for detailed module info
+          });
+        } catch (error) {
+          console.warn(`Failed to analyze chunk ${script.src}:`, error);
+        }
+      }
+    }
+
+    return chunks;
   }
 
-  private generateRecommendations(
-    duplicates: ModuleInfo[],
-    large: ModuleInfo[],
-    unused: ModuleInfo[]
-  ): string[] {
+  // Analyze dependencies from package.json and runtime
+  private async analyzeDependencies(): Promise<DependencyInfo[]> {
+    // This would typically require build-time analysis
+    // For runtime analysis, we can only estimate based on loaded resources
+    const dependencies: DependencyInfo[] = [];
+
+    // Analyze loaded resources
+    for (const resource of this.resourceTimings) {
+      if (resource.name.includes('node_modules') || resource.name.includes('chunk')) {
+        const name = this.extractDependencyName(resource.name);
+        const size = resource.transferSize || 0;
+        
+        dependencies.push({
+          name,
+          version: 'unknown',
+          size,
+          percentage: 0, // Will be calculated later
+          isDevDependency: false
+        });
+      }
+    }
+
+    return dependencies;
+  }
+
+  // Generate optimization recommendations
+  private generateRecommendations(chunks: ChunkInfo[], dependencies: DependencyInfo[]): string[] {
     const recommendations: string[] = [];
+    const totalSize = chunks.reduce((sum, chunk) => sum + chunk.size, 0);
 
-    if (duplicates.length > 0) {
-      recommendations.push(`Remove ${duplicates.length} duplicate modules to save ${this.formatBytes(duplicates.reduce((sum, m) => sum + m.size, 0))}`);
+    // Large chunk recommendations
+    const largeChunks = chunks.filter(chunk => chunk.size > 500000); // 500KB
+    if (largeChunks.length > 0) {
+      recommendations.push(
+        `Consider code splitting for large chunks: ${largeChunks.map(c => c.name).join(', ')}`
+      );
     }
 
-    if (large.length > 0) {
-      recommendations.push(`Consider code splitting for ${large.length} large modules (>100KB)`);
+    // Duplicate dependencies
+    const duplicateDeps = this.findDuplicateDependencies(dependencies);
+    if (duplicateDeps.length > 0) {
+      recommendations.push(
+        `Remove duplicate dependencies: ${duplicateDeps.join(', ')}`
+      );
     }
 
-    if (unused.length > 0) {
-      recommendations.push(`Remove ${unused.length} unused modules to reduce bundle size`);
+    // Unused dependencies (would need static analysis)
+    if (totalSize > 2000000) { // 2MB
+      recommendations.push('Bundle size is large. Consider tree shaking and removing unused code.');
     }
 
-    if (this.analysis && this.analysis.totalSize > 2 * 1024 * 1024) {
-      recommendations.push('Bundle size exceeds 2MB - consider aggressive code splitting');
-    }
-
-    if (this.analysis && this.analysis.totalGzippedSize > 500 * 1024) {
-      recommendations.push('Gzipped bundle size exceeds 500KB - optimize for mobile');
+    // Image optimization
+    const imageResources = this.resourceTimings.filter(r => 
+      r.name.match(/\.(jpg|jpeg|png|gif|svg)$/i)
+    );
+    if (imageResources.length > 0) {
+      recommendations.push('Consider optimizing images and using WebP format.');
     }
 
     return recommendations;
   }
 
-  private findTreeShakingOpportunities(modules: ModuleInfo[]): string[] {
-    const opportunities: string[] = [];
-    
-    // Look for modules that might benefit from tree shaking
-    const nodeModules = modules.filter(m => m.isNodeModule);
-    const largeNodeModules = nodeModules.filter(m => m.size > 50 * 1024);
-    
-    largeNodeModules.forEach(module => {
-      opportunities.push(`Consider tree shaking ${module.name} - only import needed functions`);
+  // Generate warnings for potential issues
+  private generateWarnings(chunks: ChunkInfo[], dependencies: DependencyInfo[]): string[] {
+    const warnings: string[] = [];
+
+    // Large individual chunks
+    chunks.forEach(chunk => {
+      if (chunk.size > 1000000) { // 1MB
+        warnings.push(`Chunk ${chunk.name} is very large (${this.formatBytes(chunk.size)})`);
+      }
     });
 
-    return opportunities;
+    // Many chunks (potential over-splitting)
+    if (chunks.length > 20) {
+      warnings.push('Many small chunks detected. Consider consolidating some chunks.');
+    }
+
+    // Slow loading resources
+    const slowResources = this.resourceTimings.filter(r => r.duration > 1000);
+    if (slowResources.length > 0) {
+      warnings.push(`${slowResources.length} resources took longer than 1s to load`);
+    }
+
+    return warnings;
   }
 
-  private findCodeSplittingOpportunities(bundles: BundleInfo[]): string[] {
-    const opportunities: string[] = [];
-    
-    bundles.forEach(bundle => {
-      if (bundle.size > 500 * 1024) {
-        opportunities.push(`Split ${bundle.name} bundle (${this.formatBytes(bundle.size)}) into smaller chunks`);
-      }
-      
-      const largeModules = bundle.modules.filter(m => m.size > 100 * 1024);
-      if (largeModules.length > 0) {
-        opportunities.push(`Extract large modules from ${bundle.name}: ${largeModules.map(m => m.name).join(', ')}`);
-      }
-    });
+  // Helper methods
+  private extractChunkName(src: string): string {
+    const match = src.match(/static\/js\/([^/]+)\.js/);
+    return match ? match[1] : 'unknown';
+  }
 
-    return opportunities;
+  private extractDependencyName(url: string): string {
+    const match = url.match(/node_modules\/([^/]+)/);
+    return match ? match[1] : 'unknown';
+  }
+
+  private findDuplicateDependencies(dependencies: DependencyInfo[]): string[] {
+    const nameCount = new Map<string, number>();
+    dependencies.forEach(dep => {
+      nameCount.set(dep.name, (nameCount.get(dep.name) || 0) + 1);
+    });
+    
+    return Array.from(nameCount.entries())
+      .filter(([_, count]) => count > 1)
+      .map(([name, _]) => name);
   }
 
   private formatBytes(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
-    
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  public getAnalysis(): BundleAnalysis | null {
-    return this.analysis;
-  }
-
-  public getBundleInfo(): BundleInfo[] {
-    return this.bundleInfo;
-  }
-
-  public getModuleSize(moduleName: string): number {
-    const allModules = this.bundleInfo.flatMap(bundle => bundle.modules);
-    const module = allModules.find(m => m.name === moduleName);
-    return module ? module.size : 0;
-  }
-
-  public getLargestModules(count: number = 10): ModuleInfo[] {
-    const allModules = this.bundleInfo.flatMap(bundle => bundle.modules);
-    return allModules
-      .sort((a, b) => b.size - a.size)
-      .slice(0, count);
-  }
-
-  public getDuplicateModules(): ModuleInfo[] {
-    return this.analysis?.duplicateModules || [];
-  }
-
-  public getUnusedModules(): ModuleInfo[] {
-    return this.analysis?.unusedModules || [];
-  }
-
-  public getRecommendations(): string[] {
-    return this.analysis?.recommendations || [];
-  }
-
-  public generateReport(): string {
-    if (!this.analysis) return 'No analysis available';
-
-    const { totalSize, totalGzippedSize, bundleCount, moduleCount, recommendations } = this.analysis;
+  // Get performance metrics
+  getPerformanceMetrics(): {
+    loadTime: number;
+    domContentLoaded: number;
+    firstPaint: number;
+    firstContentfulPaint: number;
+    largestContentfulPaint: number;
+  } {
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    const paint = performance.getEntriesByType('paint');
     
-    let report = `# Bundle Analysis Report\n\n`;
-    report += `## Summary\n`;
-    report += `- Total Size: ${this.formatBytes(totalSize)}\n`;
-    report += `- Gzipped Size: ${this.formatBytes(totalGzippedSize)}\n`;
-    report += `- Bundles: ${bundleCount}\n`;
-    report += `- Modules: ${moduleCount}\n\n`;
-    
-    report += `## Recommendations\n`;
-    recommendations.forEach((rec, index) => {
-      report += `${index + 1}. ${rec}\n`;
-    });
-    
-    report += `\n## Largest Modules\n`;
-    this.getLargestModules(10).forEach((module, index) => {
-      report += `${index + 1}. ${module.name}: ${this.formatBytes(module.size)}\n`;
-    });
-    
-    return report;
+    return {
+      loadTime: navigation.loadEventEnd - navigation.loadEventStart,
+      domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+      firstPaint: paint.find(p => p.name === 'first-paint')?.startTime || 0,
+      firstContentfulPaint: paint.find(p => p.name === 'first-contentful-paint')?.startTime || 0,
+      largestContentfulPaint: 0 // Would need LCP observer
+    };
   }
 
-  public exportAnalysis(): string {
-    return JSON.stringify({
-      analysis: this.analysis,
-      bundleInfo: this.bundleInfo,
-      timestamp: new Date().toISOString()
-    }, null, 2);
+  // Clean up
+  cleanup(): void {
+    if (this.performanceObserver) {
+      this.performanceObserver.disconnect();
+    }
   }
 }
 
-// Bundle optimization utilities
-export const bundleOptimizer = {
-  // Check if a module should be code split
-  shouldCodeSplit: (moduleName: string, size: number): boolean => {
-    const largeModuleThreshold = 100 * 1024; // 100KB
-    const codeSplitModules = ['framer-motion', 'chart.js', 'lodash'];
-    
-    return size > largeModuleThreshold || codeSplitModules.includes(moduleName);
-  },
+// Global instance
+const bundleAnalyzer = new BundleAnalyzer();
 
-  // Get optimal chunk size
-  getOptimalChunkSize: (): number => {
-    return 200 * 1024; // 200KB
-  },
-
-  // Check if module should be lazy loaded
-  shouldLazyLoad: (moduleName: string): boolean => {
-    const lazyLoadModules = [
-      'reports',
-      'admin',
-      'ebay-listings',
-      'collections'
-    ];
-    
-    return lazyLoadModules.some(name => moduleName.includes(name));
-  },
-
-  // Get compression ratio
-  getCompressionRatio: (originalSize: number, compressedSize: number): number => {
-    return ((originalSize - compressedSize) / originalSize) * 100;
-  },
-
-  // Estimate loading time
-  estimateLoadingTime: (size: number, connectionSpeed: number = 1.5): number => {
-    // connectionSpeed in Mbps
-    const sizeInMB = size / (1024 * 1024);
-    return (sizeInMB * 8) / connectionSpeed; // seconds
-  }
+// Utility functions
+export const analyzeBundle = (): Promise<BundleAnalysisResult> => {
+  return bundleAnalyzer.analyzeBundle();
 };
 
-// Create singleton instance
-export const bundleAnalyzer = new BundleAnalyzer();
+export const getPerformanceMetrics = () => {
+  return bundleAnalyzer.getPerformanceMetrics();
+};
 
-// Export types
-export type { BundleInfo, ModuleInfo, BundleAnalysis };
+export const formatBytes = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+// React hook for bundle analysis
+export const useBundleAnalysis = () => {
+  const [analysis, setAnalysis] = useState<BundleAnalysisResult | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const runAnalysis = useCallback(async () => {
+    setIsAnalyzing(true);
+    setError(null);
+
+    try {
+      const result = await analyzeBundle();
+      setAnalysis(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Analysis failed');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Run analysis on mount
+    runAnalysis();
+  }, [runAnalysis]);
+
+  return {
+    analysis,
+    isAnalyzing,
+    error,
+    runAnalysis
+  };
+};
+
+export default bundleAnalyzer;

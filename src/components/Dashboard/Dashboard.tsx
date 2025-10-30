@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCards } from '../../context/DexieCardContext';
 import Carousel, { CarouselItem } from '../Carousel/Carousel';
@@ -7,7 +7,7 @@ import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import { logInfo, logDebug } from '../../utils/logger';
 import './Dashboard.css';
 
-const Dashboard: React.FC = () => {
+const Dashboard: React.FC = React.memo(() => {
   const { state, getPortfolioStats } = useCards();
   const stats = getPortfolioStats();
   const [selectedCard, setSelectedCard] = useState<any>(null);
@@ -93,7 +93,7 @@ const Dashboard: React.FC = () => {
     }));
   }, [topPerformers]);
 
-  const handleCardClick = (item: CarouselItem) => {
+  const handleCardClick = useCallback((item: CarouselItem) => {
     logInfo('Dashboard', 'Card clicked in carousel', { cardId: item.id, title: item.title });
     
     // Find the original card data and determine type
@@ -113,14 +113,14 @@ const Dashboard: React.FC = () => {
     }
     
     setIsModalOpen(true);
-  };
+  }, [recentCards, topPerformers]);
 
-  const handleModalClose = () => {
+  const handleModalClose = useCallback(() => {
     logDebug('Dashboard', 'Modal closed');
     setIsModalOpen(false);
     setSelectedCard(null);
     setModalType(null);
-  };
+  }, []);
 
   const handlePrevious = () => {
     if (modalType) {
@@ -395,6 +395,8 @@ const Dashboard: React.FC = () => {
       </Modal>
     </div>
   );
-};
+});
 
-export default memo(Dashboard);
+Dashboard.displayName = 'Dashboard';
+
+export default Dashboard;

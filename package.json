@@ -52,11 +52,20 @@
     "zod": "^4.1.12"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "craco start",
+    "build": "craco build",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint src --ext .ts,.tsx,.js,.jsx --fix",
+    "lint:check": "eslint src --ext .ts,.tsx,.js,.jsx --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
+    "analyze:source-map": "npm run build && npx source-map-explorer 'build/static/js/*.js'",
+    "analyze:size": "npm run build && du -sh build/static/js/*.js | sort -hr",
+    "prepare": "husky install",
     "test:ci": "jest --ci --coverage --watchAll=false",
     "test:unit": "jest --testPathPattern=tests/unit",
     "test:integration": "jest --testPathPattern=tests/integration",
@@ -74,12 +83,6 @@
     "build:server": "cd server && npm run build",
     "start:prod": "concurrently \"cd server && npm start\" \"serve -s build\""
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -96,6 +99,42 @@
     "@types/jspdf": "^1.3.3",
     "@types/lodash": "^4.17.17",
     "@types/tesseract.js": "^0.0.2",
-    "concurrently": "^9.1.2"
-  }
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^8.57.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "@commitlint/cli": "^18.0.0",
+    "@commitlint/config-conventional": "^18.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0",
+    "webpack-bundle-analyzer": "^4.10.1",
+    "source-map-explorer": "^2.2.1",
+    "@craco/craco": "^7.1.0",
+    "babel-plugin-transform-imports": "^3.0.0",
+    "terser-webpack-plugin": "^5.3.9"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.{json,css,md}": [
+      "prettier --write"
+    ]
+  },
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "*.sass",
+    "*.less",
+    "./src/index.tsx",
+    "./src/serviceWorker.ts"
+  ]
 }

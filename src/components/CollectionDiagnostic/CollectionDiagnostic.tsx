@@ -3,7 +3,7 @@ import { collectionsDatabase } from '../../db/collectionsDatabase';
 import { cardDatabase } from '../../db/simpleDatabase';
 import './CollectionDiagnostic.css';
 
-const CollectionDiagnostic: React.FC = () => {
+const CollectionDiagnostic: React.FC = React.memo(() => {
   const [collections, setCollections] = useState<any[]>([]);
   const [cards, setCards] = useState<any[]>([]);
   const [orphanedCards, setOrphanedCards] = useState<any[]>([]);
@@ -199,6 +199,8 @@ const CollectionDiagnostic: React.FC = () => {
       )}
     </div>
   );
-};
+});
+
+CollectionDiagnostic.displayName = 'CollectionDiagnostic';
 
 export default CollectionDiagnostic;
