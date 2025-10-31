@@ -1,120 +1,75 @@
-import { collectionsDb } from '../db/collectionsDatabase';
-import { db } from '../db/simpleDatabase';
+/* eslint-disable import/no-unresolved, @typescript-eslint/no-explicit-any */
+import { supabase } from '../lib/supabase';
+
+function getCurrentUserId(): string {
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      return user.id || 'anonymous';
+    } catch {}
+  }
+  const auth = localStorage.getItem('auth-state');
+  if (auth) {
+    try {
+      const a = JSON.parse(auth);
+      return a.user?.id || 'anonymous';
+    } catch {}
+  }
+  return 'anonymous';
+}
 
 export async function debugDatabase() {
-  console.log('=== DATABASE DEBUG ===');
+  // eslint-disable-next-line no-console
+  console.log('=== DATABASE DEBUG (Supabase) ===');
 
-  // Check localStorage
+  // eslint-disable-next-line no-console
   console.log('localStorage user:', localStorage.getItem('user'));
+  // eslint-disable-next-line no-console
   console.log('localStorage auth-state:', localStorage.getItem('auth-state'));
 
-  // Check all cards in database
+  const userId = getCurrentUserId();
+
   try {
-    const allCards = await db.cards.toArray();
-    console.log('Total cards in database:', allCards.length);
-
-    // Group by userId
-    const cardsByUser: { [key: string]: any[] } = {};
-    allCards.forEach((card) => {
-      if (!cardsByUser[card.userId]) {
-        cardsByUser[card.userId] = [];
-      }
-      cardsByUser[card.userId].push(card);
-    });
-
-    console.log('Cards by userId:');
-    Object.entries(cardsByUser).forEach(([userId, cards]) => {
-      console.log(`  ${userId}: ${cards.length} cards`);
-      // Show first card as sample
-      if (cards.length > 0) {
-        console.log('    Sample card:', {
-          id: cards[0].id,
-          player: cards[0].player,
-          collectionId: cards[0].collectionId,
-        });
-      }
-    });
-  } catch (error) {
-    console.error('Error reading cards:', error);
+    const { data: cards, error: cardErr } = await supabase
+      .from('cards')
+      .select('id, user_id, player, collection_id, current_value, created_at')
+      .eq('user_id', userId);
+    if (cardErr) throw cardErr;
+    // eslint-disable-next-line no-console
+    console.log('Total cards:', cards?.length || 0);
+    if (cards && cards.length > 0) {
+      // eslint-disable-next-line no-console, max-len
+      console.log('Sample card:', { id: cards[0].id, player: cards[0].player, collectionId: cards[0].collection_id });
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Error reading cards from Supabase:', e);
   }
 
-  // Check all collections
   try {
-    const allCollections = await collectionsDb.collections.toArray();
-    console.log('Total collections in database:', allCollections.length);
-
-    // Group by userId
-    const collectionsByUser: { [key: string]: any[] } = {};
-    allCollections.forEach((collection) => {
-      if (!collectionsByUser[collection.userId]) {
-        collectionsByUser[collection.userId] = [];
-      }
-      collectionsByUser[collection.userId].push(collection);
-    });
-
-    console.log('Collections by userId:');
-    Object.entries(collectionsByUser).forEach(([userId, collections]) => {
-      console.log(`  ${userId}: ${collections.length} collections`);
-      collections.forEach((col) => {
-        console.log(`    - ${col.name} (${col.id}) ${col.isDefault ? '[DEFAULT]' : ''}`);
-      });
-    });
-  } catch (error) {
-    console.error('Error reading collections:', error);
+    const { data: collections, error: colErr } = await supabase
+      .from('collections')
+      .select('id, user_id, name, is_default')
+      .eq('user_id', userId);
+    if (colErr) throw colErr;
+    // eslint-disable-next-line no-console
+    console.log('Total collections:', collections?.length || 0);
+    // eslint-disable-next-line no-console, max-len
+    collections?.forEach((c) => console.log(` - ${c.name} (${c.id}) ${c.is_default ? '[DEFAULT]' : ''}`));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Error reading collections from Supabase:', e);
   }
 
+  // eslint-disable-next-line no-console
   console.log('=== END DEBUG ===');
 }
 
-// Fix userId mismatches by updating all cards to use the current user's ID
 export async function fixUserIdMismatch() {
-  console.log('=== FIXING USER ID MISMATCH ===');
-
-  // Get current user ID from localStorage
-  const userStr = localStorage.getItem('user');
-  if (!userStr) {
-    console.error('No user found in localStorage');
-    return;
-  }
-
-  try {
-    const user = JSON.parse(userStr);
-    const currentUserId = user.id;
-    console.log('Current user ID:', currentUserId);
-
-    // Update all cards to use current user ID
-    const allCards = await db.cards.toArray();
-    let updatedCount = 0;
-
-    for (const card of allCards) {
-      if (card.userId !== currentUserId) {
-        console.log(`Updating card ${card.id} from userId ${card.userId} to ${currentUserId}`);
-        await db.cards.update(card.id, { userId: currentUserId });
-        updatedCount++;
-      }
-    }
-
-    console.log(`Updated ${updatedCount} cards`);
-
-    // Also ensure all collections use current user ID
-    const allCollections = await collectionsDb.collections.toArray();
-    let collectionsUpdated = 0;
-
-    for (const collection of allCollections) {
-      if (collection.userId !== currentUserId) {
-        console.log(`Updating collection ${collection.id} from userId ${collection.userId} to ${currentUserId}`);
-        await collectionsDb.collections.update(collection.id, { userId: currentUserId });
-        collectionsUpdated++;
-      }
-    }
-
-    console.log(`Updated ${collectionsUpdated} collections`);
-    console.log('=== FIX COMPLETE - Please refresh the page ===');
-  } catch (error) {
-    console.error('Error fixing user ID mismatch:', error);
-  }
+  // eslint-disable-next-line no-console
+  console.log('This operation is not applicable with Supabase backend.');
 }
 
-// Make it available globally for debugging
 (window as any).debugDatabase = debugDatabase;
 (window as any).fixUserIdMismatch = fixUserIdMismatch;
