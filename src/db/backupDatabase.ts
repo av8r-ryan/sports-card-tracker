@@ -45,8 +45,8 @@ export const backupDatabase = {
         type,
         data: backup,
         size_bytes: sizeInBytes,
-        created_at: backup.timestamp
-      }
+        created_at: backup.timestamp,
+      },
     ]);
 
     if (error) throw error;
@@ -74,22 +74,25 @@ export const backupDatabase = {
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
     if (error) return [];
-    return (data || []).map((row) => ({
+    type BackupRow = {
+      id: string;
+      created_at: string;
+      type: 'auto' | 'manual';
+      data: BackupData;
+      size_bytes: number;
+    };
+    return (data || []).map((row: BackupRow) => ({
       id: row.id as string,
       timestamp: row.created_at as string,
       backup: row.data as BackupData,
       type: row.type as 'auto' | 'manual',
-      sizeInMB: ((row.size_bytes as number) || 0) / (1024 * 1024)
+      sizeInMB: ((row.size_bytes as number) || 0) / (1024 * 1024),
     }));
   },
 
   async clearAutoBackup(): Promise<void> {
     const userId = getCurrentUserId();
-    const { error } = await supabase
-      .from('backups')
-      .delete()
-      .eq('user_id', userId)
-      .eq('type', 'auto');
+    const { error } = await supabase.from('backups').delete().eq('user_id', userId).eq('type', 'auto');
     if (error) throw error;
   },
 
@@ -111,7 +114,7 @@ export const backupDatabase = {
     const manualBackups = rows.filter((r) => r.type === 'manual').length;
     const totalSizeMB = rows.reduce((sum, r) => sum + r.sizeInMB, 0);
     return { totalBackups, autoBackups, manualBackups, totalSizeMB };
-  }
+  },
 };
 
 // Legacy export retained for compatibility

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 import { supabase } from '../lib/supabase';
 import { User } from '../types';
@@ -125,13 +126,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
       }
 
-      supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, newSession: Session | null) => {
         if (newSession?.user) {
           const profile = await ensureUserProfile(newSession.user.id, newSession.user.email || '');
           dispatch({
             type: 'LOGIN_SUCCESS',
             payload: {
-              user: { id: profile.id, username: profile.username, email: profile.email || '', role: profile.role as any },
+              user: {
+                id: profile.id,
+                username: profile.username,
+                email: profile.email || '',
+                role: profile.role as any,
+              },
               token: newSession.access_token,
             },
           });
@@ -155,7 +161,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: {
-          user: { id: profile.id, username: profile.username, email: profile.email || email, role: profile.role as any },
+          user: {
+            id: profile.id,
+            username: profile.username,
+            email: profile.email || email,
+            role: profile.role as any,
+          },
           token: data.session.access_token,
         },
       });
@@ -248,7 +259,15 @@ async function ensureUserProfile(userId: string, email: string) {
   // Ensure default collection
   await supabase
     .from('collections')
-    .upsert([{ id: `default-${userId}`, user_id: userId, name: 'My Collection', description: 'Default collection', is_default: true }]);
+    .upsert([
+      {
+        id: `default-${userId}`,
+        user_id: userId,
+        name: 'My Collection',
+        description: 'Default collection',
+        is_default: true,
+      },
+    ]);
 
   return inserted!;
 }

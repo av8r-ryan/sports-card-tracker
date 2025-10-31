@@ -56,7 +56,9 @@ export async function debugDatabase() {
     // eslint-disable-next-line no-console
     console.log('Total collections:', collections?.length || 0);
     // eslint-disable-next-line no-console, max-len
-    collections?.forEach((c) => console.log(` - ${c.name} (${c.id}) ${c.is_default ? '[DEFAULT]' : ''}`));
+    collections?.forEach((c: { id: string; name: string; is_default: boolean }) =>
+      console.log(` - ${c.name} (${c.id}) ${c.is_default ? '[DEFAULT]' : ''}`)
+    );
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error('Error reading collections from Supabase:', e);
