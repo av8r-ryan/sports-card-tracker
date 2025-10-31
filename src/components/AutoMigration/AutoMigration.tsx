@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { migrateToSupabase, clearIndexedDBAfterMigration, MigrationProgress, MigrationResult } from '../db/migrationTools';
-import { supabase } from '../lib/supabase';
+import {
+  migrateToSupabase,
+  clearIndexedDBAfterMigration,
+  MigrationProgress,
+  MigrationResult,
+} from '../../db/migrationTools';
+import { supabase } from '../../lib/supabase';
 
 export const AutoMigration: React.FC = () => {
   const [status, setStatus] = useState<{ message: string; type: 'info' | 'success' | 'error' | 'warning' }>({
@@ -119,7 +124,9 @@ export const AutoMigration: React.FC = () => {
 
   return (
     <div style={{ maxWidth: '800px', margin: '50px auto', padding: '20px', background: '#f5f5f5' }}>
-      <div style={{ background: 'white', padding: '30px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+      <div
+        style={{ background: 'white', padding: '30px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}
+      >
         <h1 style={{ color: '#333' }}>🚀 Automatic Migration to Supabase</h1>
 
         <div
@@ -128,7 +135,14 @@ export const AutoMigration: React.FC = () => {
             margin: '15px 0',
             borderRadius: '4px',
             fontFamily: 'monospace',
-            background: status.type === 'info' ? '#e3f2fd' : status.type === 'success' ? '#e8f5e9' : status.type === 'error' ? '#ffebee' : '#fff3e0',
+            background:
+              status.type === 'info'
+                ? '#e3f2fd'
+                : status.type === 'success'
+                  ? '#e8f5e9'
+                  : status.type === 'error'
+                    ? '#ffebee'
+                    : '#fff3e0',
             borderLeft: `4px solid ${status.type === 'info' ? '#2196F3' : status.type === 'success' ? '#4CAF50' : status.type === 'error' ? '#f44336' : '#ff9800'}`,
           }}
         >
