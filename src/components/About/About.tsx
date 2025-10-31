@@ -54,7 +54,7 @@ const About: React.FC = () => {
         id: '1',
         name: 'Sookie Wentzel',
         role: 'Founder & Card Collector',
-        bio: 'A passionate 12-year-old card collector who founded CardFlex™ to revolutionize how collectors track and manage their sports card collections. Sookie brings fresh perspective and genuine love for the hobby.',
+        bio: 'A passionate 14-year-old card collector who founded CardFlex™ to revolutionize how collectors track and manage their sports card collections. Sookie brings fresh perspective and genuine love for the hobby.',
         avatar: '👦',
         skills: ['Card Collecting', 'Innovation', 'Leadership', 'Vision'],
         social: {
@@ -77,8 +77,12 @@ const About: React.FC = () => {
       {
         id: '3',
         name: 'Dragon the Mascot',
-        role: 'Official Mascot & Good Boy',
-        bio: 'Our beloved dog mascot who brings joy, loyalty, and endless enthusiasm to the CardFlex™ team. Dragon represents the fun and community spirit of card collecting.',
+        role: 'Official Mascot & Certified Very-Bestest Good Girl',
+        bio: `Dragon is not your run-of-the-mill canine. Rumors insist she's at least 27% mythical dragon, 14% marshmallow fluff, and 100% powered by giggles and treats. Instead of breathing fire, she unleashes warm snuggles and the occasional sneeze that may or may not contain sparkles. Scholars are still investigating.
+
+Brave yet squishy, Dragon guards the CardFlex™ realm with noble tail wags and a bark that sounds suspiciously like it's saying "snacks." She's known to track down rare trading cards with her enchanted snoot, guiding collectors on daring quests across living rooms and office hallways.
+
+Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartbeat of our card-collecting community, reminding everyone that this hobby works best with imagination, friendship, and a wonderfully wiggly Good Girl by your side.`,
         avatar: '🐕',
         skills: ['Morale Boosting', 'Team Spirit', 'Loyalty', 'Cuteness'],
         social: {
