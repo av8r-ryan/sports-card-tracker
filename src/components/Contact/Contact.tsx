@@ -320,8 +320,8 @@ const Contact: React.FC = () => {
       icon: '📧',
       title: 'Email Support',
       description: 'Get help via email within 24 hours',
-      contact: 'support@collectorsplaybook.com',
-      action: () => window.open('mailto:support@collectorsplaybook.com'),
+      contact: 'sookie@zylt.ai',
+      action: () => window.open('mailto:sookie@zylt.ai'),
     },
     {
       icon: '💬',
@@ -342,7 +342,9 @@ const Contact: React.FC = () => {
       title: 'Help Center',
       description: 'Browse our comprehensive guides',
       contact: 'Self-service resources',
-      action: () => logInfo('Contact', 'Help center clicked'),
+      action: () => {
+        window.location.href = '/docs';
+      },
     },
   ];
 

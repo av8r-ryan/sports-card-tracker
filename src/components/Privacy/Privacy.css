@@ -1,0 +1,89 @@
+.privacy-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.privacy-content {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.privacy-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.last-updated {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 30px;
+}
+
+.privacy-content section {
+  margin-bottom: 32px;
+}
+
+.privacy-content h2 {
+  font-size: 1.75rem;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.privacy-content h3 {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  margin-top: 20px;
+  color: var(--text-primary);
+}
+
+.privacy-content p {
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.privacy-content ul {
+  list-style-type: disc;
+  margin-left: 30px;
+  margin-bottom: 16px;
+}
+
+.privacy-content li {
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.contact-email {
+  font-size: 1.1rem;
+}
+
+.contact-email a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.contact-email a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .privacy-content {
+    padding: 24px;
+  }
+
+  .privacy-content h1 {
+    font-size: 2rem;
+  }
+
+  .privacy-content h2 {
+    font-size: 1.5rem;
+  }
+}

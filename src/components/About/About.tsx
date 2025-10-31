@@ -315,7 +315,7 @@ Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartb
     if (!isCarouselHovered && activeTab === 'overview') {
       const interval = setInterval(() => {
         setCurrentValuesCarouselIndex((prev) => (prev + 1) % 4);
-      }, 3000);
+      }, 2000);
       return () => clearInterval(interval);
     }
     return undefined;

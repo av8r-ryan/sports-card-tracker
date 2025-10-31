@@ -497,4 +497,4 @@ Test credentials:
 
 ---
 
-Need help? Contact api-support@sportscardtracker.com
+Need help? Contact sookie@zylt.ai

@@ -24,6 +24,8 @@ interface LayoutProps {
     | 'about'
     | 'contact'
     | 'docs'
+    | 'privacy'
+    | 'terms'
     | '404';
   onViewChange: (
     view:
@@ -40,6 +42,8 @@ interface LayoutProps {
       | 'about'
       | 'contact'
       | 'docs'
+      | 'privacy'
+      | 'terms'
       | '404'
   ) => void;
 }
@@ -143,7 +147,6 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
         <div className="header-content">
           <div className="header-left">
             <h2 className="app-title" onClick={() => onViewChange('dashboard')} style={{ cursor: 'pointer' }}>
-              <img src="/logo-smp.png" alt="App Icon" className="app-icon" />
               <span className="title-text">CardFlex™</span>
             </h2>
             {hasError && <div className="api-status error">⚠️ {state.error}</div>}
@@ -449,6 +452,21 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
       <footer className="footer">
         <div className="footer-content">
           <p>&copy; 2025 Sookie Wentzel.</p>
+          <div className="footer-links">
+            <button
+              className="footer-link"
+              onClick={() => onViewChange('privacy')}
+            >
+              Privacy Policy
+            </button>
+            <span className="footer-separator">|</span>
+            <button
+              className="footer-link"
+              onClick={() => onViewChange('terms')}
+            >
+              Terms of Service
+            </button>
+          </div>
         </div>
       </footer>
       {/* Performance monitor overlay */}

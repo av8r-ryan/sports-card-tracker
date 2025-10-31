@@ -23,6 +23,8 @@ import Docs from './components/Docs/Docs';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Layout from './components/Layout/Layout';
 import NotFound from './components/NotFound/NotFound';
+import Privacy from './components/Privacy/Privacy';
+import Terms from './components/Terms/Terms';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CardProvider, useCards } from './context/DexieCardContext'; // Use Dexie context
 import { ThemeProvider } from './context/ThemeContext';
@@ -53,6 +55,8 @@ type View =
   | 'about'
   | 'contact'
   | 'docs'
+  | 'privacy'
+  | 'terms'
   | '404';
 type FormType = 'classic' | 'enhanced' | 'photo';
 
@@ -148,6 +152,8 @@ const AppRoutes: React.FC = () => {
       about: '/about',
       contact: '/contact',
       docs: '/docs',
+      privacy: '/privacy',
+      terms: '/terms',
       '404': '/404',
     };
 
@@ -313,6 +319,10 @@ const AppRoutes: React.FC = () => {
         return <Contact />;
       case 'docs':
         return <Docs />;
+      case 'privacy':
+        return <Privacy />;
+      case 'terms':
+        return <Terms />;
       case '404':
         return <NotFound onNavigateHome={() => setCurrentView('dashboard')} />;
       default:
