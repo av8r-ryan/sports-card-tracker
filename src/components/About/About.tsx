@@ -157,7 +157,7 @@ Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartb
     () => [
       {
         id: '0',
-        year: '2012',
+        year: '2011',
         title: 'Founder is Born 👶',
         description: 'The journey begins! Setup for success from day one.',
         type: 'milestone',
@@ -165,15 +165,15 @@ Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartb
       },
       {
         id: '1',
-        year: '2024',
-        title: 'Sports Card Tracker Launch',
+        year: 'Q3 2025',
+        title: 'Card Flex Launch',
         description: 'Launched the first version of our comprehensive sports card tracking platform',
         type: 'launch',
         icon: '🚀',
       },
       {
         id: '2',
-        year: '2024',
+        year: 'Q4 2025',
         title: 'AI Integration',
         description: 'Integrated AI-powered pricing suggestions and market analysis',
         type: 'achievement',
@@ -181,22 +181,6 @@ Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartb
       },
       {
         id: '3',
-        year: '2024',
-        title: 'eBay Partnership',
-        description: 'Established partnership with eBay for seamless listing integration',
-        type: 'partnership',
-        icon: '🤝',
-      },
-      {
-        id: '4',
-        year: '2024',
-        title: '7+ Users',
-        description: 'Reached milestone of 7+ active users on the platform',
-        type: 'milestone',
-        icon: '👥',
-      },
-      {
-        id: '5',
         year: '2026',
         title: 'Mobile App Release - Coming Soon 🎉',
         description: 'Slated for 2026 launch - Mobile applications for iOS and Android in development',

@@ -426,7 +426,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
 
       <footer className="footer">
         <div className="footer-content">
-          <p>&copy; 2025 Collectors Playbook.</p>
+          <p>&copy; 2025 Sookie Wentzel.</p>
         </div>
       </footer>
       {/* Performance monitor overlay */}
