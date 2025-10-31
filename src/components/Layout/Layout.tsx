@@ -51,6 +51,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showExportSubmenu, setShowExportSubmenu] = useState(false);
+  const [showCardsMenu, setShowCardsMenu] = useState(false);
 
   // Debug logging for submenu state
   console.log('Export submenu state:', showExportSubmenu);
@@ -360,25 +361,46 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
             Collections
           </button>
 
-          <button
-            className={`nav-item ${currentView === 'inventory' ? 'active' : ''}`}
-            onClick={() => {
-              onViewChange('inventory');
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Inventory
-          </button>
-
-          <button
-            className={`nav-item ${currentView === 'add-card' ? 'active' : ''}`}
-            onClick={() => {
-              onViewChange('add-card');
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            Add Card
-          </button>
+          <div className="nav-item-dropdown">
+            <button
+              className={`nav-item ${currentView === 'inventory' || currentView === 'add-card' ? 'active' : ''}`}
+              onClick={() => setShowCardsMenu(!showCardsMenu)}
+              onBlur={() => setTimeout(() => setShowCardsMenu(false), 200)}
+            >
+              Cards
+              <svg
+                className={`dropdown-arrow ${showCardsMenu ? 'rotated' : ''}`}
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="currentColor"
+              >
+                <path d="M6 8L2 4h8L6 8z" />
+              </svg>
+            </button>
+            {showCardsMenu && (
+              <div className="nav-dropdown">
+                <button
+                  onClick={() => {
+                    onViewChange('inventory');
+                    setIsMobileMenuOpen(false);
+                    setShowCardsMenu(false);
+                  }}
+                >
+                  Inventory
+                </button>
+                <button
+                  onClick={() => {
+                    onViewChange('add-card');
+                    setIsMobileMenuOpen(false);
+                    setShowCardsMenu(false);
+                  }}
+                >
+                  Add Card
+                </button>
+              </div>
+            )}
+          </div>
 
           <button
             className={`nav-item ${currentView === 'reports' ? 'active' : ''}`}

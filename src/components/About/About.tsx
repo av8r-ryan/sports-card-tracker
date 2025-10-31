@@ -46,6 +46,8 @@ const About: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState<any>(null);
   const [isValueModalOpen, setIsValueModalOpen] = useState(false);
   const [currentValueIndex, setCurrentValueIndex] = useState(0);
+  const [currentValuesCarouselIndex, setCurrentValuesCarouselIndex] = useState(0);
+  const [isCarouselHovered, setIsCarouselHovered] = useState(false);
 
   // Team data
   const teamMembers: TeamMember[] = useMemo(
@@ -308,6 +310,17 @@ Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartb
     return () => clearInterval(interval);
   }, [timelineEvents.length]);
 
+  // Auto-scroll values carousel
+  useEffect(() => {
+    if (!isCarouselHovered && activeTab === 'overview') {
+      const interval = setInterval(() => {
+        setCurrentValuesCarouselIndex((prev) => (prev + 1) % 4);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+    return undefined;
+  }, [isCarouselHovered, activeTab]);
+
   const getCategoryColor = (category: string) => {
     const colors = {
       Frontend: '#3b82f6',
@@ -392,8 +405,18 @@ Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartb
               <AnimatedWrapper animation="fadeInUp" duration={0.6} delay={0.2}>
                 <div className="values-section">
                   <h3 className="values-title">Our Values</h3>
-                  <div className="values-carousel">
-                    <div className="values-carousel-container">
+                  <div 
+                    className="values-carousel"
+                    onMouseEnter={() => setIsCarouselHovered(true)}
+                    onMouseLeave={() => setIsCarouselHovered(false)}
+                  >
+                    <div 
+                      className="values-carousel-container"
+                      style={{
+                        transform: `translateX(-${currentValuesCarouselIndex * 25}%)`,
+                        transition: 'transform 0.5s ease-in-out'
+                      }}
+                    >
                       {[
                         {
                           id: 'innovation',
@@ -716,7 +739,7 @@ Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartb
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setIsValueModalOpen(false)}
+            onClick={handleValueModalClose}
           >
             <motion.div
               className="value-modal"
@@ -725,8 +748,22 @@ Dragon isn't scary unless you fear enthusiastic kisses. She's the magical heartb
               exit={{ scale: 0.8, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button className="modal-close-btn" onClick={() => setIsValueModalOpen(false)} aria-label="Close modal">
+              <button className="modal-close-btn" onClick={handleValueModalClose} aria-label="Close modal">
                 ✕
+              </button>
+              <button 
+                className="modal-nav-btn modal-prev-btn" 
+                onClick={handleValuePrevious}
+                aria-label="Previous value"
+              >
+                ←
+              </button>
+              <button 
+                className="modal-nav-btn modal-next-btn" 
+                onClick={handleValueNext}
+                aria-label="Next value"
+              >
+                →
               </button>
               <div className="value-modal-content">
                 <div className="value-modal-icon">{selectedValue.icon}</div>
