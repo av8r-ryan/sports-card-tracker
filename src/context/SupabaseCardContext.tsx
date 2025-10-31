@@ -39,10 +39,7 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log('Loading cards from Supabase...');
         setState((prev) => ({ ...prev, loading: true }));
 
-        const { data, error } = await supabase
-          .from('cards')
-          .select('*')
-          .order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('cards').select('*').order('created_at', { ascending: false });
 
         if (error) throw error;
 
@@ -90,17 +87,14 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         team: card.team || null,
         condition: card.condition || null,
         grading_company: card.gradingCompany || null,
-        grade: card.grade || null,
-        cert_number: card.certNumber || null,
         purchase_price: card.purchasePrice || null,
         current_value: card.currentValue || null,
-        purchase_date: card.purchaseDate || null,
+        // Persist dates as ISO yyyy-mm-dd strings when available
+        purchase_date: card.purchaseDate ? new Date(card.purchaseDate).toISOString().split('T')[0] : null,
         sell_price: card.sellPrice || null,
-        sell_date: card.sellDate || null,
+        sell_date: card.sellDate ? new Date(card.sellDate).toISOString().split('T')[0] : null,
         notes: card.notes || null,
-        image_url: card.imageUrl || null,
-        image_front: card.imageFront || null,
-        image_back: card.imageBack || null,
+        // images array is not directly stored in separate columns in this context
       };
 
       const { error } = await supabase.from('cards').insert([cardData]);
@@ -132,17 +126,13 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         team: card.team || null,
         condition: card.condition || null,
         grading_company: card.gradingCompany || null,
-        grade: card.grade || null,
-        cert_number: card.certNumber || null,
         purchase_price: card.purchasePrice || null,
         current_value: card.currentValue || null,
-        purchase_date: card.purchaseDate || null,
+        purchase_date: card.purchaseDate ? new Date(card.purchaseDate).toISOString().split('T')[0] : null,
         sell_price: card.sellPrice || null,
-        sell_date: card.sellDate || null,
+        sell_date: card.sellDate ? new Date(card.sellDate).toISOString().split('T')[0] : null,
         notes: card.notes || null,
-        image_url: card.imageUrl || null,
-        image_front: card.imageFront || null,
-        image_back: card.imageBack || null,
+        // images array not mapped to individual columns here
       };
 
       const { error } = await supabase.from('cards').update(cardData).eq('id', card.id);
@@ -185,7 +175,7 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('Clearing all cards from Supabase...');
 
-      const { error} = await supabase.from('cards').delete().neq('id', '');
+      const { error } = await supabase.from('cards').delete().neq('id', '');
 
       if (error) throw error;
 
