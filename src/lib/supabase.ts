@@ -4,20 +4,70 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://dicstmwvrpyyszqxubhu.supabase.co';
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
 
+// Create a safe fallback client if env is missing so the app doesn't crash
+function createFallbackSupabase() {
+  // Minimal, no-op implementations that allow the UI to render in "offline" mode
+  const queryBuilder = {
+    select: async () => ({ data: [], error: null }),
+    maybeSingle: async () => ({ data: null, error: null }),
+    single: async () => ({ data: null, error: null }),
+    insert: async () => ({ data: null, error: new Error('Supabase not configured') }),
+    update: async () => ({ data: null, error: new Error('Supabase not configured') }),
+    delete: async () => ({ data: null, error: new Error('Supabase not configured') }),
+    eq(this: any) {
+      return this;
+    },
+    in(this: any) {
+      return this;
+    },
+    order(this: any) {
+      return this;
+    },
+    limit(this: any) {
+      return this;
+    },
+  } as const;
+
+  return {
+    auth: {
+      getSession: async () => ({ data: { session: null }, error: null }),
+      onAuthStateChange: (_event: unknown, _cb?: unknown) => ({
+        data: { subscription: { unsubscribe: () => {} } },
+        error: null,
+      }),
+      signInWithPassword: async () => ({
+        data: { user: null, session: null },
+        error: new Error('Supabase not configured'),
+      }),
+      signUp: async () => ({ data: { user: null, session: null }, error: new Error('Supabase not configured') }),
+      signOut: async () => ({ error: null }),
+    },
+    from: (_table: string) => queryBuilder,
+  } as const;
+}
+
+let supabaseClient: any;
 if (!supabaseAnonKey) {
+  // Log once and continue with fallback so production doesn't hard-crash
   console.error('⚠️  REACT_APP_SUPABASE_ANON_KEY is not set!');
   console.error('Please add it to your .env.local file');
   console.error('Get it from: https://supabase.com/dashboard/project/dicstmwvrpyyszqxubhu/settings/api');
+  supabaseClient = createFallbackSupabase();
+  if (typeof window !== 'undefined') {
+    (window as any).__SUPABASE_OFFLINE__ = true;
+  }
+} else {
+  supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+    },
+  });
 }
 
-// Create Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-});
+// Export a single supabase instance (fallback or real)
+export const supabase = supabaseClient;
 
 // Database types
 export interface Database {
