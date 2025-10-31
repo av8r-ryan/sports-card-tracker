@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { useAuth } from '../../context/AuthContext';
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { useTheme } from '../../context/ThemeContext';
 import { exportCardsAsJSON, exportCardsAsCSV } from '../../utils/exportUtils';
 import { exportCardsToPDF } from '../../utils/pdfExport';
@@ -453,17 +453,11 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onViewChange }) 
         <div className="footer-content">
           <p>&copy; 2025 Sookie Wentzel.</p>
           <div className="footer-links">
-            <button
-              className="footer-link"
-              onClick={() => onViewChange('privacy')}
-            >
+            <button className="footer-link" onClick={() => onViewChange('privacy')}>
               Privacy Policy
             </button>
             <span className="footer-separator">|</span>
-            <button
-              className="footer-link"
-              onClick={() => onViewChange('terms')}
-            >
+            <button className="footer-link" onClick={() => onViewChange('terms')}>
               Terms of Service
             </button>
           </div>

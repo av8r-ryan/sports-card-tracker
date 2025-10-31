@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { Card, CardFormData, CONDITIONS, CATEGORIES, GRADING_COMPANIES } from '../../types';
 import { logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 import AnimatedWrapper from '../Animation/AnimatedWrapper';

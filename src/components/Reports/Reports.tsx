@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState, useMemo, Suspense } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { ReportingService } from '../../services/reportingService';
 import { ReportFilter, ReportTemplate } from '../../types/reports';
 import {

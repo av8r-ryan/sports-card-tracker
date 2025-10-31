@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import React, { useState, useRef, useMemo } from 'react';
 
 import { useAuth } from '../../context/AuthContext';
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { userService } from '../../services/userService';
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import CollapsibleMenu from '../UI/CollapsibleMenu';

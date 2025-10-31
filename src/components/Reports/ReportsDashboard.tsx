@@ -14,7 +14,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { ReportingService } from '../../services/reportingService';
 import { ReportTemplate } from '../../types/reports';
 import './ReportsDashboard.css';

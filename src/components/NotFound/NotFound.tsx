@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 import { useAuth } from '../../context/AuthContext';
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { logError } from '../../utils/logger';
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import './NotFound.css';

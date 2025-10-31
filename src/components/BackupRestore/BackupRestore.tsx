@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 
 import { useAuth } from '../../context/AuthContext';
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import {
   downloadBackup,
   loadBackupFile,

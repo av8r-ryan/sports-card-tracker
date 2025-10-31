@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { cardDatabase } from '../../db/simpleDatabase';
 import './CardDebug.css';
 

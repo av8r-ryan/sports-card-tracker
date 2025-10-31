@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState, useMemo, memo, useCallback, useRef, useEffect } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { collectionsDatabase } from '../../db/collectionsDatabase';
 import useVirtualScroll from '../../hooks/useVirtualScroll';
 import { Card, FilterOptions, SortOption } from '../../types';

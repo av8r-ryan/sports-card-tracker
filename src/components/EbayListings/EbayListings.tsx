@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { Card } from '../../types';
 import { instantExportAllUnsoldCards } from '../../utils/instantEbayExport';
 import { quickExportAllUnsoldCards, generateExportSummary } from '../../utils/quickEbayExport';

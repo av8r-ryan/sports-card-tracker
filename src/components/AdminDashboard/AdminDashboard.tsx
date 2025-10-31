@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
 
 import { useAuth } from '../../context/AuthContext';
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { backupDatabase } from '../../db/backupDatabase';
 import { cardDatabase } from '../../db/simpleDatabase';
 import { getAutoBackups } from '../../utils/backupRestore';

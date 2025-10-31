@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { logInfo, logDebug } from '../../utils/logger';
 import AnimatedWrapper from '../Animation/AnimatedWrapper';
 import Carousel, { CarouselItem } from '../Carousel/Carousel';

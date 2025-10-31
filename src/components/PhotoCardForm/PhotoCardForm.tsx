@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { cardDetectionService } from '../../services/cardDetectionService';
 import { ExtractedCardData } from '../../types/detection';
 import { Card } from '../../types/index';

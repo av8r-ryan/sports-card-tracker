@@ -21,7 +21,7 @@ import {
   Treemap,
 } from 'recharts';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { Card } from '../../types';
 import './InvestmentInsightsReport.css';
 

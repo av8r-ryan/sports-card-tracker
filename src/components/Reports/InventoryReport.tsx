@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { exportToPDF } from '../../services/reportService';
 import { Card } from '../../types';
 import './InventoryReport.css';

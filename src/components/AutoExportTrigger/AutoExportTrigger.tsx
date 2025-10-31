@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 
 const AutoExportTrigger: React.FC = () => {
   const { state } = useCards();
