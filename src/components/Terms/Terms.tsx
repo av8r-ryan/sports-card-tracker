@@ -156,7 +156,7 @@ const Terms: React.FC = () => {
           <h2>14. Contact Information</h2>
           <p>If you have any questions about these Terms of Service, please contact us at:</p>
           <p className="contact-email">
-            <a href="mailto:sookie@zylt.ai">sookie@zylt.ai</a>
+            <a href="mailto:Sookie@Zylt.AI">Sookie@Zylt.AI</a>
           </p>
         </section>
       </div>

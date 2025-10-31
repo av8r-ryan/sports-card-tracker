@@ -320,8 +320,8 @@ const Contact: React.FC = () => {
       icon: '📧',
       title: 'Email Support',
       description: 'Get help via email within 24 hours',
-      contact: 'sookie@zylt.ai',
-      action: () => window.open('mailto:sookie@zylt.ai'),
+      contact: 'Sookie@Zylt.AI',
+      action: () => window.open('mailto:Sookie@Zylt.AI'),
     },
     {
       icon: '💬',

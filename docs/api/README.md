@@ -497,4 +497,4 @@ Test credentials:
 
 ---
 
-Need help? Contact sookie@zylt.ai
+Need help? Contact Sookie@Zylt.AI

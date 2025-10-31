@@ -123,7 +123,7 @@ const Privacy: React.FC = () => {
           <h2>10. Contact Us</h2>
           <p>If you have any questions about this privacy policy, please contact us at:</p>
           <p className="contact-email">
-            <a href="mailto:sookie@zylt.ai">sookie@zylt.ai</a>
+            <a href="mailto:Sookie@Zylt.AI">Sookie@Zylt.AI</a>
           </p>
         </section>
       </div>

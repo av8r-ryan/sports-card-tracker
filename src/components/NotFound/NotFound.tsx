@@ -355,7 +355,7 @@ const NotFound: React.FC<NotFoundProps> = ({ onNavigateHome }) => {
           <div className="not-found-help">
             <p>
               Still can't find what you're looking for?
-              <a href="mailto:sookie@zylt.ai" className="help-link">
+              <a href="mailto:Sookie@Zylt.AI" className="help-link">
                 Contact Support
               </a>
             </p>
