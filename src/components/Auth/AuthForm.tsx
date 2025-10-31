@@ -71,13 +71,32 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
     }
   };
 
+  const simpleMode =
+    process.env.REACT_APP_SIMPLE_AUTH === 'true' ||
+    (typeof window !== 'undefined' && window.location.search.includes('simple=1'));
+
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    if (simpleMode) {
+      return (
+        <div className="auth-container" style={{ background: '#0f172a' }}>
+          {children}
+        </div>
+      );
+    }
+    return (
+      <ParticleBackground
+        particleCount={60}
+        colors={['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6']}
+        speed={0.5}
+        className="auth-container"
+      >
+        {children}
+      </ParticleBackground>
+    );
+  };
+
   return (
-    <ParticleBackground
-      particleCount={60}
-      colors={['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6']}
-      speed={0.5}
-      className="auth-container"
-    >
+    <Wrapper>
       <AnimatedWrapper animation="fadeInUp" duration={0.8} delay={0.2}>
         <div className="auth-card card-glass">
           <motion.div
@@ -264,7 +283,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
           </motion.div>
         </div>
       </AnimatedWrapper>
-    </ParticleBackground>
+    </Wrapper>
   );
 };
 
