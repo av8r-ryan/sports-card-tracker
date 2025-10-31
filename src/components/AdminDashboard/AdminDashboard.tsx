@@ -31,7 +31,7 @@ interface UserStats {
 }
 
 interface BackupInfo {
-  id?: number;
+  id?: string;
   timestamp: string;
   type: 'auto' | 'manual';
   sizeInMB: number;
