@@ -113,16 +113,28 @@ export const supabaseCardDatabase = {
     }
   },
 
+  // ADMIN: Get all cards across all users
+  async getAllCardsAdmin(): Promise<Card[]> {
+    try {
+      const { data, error } = await supabase.from('cards').select('*').order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('[getAllCardsAdmin] Supabase error:', error);
+        throw error;
+      }
+
+      return (data || []).map(dbToCard);
+    } catch (error) {
+      console.error('[getAllCardsAdmin] Error:', error);
+      throw error;
+    }
+  },
+
   // Get card by ID
   async getCardById(id: string): Promise<Card | null> {
     try {
       const userId = getCurrentUserId();
-      const { data, error } = await supabase
-        .from('cards')
-        .select('*')
-        .eq('id', id)
-        .eq('user_id', userId)
-        .single();
+      const { data, error } = await supabase.from('cards').select('*').eq('id', id).eq('user_id', userId).single();
 
       if (error) {
         if (error.code === 'PGRST116') {
@@ -280,6 +292,63 @@ export const supabaseCardDatabase = {
       return (data || []).map(dbToCard);
     } catch (error) {
       console.error('[searchCards] Error:', error);
+      throw error;
+    }
+  },
+
+  // ADMIN: Aggregate user statistics from all cards
+  async getUserStatistics(): Promise<
+    Array<{ userId: string; username: string; cardCount: number; totalValue: number; avgValue: number }>
+  > {
+    try {
+      // Fetch all cards (admin scope)
+      const cards = await this.getAllCardsAdmin();
+
+      // Group by userId and compute aggregates
+      const byUser = new Map<string, { userId: string; username: string; cardCount: number; totalValue: number }>();
+
+      for (const card of cards) {
+        const key = card.userId || 'unknown';
+        const current = byUser.get(key) || {
+          userId: key,
+          // Best-effort username: try to read from local user cache if available
+          username: (() => {
+            try {
+              const usersStr = localStorage.getItem('sports-card-tracker-users');
+              if (usersStr) {
+                const users = JSON.parse(usersStr) as Array<{ id: string; username?: string; email?: string }>;
+                const found = users.find((u) => u.id === key);
+                if (found && found.username) return found.username;
+                if (found && found.email) return found.email;
+              }
+            } catch (e) {
+              // ignore cache parse errors
+            }
+            return key;
+          })(),
+          cardCount: 0,
+          totalValue: 0,
+        };
+
+        current.cardCount += 1;
+        current.totalValue += card.currentValue || 0;
+        byUser.set(key, current);
+      }
+
+      // Build result with averages
+      const result = Array.from(byUser.values()).map((u) => ({
+        userId: u.userId,
+        username: u.username,
+        cardCount: u.cardCount,
+        totalValue: u.totalValue,
+        avgValue: u.cardCount > 0 ? u.totalValue / u.cardCount : 0,
+      }));
+
+      // Sort by total value descending for nicer display
+      result.sort((a, b) => b.totalValue - a.totalValue);
+      return result;
+    } catch (error) {
+      console.error('[getUserStatistics] Error:', error);
       throw error;
     }
   },
