@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useCards } from '../../context/DexieCardContext';
+import { useCards } from '../../context/SupabaseCardContext';
 import { addSampleDataToCollection } from '../../utils/sampleData';
 import './DevTools.css';
 
@@ -28,10 +28,18 @@ const DevTools: React.FC = () => {
     }
   };
 
-  const handleClearData = () => {
+  const handleClearData = async () => {
     if (window.confirm('Are you sure you want to clear all cards? This cannot be undone.')) {
-      clearAllCards();
-      setMessage('All cards cleared');
+      setIsLoading(true);
+      try {
+        await clearAllCards();
+        setMessage('All cards cleared');
+      } catch (error) {
+        setMessage('Error clearing cards');
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

@@ -27,7 +27,7 @@ import Privacy from './components/Privacy/Privacy';
 import Terms from './components/Terms/Terms';
 import { AutoMigration } from './components/AutoMigration/AutoMigration';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { CardProvider, useCards } from './context/DexieCardContext'; // Use Dexie context
+import { CardProvider, useCards } from './context/SupabaseCardContext'; // Use Supabase context
 import { ThemeProvider } from './context/ThemeContext';
 import { useApi } from './hooks/useApi';
 import { Card } from './types';
