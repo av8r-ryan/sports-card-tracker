@@ -1,11 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration
-const supabaseUrl = 'https://dicstmwvrpyyszqxubhu.supabase.co';
+// Supabase configuration from environment variables
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://dicstmwvrpyyszqxubhu.supabase.co';
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
 
 if (!supabaseAnonKey) {
-  console.warn('REACT_APP_SUPABASE_ANON_KEY is not set. Please add it to your .env file.');
+  console.error('⚠️  REACT_APP_SUPABASE_ANON_KEY is not set!');
+  console.error('Please add it to your .env.local file');
+  console.error('Get it from: https://supabase.com/dashboard/project/dicstmwvrpyyszqxubhu/settings/api');
 }
 
 // Create Supabase client

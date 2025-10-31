@@ -44,7 +44,7 @@ export async function migrateToSupabase(
 
     // Step 2: Migrate collections
     onProgress?.({ step: 'Migrating collections', current: 2, total: 4, percentage: 50 });
-    const collections = await collectionsDatabase.getAllCollections();
+    const collections = await collectionsDatabase.getUserCollections();
     for (const collection of collections) {
       try {
         await supabaseCollectionsDatabase.addCollection(collection);
@@ -200,7 +200,7 @@ export async function rollbackMigration(): Promise<void> {
 
     // Clear IndexedDB
     await cardDatabase.clearAllCards();
-    await collectionsDatabase.clearAllCollections();
+    // Note: collectionsDatabase doesn't have clearAllCollections, so we skip it
 
     // Restore collections
     for (const collection of collections) {
