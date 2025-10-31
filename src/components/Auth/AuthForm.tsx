@@ -86,7 +86,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <h1 className="text-gradient">Collectors Playbook</h1>
+            <h1 className="text-gradient">Card Flex</h1>
             <h2>{mode === 'login' ? 'Sign In' : 'Create Account'}</h2>
           </motion.div>
 

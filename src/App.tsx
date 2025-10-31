@@ -25,6 +25,7 @@ import Layout from './components/Layout/Layout';
 import NotFound from './components/NotFound/NotFound';
 import Privacy from './components/Privacy/Privacy';
 import Terms from './components/Terms/Terms';
+import { AutoMigration } from './components/AutoMigration/AutoMigration';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CardProvider, useCards } from './context/DexieCardContext'; // Use Dexie context
 import { ThemeProvider } from './context/ThemeContext';
@@ -368,6 +369,7 @@ function App() {
           <AuthProvider>
             <CardProvider>
               <Routes>
+                <Route path="/migrate" element={<AutoMigration />} />
                 <Route path="/login" element={<AppRoutes />} />
                 <Route path="/register" element={<AppRoutes />} />
                 <Route path="/" element={<AppRoutes />} />

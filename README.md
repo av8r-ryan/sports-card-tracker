@@ -380,24 +380,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 📖 [Documentation](docs/README.md)
 - ❓ [FAQ](docs/guides/faq.md)
-- 🐛 [Issue Tracker](https://github.com/Collectors-Playbook/sports-card-tracker/issues)
-- 💬 [Discussions](https://github.com/Collectors-Playbook/sports-card-tracker/discussions)
 - 📧 Email: Sookie@Zylt.AI
-
-<!-- ### Community
-
-- [Discord Server](https://discord.gg/sportscards)
-- [Reddit Community](https://reddit.com/r/sportscardtracker)
-- [Twitter Updates](https://twitter.com/sportscardtrack) -->
 
 ---
 
 <div align="center">
 
-**[Live Demo](https://sportscardtracker.com)** | **[Documentation](docs/README.md)** | **[Report Bug](https://github.com/Collectors-Playbook/sports-card-tracker/issues)** | **[Request Feature](https://github.com/Collectors-Playbook/sports-card-tracker/issues)**
-
-Made with ❤️ by collectors, for collectors
-
-**Version**: 2.5.0 | **Last Updated**: January 2025
+**Version**: 0.1 | **Last Updated**: October 2025
 
 </div>
