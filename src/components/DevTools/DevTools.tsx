@@ -10,8 +10,13 @@ const DevTools: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [isMinimized, setIsMinimized] = useState(false);
   const isDevelopment = process.env.NODE_ENV === 'development';
+  const isEnabledByEnv = process.env.REACT_APP_ENABLE_DEVTOOLS === 'true';
+  const isEnabledByQuery = typeof window !== 'undefined' && window.location.search.includes('devtools=1');
+  const isEnabledByStorage = typeof window !== 'undefined' && localStorage.getItem('enable-devtools') === 'true';
+  const isOfflineFallback = typeof window !== 'undefined' && (window as any).__SUPABASE_OFFLINE__ === true;
+  const enabled = isDevelopment || isEnabledByEnv || isEnabledByQuery || isEnabledByStorage || isOfflineFallback;
 
-  if (!isDevelopment) return null;
+  if (!enabled) return null;
 
   const handleAddSampleData = async () => {
     setIsLoading(true);
