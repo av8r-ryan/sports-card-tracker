@@ -169,7 +169,7 @@ A: Use the Enhanced Form and fill in the grading section.
 - 📖 Read the full [User Guide](../README.md)
 - 🔧 Check [Troubleshooting](troubleshooting.md)
 - 💬 Join our [Community Forum](https://community.sportscardtracker.com)
-- 📧 Email: support@sportscardtracker.com
+- 📧 Email: Sookie@Zylt.AI
 
 ---
 

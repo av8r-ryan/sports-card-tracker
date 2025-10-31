@@ -338,4 +338,4 @@ Annualized = ((1 + ROI)^(365/Days Held) - 1) × 100
 
 ---
 
-Questions? Visit our [FAQ](../guides/faq.md) or contact support@sportscardtracker.com
+Questions? Visit our [FAQ](../guides/faq.md) or contact Sookie@Zylt.AI

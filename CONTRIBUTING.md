@@ -372,7 +372,7 @@ Contributors are recognized in:
 
 - **Discord**: Join our development channel
 - **GitHub Discussions**: Ask questions
-- **Email**: dev@sportscardtracker.com
+- **Email**: Sookie@Zylt.AI
 
 ## 📋 Checklist for Contributors
 

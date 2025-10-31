@@ -207,7 +207,7 @@ Premium features will include a 30-day free trial.
 1. Check this FAQ
 2. Read the [documentation](../README.md)
 3. Visit [troubleshooting](troubleshooting.md)
-4. Email support@sportscardtracker.com
+4. Email Sookie@Zylt.AI
 
 ### What's the response time?
 - Email support: 24-48 hours
@@ -238,7 +238,7 @@ Email support with:
 - Blockchain authentication
 
 ### Can I beta test features?
-Yes! Join our beta program by emailing beta@sportscardtracker.com
+Yes! Join our beta program by emailing Sookie@Zylt.AI
 
 ### How often are updates released?
 - Bug fixes: As needed
@@ -264,4 +264,4 @@ Yes, but each requires a unique email address.
 
 ---
 
-Still have questions? Contact support@sportscardtracker.com
+Still have questions? Contact Sookie@Zylt.AI

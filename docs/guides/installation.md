@@ -258,7 +258,7 @@ If you encounter issues:
 1. Check the [Troubleshooting Guide](troubleshooting.md)
 2. Search [GitHub Issues](https://github.com/yourusername/sports-card-tracker/issues)
 3. Ask in our [Community Forum](https://community.sportscardtracker.com)
-4. Contact support at support@sportscardtracker.com
+4. Contact support at Sookie@Zylt.AI
 
 ---
 

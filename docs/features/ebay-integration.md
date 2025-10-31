@@ -421,4 +421,4 @@ Track these KPIs:
 
 ---
 
-Need help? Contact support@sportscardtracker.com or visit our [eBay Integration FAQ](../guides/ebay-faq.md)
+Need help? Contact Sookie@Zylt.AI or visit our [eBay Integration FAQ](../guides/ebay-faq.md)

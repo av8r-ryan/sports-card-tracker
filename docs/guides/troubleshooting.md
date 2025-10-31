@@ -315,7 +315,7 @@ Contact support if:
 - [Video Tutorials](https://youtube.com/sportscardtracker)
 
 ### Direct Support
-- Email: support@sportscardtracker.com
+- Email: Sookie@Zylt.AI
 - Response time: 24-48 hours
 - Include ticket number in replies
 
@@ -335,4 +335,4 @@ If you suspect security issues:
 
 ---
 
-Still need help? Email support@sportscardtracker.com with your issue details.
+Still need help? Email Sookie@Zylt.AI with your issue details.

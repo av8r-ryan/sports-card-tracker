@@ -189,7 +189,7 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 - **Documentation**: This comprehensive guide
 - **Issues**: [GitHub Issues](https://github.com/your-username/sports-card-tracker/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/your-username/sports-card-tracker/discussions)
-- **Email**: support@sportscardtracker.com
+- **Email**: Sookie@Zylt.AI
 
 ## 🔄 Changelog
 
