@@ -1,10 +1,8 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
-import { collectionsDatabase } from '../db/collectionsDatabase';
-import { localAuthService } from '../services/localAuthService';
+import { supabase } from '../lib/supabase';
 import { User } from '../types';
 import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
-import { seedDataManager } from '../utils/seedDataManager';
 
 interface AuthState {
   user: User | null;
@@ -109,27 +107,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    // Check if user is stored in localStorage on app start
-    logDebug('AuthContext', 'Checking for existing session on app start');
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
+    // Initialize from Supabase session and subscribe to auth state changes
+    (async () => {
+      logDebug('AuthContext', 'Initializing Supabase auth session');
+      const { data: sessionData } = await supabase.auth.getSession();
+      const session = sessionData.session;
 
-    if (storedUser && storedToken) {
-      try {
-        logDebug('AuthContext', 'Found existing session data', { hasUser: !!storedUser, hasToken: !!storedToken });
-        const user = JSON.parse(storedUser);
-        dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token: storedToken } });
-        logInfo('AuthContext', 'Session restored successfully', { userId: user.id, username: user.username });
-      } catch (error) {
-        logError('AuthContext', 'Failed to parse stored user data', error as Error, { storedUser, storedToken });
-        // Clear invalid stored data
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        logWarn('AuthContext', 'Cleared invalid session data');
+      if (session?.user) {
+        logInfo('AuthContext', 'Supabase session found', { userId: session.user.id });
+        const profile = await ensureUserProfile(session.user.id, session.user.email || '');
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: {
+            user: { id: profile.id, username: profile.username, email: profile.email || '', role: profile.role as any },
+            token: session.access_token,
+          },
+        });
       }
-    } else {
-      logDebug('AuthContext', 'No existing session found');
-    }
+
+      supabase.auth.onAuthStateChange(async (_event, newSession) => {
+        if (newSession?.user) {
+          const profile = await ensureUserProfile(newSession.user.id, newSession.user.email || '');
+          dispatch({
+            type: 'LOGIN_SUCCESS',
+            payload: {
+              user: { id: profile.id, username: profile.username, email: profile.email || '', role: profile.role as any },
+              token: newSession.access_token,
+            },
+          });
+        } else {
+          dispatch({ type: 'LOGOUT' });
+        }
+      });
+    })();
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
@@ -137,32 +147,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
 
     try {
-      // Use local authentication
-      logDebug('AuthContext', 'Authenticating user with local auth service');
-      const { user, token } = await localAuthService.login(email, password);
-      logDebug('AuthContext', 'Authentication result received', { userFound: !!user, userId: user?.id });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error || !data.session || !data.user) throw error || new Error('Login failed');
+
+      const profile = await ensureUserProfile(data.user.id, data.user.email || email);
 
       dispatch({
         type: 'LOGIN_SUCCESS',
-        payload: { user, token },
+        payload: {
+          user: { id: profile.id, username: profile.username, email: profile.email || email, role: profile.role as any },
+          token: data.session.access_token,
+        },
       });
-
-      logInfo('AuthContext', 'Login successful, initializing user collections', { userId: user.id });
-
-      // Initialize user collections (handles errors internally)
-      await collectionsDatabase.initializeUserCollections(user.id);
-      logInfo('AuthContext', 'User collections initialization completed', { userId: user.id });
-
-      // Import seed data if needed
-      try {
-        const importedCount = await seedDataManager.importSeedData(user.id);
-        if (importedCount > 0) {
-          logInfo('AuthContext', 'Seed data imported successfully', { importedCount, userId: user.id });
-        }
-      } catch (seedError) {
-        logError('AuthContext', 'Failed to import seed data', seedError as Error, { userId: user.id });
-        // Don't fail login if seed import fails
-      }
     } catch (error) {
       logError('AuthContext', 'Login process failed', error as Error, { email });
       dispatch({
@@ -178,31 +174,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
 
     try {
-      // Use local registration
-      logDebug('AuthContext', 'Registering user with local auth service');
-      const { user, token } = await localAuthService.register(username, email, password);
-      logDebug('AuthContext', 'Registration result received', { userFound: !!user, userId: user?.id });
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error || !data.user) throw error || new Error('Registration failed');
 
-      dispatch({
-        type: 'LOGIN_SUCCESS',
-        payload: { user, token },
-      });
+      // Create profile row
+      await upsertUserProfile({ id: data.user.id, username, email, role: 'user' });
 
-      logInfo('AuthContext', 'Registration successful, initializing user collections', { userId: user.id });
-
-      // Initialize user collections (handles errors internally)
-      await collectionsDatabase.initializeUserCollections(user.id);
-      logInfo('AuthContext', 'User collections initialization completed for new user', { userId: user.id });
-
-      // Import seed data for new user
-      try {
-        const importedCount = await seedDataManager.importSeedData(user.id);
-        if (importedCount > 0) {
-          logInfo('AuthContext', 'Seed data imported for new user', { importedCount, userId: user.id });
-        }
-      } catch (seedError) {
-        logError('AuthContext', 'Failed to import seed data for new user', seedError as Error);
-        // Don't fail registration if seed import fails
+      // Optional immediate sign-in (if email confirmations disabled)
+      const { data: signin } = await supabase.auth.signInWithPassword({ email, password });
+      if (signin?.session) {
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: {
+            user: { id: data.user.id, username, email, role: 'user' },
+            token: signin.session.access_token,
+          },
+        });
+      } else {
+        // If email confirmation is required, surface a friendly message
+        dispatch({ type: 'LOGIN_FAILURE', payload: 'Please check your email to confirm your account.' });
       }
     } catch (error) {
       logError('AuthContext', 'Registration process failed', error as Error, { username, email });
@@ -216,7 +206,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     logInfo('AuthContext', 'User logout initiated', { userId: state.user?.id, username: state.user?.username });
-    dispatch({ type: 'LOGOUT' });
+    supabase.auth.signOut().finally(() => {
+      dispatch({ type: 'LOGOUT' });
+    });
     logInfo('AuthContext', 'User logout completed');
   };
 
@@ -236,3 +228,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+// Helpers
+async function ensureUserProfile(userId: string, email: string) {
+  // Fetch or create user profile row
+  const { data, error } = await supabase.from('users').select('*').eq('id', userId).maybeSingle();
+  if (!error && data) return data;
+
+  // Create with derived username
+  const username = email?.split('@')[0] || `user_${userId.substring(0, 6)}`;
+  const { data: inserted, error: upsertErr } = await supabase
+    .from('users')
+    .upsert([{ id: userId, username, email, role: 'user' }])
+    .select()
+    .maybeSingle();
+
+  if (upsertErr) throw upsertErr;
+
+  // Ensure default collection
+  await supabase
+    .from('collections')
+    .upsert([{ id: `default-${userId}`, user_id: userId, name: 'My Collection', description: 'Default collection', is_default: true }]);
+
+  return inserted!;
+}
+
+async function upsertUserProfile(profile: { id: string; username: string; email: string; role: 'user' | 'admin' }) {
+  const { error } = await supabase.from('users').upsert([profile]);
+  if (error) throw error;
+}
