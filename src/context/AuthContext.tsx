@@ -153,7 +153,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      // Timeout guard so the UI doesn't spin forever on network issues
+      const timeoutMs = 15000;
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Login timed out. Please check your connection and try again.')), timeoutMs)
+      );
+
+      const { data, error } = (await Promise.race([
+        supabase.auth.signInWithPassword({ email, password }),
+        timeout,
+      ])) as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>;
       if (error || !data.session || !data.user) throw error || new Error('Login failed');
 
       const profile = await ensureUserProfile(data.user.id, data.user.email || email);
@@ -257,17 +266,15 @@ async function ensureUserProfile(userId: string, email: string) {
   if (upsertErr) throw upsertErr;
 
   // Ensure default collection
-  await supabase
-    .from('collections')
-    .upsert([
-      {
-        id: `default-${userId}`,
-        user_id: userId,
-        name: 'My Collection',
-        description: 'Default collection',
-        is_default: true,
-      },
-    ]);
+  await supabase.from('collections').upsert([
+    {
+      id: `default-${userId}`,
+      user_id: userId,
+      name: 'My Collection',
+      description: 'Default collection',
+      is_default: true,
+    },
+  ]);
 
   return inserted!;
 }
