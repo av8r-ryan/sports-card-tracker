@@ -13,8 +13,13 @@ const DevTools: React.FC = () => {
   const isEnabledByEnv = process.env.REACT_APP_ENABLE_DEVTOOLS === 'true';
   const isEnabledByQuery = typeof window !== 'undefined' && window.location.search.includes('devtools=1');
   const isEnabledByStorage = typeof window !== 'undefined' && localStorage.getItem('enable-devtools') === 'true';
-  const isOfflineFallback = typeof window !== 'undefined' && (window as any).__SUPABASE_OFFLINE__ === true;
-  const enabled = isDevelopment || isEnabledByEnv || isEnabledByQuery || isEnabledByStorage || isOfflineFallback;
+  const isOfflineFallback =
+    typeof window !== 'undefined' &&
+    (window as unknown as { __SUPABASE_OFFLINE__?: boolean }).__SUPABASE_OFFLINE__ === true;
+  const host = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isVercelPreview = /-git-/.test(host) || host.endsWith('.vercel.app');
+  const enabled =
+    isDevelopment || isEnabledByEnv || isEnabledByQuery || isEnabledByStorage || isOfflineFallback || isVercelPreview;
 
   if (!enabled) return null;
 
