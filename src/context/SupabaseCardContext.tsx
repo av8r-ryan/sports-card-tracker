@@ -207,17 +207,20 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { cards } = state;
 
     const totalCards = cards.length;
-    const totalValue = cards.reduce((sum, card) => sum + (card.currentValue || 0), 0);
-    const totalInvested = cards.reduce((sum, card) => sum + (card.purchasePrice || 0), 0);
-    const netGainLoss = totalValue - totalInvested;
-    const roi = totalInvested > 0 ? (netGainLoss / totalInvested) * 100 : 0;
+    const totalCurrentValue = cards.reduce((sum, card) => sum + (card.currentValue || 0), 0);
+    const totalCostBasis = cards.reduce((sum, card) => sum + (card.purchasePrice || 0), 0);
+    const totalProfit = totalCurrentValue - totalCostBasis;
+    const soldCards = cards.filter((card) => !!card.sellDate);
+    const totalSold = soldCards.length;
+    const totalSoldValue = soldCards.reduce((sum, card) => sum + (card.sellPrice || 0), 0);
 
     return {
       totalCards,
-      totalValue,
-      totalInvested,
-      netGainLoss,
-      roi,
+      totalCostBasis,
+      totalCurrentValue,
+      totalProfit,
+      totalSold,
+      totalSoldValue,
     };
   }, [state]);
 

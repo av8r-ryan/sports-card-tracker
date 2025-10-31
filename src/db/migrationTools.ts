@@ -22,9 +22,7 @@ export interface MigrationResult {
 /**
  * Migrate all data from IndexedDB to Supabase
  */
-export async function migrateToSupabase(
-  onProgress?: (progress: MigrationProgress) => void
-): Promise<MigrationResult> {
+export async function migrateToSupabase(onProgress?: (progress: MigrationProgress) => void): Promise<MigrationResult> {
   const result: MigrationResult = {
     success: false,
     cardsMigrated: 0,
@@ -204,7 +202,7 @@ export async function rollbackMigration(): Promise<void> {
 
     // Restore collections
     for (const collection of collections) {
-      await collectionsDatabase.addCollection(collection);
+      await supabaseCollectionsDatabase.addCollection(collection);
     }
 
     // Restore cards

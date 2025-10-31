@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { Collection } from '../types';
+import { Collection } from '../types/collection';
 
 // Helper to convert Collection to database format
 function collectionToDbFormat(collection: Collection, userId: string) {
@@ -9,6 +9,7 @@ function collectionToDbFormat(collection: Collection, userId: string) {
     name: collection.name,
     description: collection.description || null,
     is_default: collection.isDefault || false,
+    visibility: collection.visibility || 'private',
   };
 }
 
@@ -20,6 +21,7 @@ function dbToCollection(row: any): Collection {
     name: row.name,
     description: row.description,
     isDefault: row.is_default,
+    visibility: row.visibility || 'private',
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
   };
