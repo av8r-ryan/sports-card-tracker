@@ -116,31 +116,53 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (session?.user) {
         logInfo('AuthContext', 'Supabase session found', { userId: session.user.id });
-        const profile = await ensureUserProfile(session.user.id, session.user.email || '');
-        dispatch({
-          type: 'LOGIN_SUCCESS',
-          payload: {
-            user: { id: profile.id, username: profile.username, email: profile.email || '', role: profile.role as any },
-            token: session.access_token,
-          },
-        });
-      }
-
-      supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, newSession: Session | null) => {
-        if (newSession?.user) {
-          const profile = await ensureUserProfile(newSession.user.id, newSession.user.email || '');
-          dispatch({
-            type: 'LOGIN_SUCCESS',
-            payload: {
-              user: {
+        // Dispatch immediately so UI can render
+        const baseUser: User = {
+          id: session.user.id,
+          username: (session.user.email || '').split('@')[0] || `user_${session.user.id.substring(0, 6)}`,
+          email: session.user.email || '',
+          role: 'user',
+        } as User;
+        dispatch({ type: 'LOGIN_SUCCESS', payload: { user: baseUser, token: session.access_token } });
+        // Enrich in background
+        ensureUserProfile(session.user.id, session.user.email || '')
+          .then((profile) =>
+            dispatch({
+              type: 'UPDATE_USER',
+              payload: {
                 id: profile.id,
                 username: profile.username,
                 email: profile.email || '',
                 role: profile.role as any,
-              },
-              token: newSession.access_token,
-            },
-          });
+              } as User,
+            })
+          )
+          .catch((e) => logWarn('AuthContext', 'ensureUserProfile failed post-init', e as Error));
+      }
+
+      supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, newSession: Session | null) => {
+        if (newSession?.user) {
+          const su = newSession.user;
+          const baseUser: User = {
+            id: su.id,
+            username: (su.email || '').split('@')[0] || `user_${su.id.substring(0, 6)}`,
+            email: su.email || '',
+            role: 'user',
+          } as User;
+          dispatch({ type: 'LOGIN_SUCCESS', payload: { user: baseUser, token: newSession.access_token } });
+          ensureUserProfile(su.id, su.email || '')
+            .then((profile) =>
+              dispatch({
+                type: 'UPDATE_USER',
+                payload: {
+                  id: profile.id,
+                  username: profile.username,
+                  email: profile.email || '',
+                  role: profile.role as any,
+                } as User,
+              })
+            )
+            .catch((e) => logWarn('AuthContext', 'ensureUserProfile failed onAuthStateChange', e as Error));
         } else {
           dispatch({ type: 'LOGOUT' });
         }
@@ -155,9 +177,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Timeout guard so the UI doesn't spin forever on network issues
       const timeoutMs = 15000;
-      const timeout = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Login timed out. Please check your connection and try again.')), timeoutMs)
-      );
+      const timeout = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Login timed out. Please check your connection and try again.'));
+        }, timeoutMs);
+      });
 
       const { data, error } = (await Promise.race([
         supabase.auth.signInWithPassword({ email, password }),
@@ -165,20 +189,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       ])) as Awaited<ReturnType<typeof supabase.auth.signInWithPassword>>;
       if (error || !data.session || !data.user) throw error || new Error('Login failed');
 
-      const profile = await ensureUserProfile(data.user.id, data.user.email || email);
+      // Dispatch success immediately with base info
+      const baseUser: User = {
+        id: data.user.id,
+        username: (data.user.email || email).split('@')[0] || `user_${data.user.id.substring(0, 6)}`,
+        email: data.user.email || email,
+        role: 'user',
+      } as User;
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: baseUser, token: data.session.access_token } });
 
-      dispatch({
-        type: 'LOGIN_SUCCESS',
-        payload: {
-          user: {
-            id: profile.id,
-            username: profile.username,
-            email: profile.email || email,
-            role: profile.role as any,
-          },
-          token: data.session.access_token,
-        },
-      });
+      // Enrich in background (do not block UI)
+      ensureUserProfile(data.user.id, data.user.email || email)
+        .then((profile) =>
+          dispatch({
+            type: 'UPDATE_USER',
+            payload: {
+              id: profile.id,
+              username: profile.username,
+              email: profile.email || email,
+              role: profile.role as any,
+            } as User,
+          })
+        )
+        .catch((e) => logWarn('AuthContext', 'ensureUserProfile failed after login', e as Error));
     } catch (error) {
       logError('AuthContext', 'Login process failed', error as Error, { email });
       dispatch({
