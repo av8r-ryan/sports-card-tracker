@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState, useCallback, useMemo } from 'react';
-
 import { supabase } from '../lib/supabase';
 import { Card, PortfolioStats } from '../types';
+import { useAuth } from './AuthContext';
 
 interface CardState {
   cards: Card[];
@@ -24,100 +24,46 @@ interface CardContextType {
 const CardContext = createContext<CardContextType | undefined>(undefined);
 
 export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<CardState>({
-    cards: [],
-    loading: false,
-    error: null,
-  });
+  const [state, setState] = useState<CardState>({ cards: [], loading: false, error: null });
+  const { state: authState } = useAuth();
 
-  // Load cards from Supabase on mount
   useEffect(() => {
     let isMounted = true;
-
-    const loadCards = async () => {
+    (async () => {
       try {
-        console.log('Loading cards from Supabase...');
         setState((prev) => ({ ...prev, loading: true }));
-
         const { data, error } = await supabase.from('cards').select('*').order('created_at', { ascending: false });
-
         if (error) throw error;
-
-        if (isMounted) {
-          console.log(`Loaded ${data?.length || 0} cards from Supabase`);
-          setState({
-            cards: data || [],
-            loading: false,
-            error: null,
-          });
-        }
-      } catch (error) {
-        console.error('Error loading cards from Supabase:', error);
-        if (isMounted) {
+        if (isMounted) setState({ cards: data || [], loading: false, error: null });
+      } catch (err) {
+        if (isMounted)
           setState((prev) => ({
             ...prev,
             loading: false,
-            error: error instanceof Error ? error.message : 'Failed to load cards',
+            error: err instanceof Error ? err.message : 'Failed to load cards',
           }));
-        }
       }
-    };
-
-    loadCards();
-
+    })();
     return () => {
       isMounted = false;
     };
   }, []);
 
-  const addCard = useCallback(async (card: Card) => {
-    try {
-      console.log('Adding card to Supabase:', card.player);
+  const addCard = useCallback(
+    async (card: Card): Promise<void> => {
+      const userId = authState.user?.id;
+      if (!userId) throw new Error('Not authenticated');
 
-      // Map card properties to match Supabase schema
-      const cardData = {
-        id: card.id,
-        user_id: 'anonymous', // Default user
-        collection_id: null,
-        player: card.player,
-        year: card.year,
-        brand: card.brand,
-        card_number: card.cardNumber || null,
-        category: card.category,
-        team: card.team || null,
-        condition: card.condition || null,
-        grading_company: card.gradingCompany || null,
-        purchase_price: card.purchasePrice || null,
-        current_value: card.currentValue || null,
-        // Persist dates as ISO yyyy-mm-dd strings when available
-        purchase_date: card.purchaseDate ? new Date(card.purchaseDate).toISOString().split('T')[0] : null,
-        sell_price: card.sellPrice || null,
-        sell_date: card.sellDate ? new Date(card.sellDate).toISOString().split('T')[0] : null,
-        notes: card.notes || null,
-        // images array is not directly stored in separate columns in this context
-      };
+      const id =
+        (card as any).id ||
+        (typeof crypto !== 'undefined' && 'randomUUID' in crypto
+          ? (crypto as any).randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
-      const { error } = await supabase.from('cards').insert([cardData]);
-
-      if (error) throw error;
-
-      setState((prev) => ({
-        ...prev,
-        cards: [card, ...prev.cards],
-      }));
-
-      console.log('Card added successfully');
-    } catch (error) {
-      console.error('Error adding card to Supabase:', error);
-      throw error;
-    }
-  }, []);
-
-  const updateCard = useCallback(async (card: Card) => {
-    try {
-      console.log('Updating card in Supabase:', card.id);
-
-      const cardData = {
+      const payload = {
+        id,
+        user_id: userId,
+        collection_id: (card as any).collection_id || `default-${userId}`,
         player: card.player,
         year: card.year,
         brand: card.brand,
@@ -132,63 +78,53 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         sell_price: card.sellPrice || null,
         sell_date: card.sellDate ? new Date(card.sellDate).toISOString().split('T')[0] : null,
         notes: card.notes || null,
-        // images array not mapped to individual columns here
-      };
+      } as const;
 
-      const { error } = await supabase.from('cards').update(cardData).eq('id', card.id);
-
+      const { error } = await supabase.from('cards').insert([payload]);
       if (error) throw error;
 
-      setState((prev) => ({
-        ...prev,
-        cards: prev.cards.map((c) => (c.id === card.id ? card : c)),
-      }));
+      setState((prev) => ({ ...prev, cards: [{ ...card, id } as Card, ...prev.cards] }));
+    },
+    [authState.user?.id]
+  );
 
-      console.log('Card updated successfully');
-    } catch (error) {
-      console.error('Error updating card in Supabase:', error);
-      throw error;
-    }
+  const updateCard = useCallback(async (card: Card): Promise<void> => {
+    const payload = {
+      player: card.player,
+      year: card.year,
+      brand: card.brand,
+      card_number: card.cardNumber || null,
+      category: card.category,
+      team: card.team || null,
+      condition: card.condition || null,
+      grading_company: card.gradingCompany || null,
+      purchase_price: card.purchasePrice || null,
+      current_value: card.currentValue || null,
+      purchase_date: card.purchaseDate ? new Date(card.purchaseDate).toISOString().split('T')[0] : null,
+      sell_price: card.sellPrice || null,
+      sell_date: card.sellDate ? new Date(card.sellDate).toISOString().split('T')[0] : null,
+      notes: card.notes || null,
+    };
+
+    const { error } = await supabase.from('cards').update(payload).eq('id', card.id);
+    if (error) throw error;
+
+    setState((prev) => ({
+      ...prev,
+      cards: prev.cards.map((c) => (c.id === card.id ? card : c)),
+    }));
   }, []);
 
-  const deleteCard = useCallback(async (id: string) => {
-    try {
-      console.log('Deleting card from Supabase:', id);
-
-      const { error } = await supabase.from('cards').delete().eq('id', id);
-
-      if (error) throw error;
-
-      setState((prev) => ({
-        ...prev,
-        cards: prev.cards.filter((c) => c.id !== id),
-      }));
-
-      console.log('Card deleted successfully');
-    } catch (error) {
-      console.error('Error deleting card from Supabase:', error);
-      throw error;
-    }
+  const deleteCard = useCallback(async (id: string): Promise<void> => {
+    const { error } = await supabase.from('cards').delete().eq('id', id);
+    if (error) throw error;
+    setState((prev) => ({ ...prev, cards: prev.cards.filter((c) => c.id !== id) }));
   }, []);
 
-  const clearAllCards = useCallback(async () => {
-    try {
-      console.log('Clearing all cards from Supabase...');
-
-      const { error } = await supabase.from('cards').delete().neq('id', '');
-
-      if (error) throw error;
-
-      setState((prev) => ({
-        ...prev,
-        cards: [],
-      }));
-
-      console.log('All cards cleared successfully');
-    } catch (error) {
-      console.error('Error clearing cards from Supabase:', error);
-      throw error;
-    }
+  const clearAllCards = useCallback(async (): Promise<void> => {
+    const { error } = await supabase.from('cards').delete().neq('id', '');
+    if (error) throw error;
+    setState((prev) => ({ ...prev, cards: [] }));
   }, []);
 
   const setCards = useCallback((cards: Card[]) => {
@@ -205,15 +141,13 @@ export const CardProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const getPortfolioStats = useCallback((): PortfolioStats => {
     const { cards } = state;
-
     const totalCards = cards.length;
-    const totalCurrentValue = cards.reduce((sum, card) => sum + (card.currentValue || 0), 0);
-    const totalCostBasis = cards.reduce((sum, card) => sum + (card.purchasePrice || 0), 0);
+    const totalCurrentValue = cards.reduce((sum, c) => sum + (c.currentValue || 0), 0);
+    const totalCostBasis = cards.reduce((sum, c) => sum + (c.purchasePrice || 0), 0);
     const totalProfit = totalCurrentValue - totalCostBasis;
-    const soldCards = cards.filter((card) => !!card.sellDate);
+    const soldCards = cards.filter((c) => !!c.sellDate);
     const totalSold = soldCards.length;
-    const totalSoldValue = soldCards.reduce((sum, card) => sum + (card.sellPrice || 0), 0);
-
+    const totalSoldValue = soldCards.reduce((sum, c) => sum + (c.sellPrice || 0), 0);
     return {
       totalCards,
       totalCostBasis,

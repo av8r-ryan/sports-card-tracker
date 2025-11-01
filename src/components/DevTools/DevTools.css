@@ -2,7 +2,7 @@
 .dev-tools {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   background: white;
   border: 2px solid #ff6b6b;
   border-radius: 12px;
@@ -180,7 +180,7 @@
     left: 10px;
     max-width: none;
   }
-  
+
   .dev-actions {
     flex-direction: column;
   }

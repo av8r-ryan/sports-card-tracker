@@ -1,13 +1,12 @@
 // Service Worker for Sports Card Tracker
-const CACHE_NAME = 'sports-card-tracker-v1';
-const STATIC_CACHE_NAME = 'sports-card-tracker-static-v1';
-const DYNAMIC_CACHE_NAME = 'sports-card-tracker-dynamic-v1';
+const CACHE_NAME = 'sports-card-tracker-v2';
+const STATIC_CACHE_NAME = 'sports-card-tracker-static-v2';
+const DYNAMIC_CACHE_NAME = 'sports-card-tracker-dynamic-v2';
 
 // Static assets to cache immediately
+// Note: CSS/JS files have content hashes, so we don't cache specific filenames
 const STATIC_ASSETS = [
   '/',
-  '/static/css/main.css',
-  '/static/js/main.js',
   '/manifest.json',
   '/favicon.ico',
   '/logo192.png',
